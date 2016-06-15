@@ -1,4 +1,4 @@
-﻿var ASTEROIDS_GAME = (function (asteroids_game) {
+var ASTEROIDS_GAME = (function (asteroids_game) {
 
     asteroids_game.asteroid = function (x, y, vx, vy, spinFactor, size) {
         this.x = x;
@@ -10,6 +10,7 @@
         this.height = size * 15;
         this.width = size * 15;
         this.size = size;
+        this.explosionSound = document.getElementById('explosionSound');
 
         this.draw = function () {
             var context = asteroids_game.getContext();
@@ -53,5 +54,22 @@
             }
         }
     };
+
+    asteroids_game.spawnAsteroids = function () {
+        var asteroidCount = asteroids_game.getCurrentWave() * 5 - 2;
+        for (var i = 0; i < asteroidCount; i++) {
+            var canvas = asteroids_game.getCanvas();
+            var velCox = Math.random() < 0.5 ? -1 : 1;
+            var velCoy = Math.random() < 0.5 ? -1 : 1;
+            var randomXPosition = Math.random() * canvas.width;
+            var randomYPosition = Math.random() * canvas.height;
+            var randomXV = Math.ceil(Math.random() * 5 * velCox);
+            var randomXY = Math.ceil(Math.random() * 5 * velCoy);
+            var randomSpinFactor = Math.ceil(Math.random() * 4);
+            var randomSize = Math.ceil(Math.random() * 6);
+            asteroids_game.asteroids.push(new asteroids_game.asteroid(randomXPosition, randomYPosition, randomXV, randomXY, randomSpinFactor, randomSize));
+        }
+    };
+
     return asteroids_game;
 }(ASTEROIDS_GAME));

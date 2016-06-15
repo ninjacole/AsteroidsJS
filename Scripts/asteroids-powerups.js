@@ -1,4 +1,4 @@
-﻿var ASTEROIDS_GAME = (function (asteroids_game) {
+var ASTEROIDS_GAME = (function (asteroids_game) {
     asteroids_game.powerup = function (context, x, y, ability) {
         this.x = x;
         this.y = y;
@@ -6,6 +6,7 @@
         this.pulse = .5;
         this.pulseChange = .5;
         this.ability = ability;
+        this.powerupSound = document.getElementById('powerupSound');
 
         this.getRadGrad = function () {
             if (this.pulse === this.radius - 1) {
@@ -24,8 +25,8 @@
         this.draw = function () {
             var context = asteroids_game.getContext();
             context.save();
-            context.getContext().beginPath();
-            context.getContext().arc(this.x, this.y, this.radius, 0, Math.PI * 2, true);
+            context.beginPath();
+            context.arc(this.x, this.y, this.radius, 0, Math.PI * 2, true);
             context.fillStyle = this.getRadGrad();
             context.fill();
             context.restore();
