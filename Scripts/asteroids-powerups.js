@@ -31,5 +31,5 @@
             context.restore();
         }
     };
-        
+    return asteroids_game;
 }(ASTEROIDS_GAME));

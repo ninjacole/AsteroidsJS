@@ -57,5 +57,6 @@
             this.timeTravelled = (new Date).getTime() - this.startTime;
         }
     };
-    
+    return asteroids_game;
+
 }(ASTEROIDS_GAME));

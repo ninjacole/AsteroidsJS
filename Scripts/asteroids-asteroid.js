@@ -53,4 +53,5 @@
             }
         }
     };
+    return asteroids_game;
 }(ASTEROIDS_GAME));
