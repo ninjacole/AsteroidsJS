@@ -64,6 +64,10 @@ var ASTEROIDS_GAME = (function () {
         return powerupSound;
     }
 
+    asteroids_game.convertDegreesToRads = function (degrees) {
+        return (Math.PI / 180) * degrees;
+    }
+
     // ---------------- Private functions
     // Create asteroids at the start of the wave
     function spawnAsteroids() {
@@ -193,36 +197,7 @@ var ASTEROIDS_GAME = (function () {
 //////////////////////////////////////////////////////////////////////
 $(document).ready(function () {
     (function () {
-
-        //////////////////////////////////////////////////////////////////////
-        ////////////////             KEY              ////////////////////////
-        //////////////////////////////////////////////////////////////////////
-        var key = {
-            _pressed: {},
-
-            LEFT: 37,
-            UP: 38,
-            RIGHT: 39,
-            DOWN: 40,
-            SPACE: 32,
-
-            isDown: function (keyCode) {
-                return this._pressed[keyCode];
-            },
-
-            onKeyDown: function (event) {
-                this._pressed[event.keyCode] = true;
-            },
-
-            onKeyUp: function (event) {
-                delete this._pressed[event.keyCode];
-            }
-        }
-
-
-        //////////////////////////////////////////////////////////////////////
-        ////////////////             ASTEROID         ////////////////////////
-        //////////////////////////////////////////////////////////////////////
+        
         function asteroid(x, y, vx, vy, spinFactor, size) {
             this.x = x;
             this.y = y;
