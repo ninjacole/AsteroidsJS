@@ -9,14 +9,24 @@
 <body>
     <br/>
         <div id="canvasParent" style="padding: 20px">
-
         </div>
     <script src="../Scripts/jquery-2.2.3.js"></script>
     <script src="../Scripts/bootstrap.js"></script>
 
+    <script src="../Scripts/asteroids-asteroid.js"></script>
+    <script src="../Scripts/asteroids-bullet.js"></script>
+    <script src="../Scripts/asteroids-key-helper.js"></script>
+    <script src="../Scripts/asteroids-player.js"></script>
+
     <script src="../Scripts/asteroids-game.js"></script>
     <audio id="laserSound" src="../Content/sounds/laser.wav" preload="auto" style="display: none;"></audio>
     <audio id="explosion" src="../Content/sounds/explosion.wav" preload="auto" style="display: none;"></audio>
-    <audio id="powerupSound" src="../Content/sounds/powerup.wav" preload="auto" style="display: none;"></audio>w
+    <audio id="powerupSound" src="../Content/sounds/powerup.wav" preload="auto" style="display: none;"></audio>
+
+    <script>
+    $(document).ready(function () {
+        ASTEROIDS_GAME.intervalId = setInterval(ASTEROIDS_GAME.start, 0);
+    });
+    </script>
 </body>
 </html>

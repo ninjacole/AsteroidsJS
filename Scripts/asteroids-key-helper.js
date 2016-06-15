@@ -20,6 +20,10 @@
             delete this._pressed[event.keyCode];
         }
     };
+
+    document.addEventListener('keyup', function (event) { asteroids_game.key.onKeyUp(event); }, false);
+    document.addEventListener('keydown', function (event) { asteroids_game.key.onKeyDown(event); }, false);
+
     return asteroids_game;
 
 })(ASTEROIDS_GAME);
