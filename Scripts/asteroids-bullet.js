@@ -20,9 +20,12 @@
         this.vy += Math.cos((Math.PI / 180) * (180 - this.rotation)) * this.speed; // create y vector based on current rotation
 
         this.draw = function () {
+            var context = asteroids_game.getContext();
+            var canvas = asteroids_game.getCanvas();
+
             context.save();
             context.translate(this.x, this.y);
-            context.rotate((Math.PI / 180) * this.rotation); // turn the entire graph within the canvas x radians
+            context.rotate(asteroids_game.convertDegreesToRads(this.rotation)); // turn the entire graph within the canvas x radians
 
             if (this.offset < 0) {
                 context.fillRect(this.offset - this.width, -.5 * this.height, this.width, this.height);

@@ -12,6 +12,7 @@
         this.size = size;
 
         this.draw = function () {
+            var context = asteroids_game.getContext();
             context.save();
             context.translate(this.x, this.y);
             context.rotate(asteroids_game.convertDegreesToRads(this.rotation));
@@ -20,6 +21,7 @@
         }
 
         this.update = function () {
+            var canvas = asteroids_game.getCanvas();
             this.x += vx;
             this.y += vy;
             this.rotate(this.spinFactor);
@@ -35,7 +37,6 @@
             if (this.y + this.vy < 0) {
                 this.y = canvas.height;
             }
-
         }
 
         this.rotate = function (degrees) {
