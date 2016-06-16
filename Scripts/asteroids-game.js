@@ -75,6 +75,53 @@ var ASTEROIDS_GAME = (function () {
         return currentWave;
     }
 
+    asteroids_game.point = function (x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    asteroids_game.triangle = function (tip, height, width) {
+        this.tip = tip;
+        this.height = height;
+        this.width = width;
+        this.corner1 = new asteroids_game.point(this.tip.x - .5 * this.width, this.tip.y + this.height);
+        this.corner2 = new asteroids_game.point(this.tip.x + .5 * this.width, this.tip.y + this.height);
+
+        this.rotation = 0;
+
+        this.rotate = function (degrees) {
+            this.rotation += degrees;
+            // If we're over 360 degrees, use the remainder
+            // example: 365 % 360 = remainder of 5. Rotation is 5 degrees.
+            if (this.rotation % 360 > 0) {
+                this.rotation = this.rotation % 360;
+            }
+
+            // If we're negative rotation, add 360.
+            // Example, rotated to -5 degrees, becomes 355 in the circle
+            if (this.rotation < 0) {
+                this.rotation = 360 + this.rotation;
+            }
+        }
+
+        this.center = new asteroids_game.point(this.tip.x, this.tip.y + .5 * this.height);
+
+        this.draw = function (context) {
+            context.save();
+            context.translate(this.point.center.x, this.point.center.y);
+            context.rotate(asteroids_game.convertDegreesToRads(this.rotation));
+            context.translate(-1 * this.point.center.x, -1 * this.point.center.y);
+            context.beginPath();
+            context.moveTo(this.tip.x, this.tip.y);
+            context.lineTo(this.corner1.x, this.corner1.y);
+            context.lineTo(this.corner2.x, this.corner2.y);
+            context.lineTo(this.tip.x, this.tip.y);
+            context.fill()
+            context.closePath();
+            context.restore();
+        }
+    }
+
     // ---------------- Private functions
     // Setup the canvas
     function setupCanvas() {

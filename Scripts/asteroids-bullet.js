@@ -1,5 +1,5 @@
 ﻿var ASTEROIDS_GAME = (function (asteroids_game) {
-    asteroids_game.bullet = function (context, x, y, vx, vy, rotation, offset) {
+    asteroids_game.bullet = function (playerShape, offset) {
         this.duration = 700;
         this.startTime = (new Date).getTime();
         this.timeTravelled = 0;
@@ -10,8 +10,8 @@
 
         this.speed = 7;
 
-        this.x = x;
-        this.y = y;
+        this.x = playerShape.center.x;
+        this.y = playerShape.center.y;
 
         this.vx = vx;
         this.vy = vy;
