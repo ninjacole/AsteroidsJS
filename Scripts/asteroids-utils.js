@@ -24,3 +24,11 @@ ASTEROIDS.namespace = function (ns_string) {
     }
     return parent;
 };
+
+ASTEROIDS.namespace('ASTEROIDS.utils');
+
+ASTEROIDS.utils = {
+    convertDegreesToRads: function (degrees) {
+        return (Math.PI / 180) * degrees;
+    }
+};
