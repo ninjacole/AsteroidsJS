@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <title>Asteroids</title>
@@ -8,8 +8,7 @@
 </head>
 <body>
     <br/>
-        <div id="canvasParent" style="padding: 20px">
-        </div>
+    <canvas width="1000" height="700" id="gameCanvas"></canvas>
     <audio id="laserSound" src="../Content/sounds/laser.wav" preload="auto" style="display: none;"></audio>
     <audio id="explosionSound" src="../Content/sounds/explosion.wav" preload="auto" style="display: none;"></audio>
     <audio id="powerupSound" src="../Content/sounds/powerup.wav" preload="auto" style="display: none;"></audio>
@@ -18,21 +17,14 @@
     <script src="../Scripts/bootstrap.js"></script>
 
 
-
-    <script src="../Scripts/asteroids-game.js"></script>
-
-    <script src="../Scripts/asteroids-asteroid.js"></script>
-    <script src="../Scripts/asteroids-bullet.js"></script>
-    <script src="../Scripts/asteroids-key-helper.js"></script>
+    <script src="../Scripts/asteroids-utils.js"></script>
+    <script src="../Scripts/asteroids-key.js"></script>
     <script src="../Scripts/asteroids-player.js"></script>
-    <script src="../Scripts/asteroids-powerups.js"></script>
-
-
+    <script src="../Scripts/asteroids-gameBoard.js"></script>
 
     <script>
     $(document).ready(function () {
-        ASTEROIDS_GAME.intervalId = setInterval(ASTEROIDS_GAME.start, 0);
-        ASTEROIDS_GAME.spawnAsteroids();
+        ASTEROIDS.gameBoard.intervalId = setInterval(ASTEROIDS.gameBoard.start, 0);
     });
     </script>
 </body>

@@ -9,6 +9,7 @@ ASTEROIDS.namespace('ASTEROIDS.player');
 ASTEROIDS.player = (function () {
     // private properties
     var utils = ASTEROIDS.utils,
+        key = ASTEROIDS.key,
         powerupSound = document.getElementById('powerupSound'),
         canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d'),
@@ -41,6 +42,26 @@ ASTEROIDS.player = (function () {
         },
         getVY: function () {
             return vy;
+        },
+        setVX: function (value) {
+            if (vx + value > maxSpeed) {
+                vx = maxSpeed;
+            } else {
+                vx += value;
+            }
+        },
+        setVY: function (value) {
+            if (vy + value > maxSpeed) {
+                vy = maxSpeed;
+            } else {
+                vy += value;
+            }
+        },
+        accelerate: function () {
+            var vx = Math.sin((Math.PI / 180) * (180 - rotation)) * accelerationCoefficient,
+                vy = Math.cos((Math.PI / 180) * (180 - rotation)) * accelerationCoefficient;
+            this.setVX(vx);
+            this.setVY(vy);
         },
         adjustFireRate: function (value) {
             if (fireRate + value > maxFireRate) {
@@ -77,11 +98,11 @@ ASTEROIDS.player = (function () {
             context.save();
             context.translate(x, y + 0.5 * height);
             context.rotate(utils.convertDegreesToRads(rotation));
-            context.translate(-1 * x, -1 * (0.5 * height));
+            context.translate(-1 * x, -1 * (y + 0.5 * height));
             context.beginPath();
             context.moveTo(x, y);
-            context.lineTo(x - (0.5 * width), y - height);
-            context.lineTo(x + (0.5 * width), y - height);
+            context.lineTo(x - (0.5 * width), y + height);
+            context.lineTo(x + (0.5 * width), y + height);
             context.lineTo(x, y);
             context.fill();
             context.closePath();
@@ -102,7 +123,7 @@ ASTEROIDS.player = (function () {
             }
         },
         isFireReady: function () {
-            return new Date().gettime() - lastFired > fireRate;
+            return new Date().getTime() - lastFired > fireRate;
         },
         isFiring: function () {
             lastFired = new Date().getTime();
@@ -111,6 +132,39 @@ ASTEROIDS.player = (function () {
             if (this.isFireReady()) {
                 this.isFiring();
                 weapon.fire();
+            }
+        },
+        update: function () {
+            x += vx;
+            y += vy;
+
+            if (x + vx > canvas.width) {
+                x = 0;
+            }
+            if (x + vx < 0) {
+                x = canvas.width;
+            }
+            if (y + vy > canvas.height) {
+                y = 0;
+            }
+            if (y + vy < 0) {
+                y = canvas.height;
+            }
+            
+            if (key.isDown(key.UP)) {
+                this.accelerate();
+            }
+            if (key.isDown(key.LEFT)) {
+                this.rotate(-5);
+            }
+            if (key.isDown(key.RIGHT)) {
+                this.rotate(5);
+            }
+            if (key.isDown(key.DOWN)) {
+                this.accelerationCoefficient += 0.1;
+            }
+            if (key.isDown(key.SPACE)) {
+                this.shoot();
             }
         }
 //        gainPowerup: function (powerup) {
@@ -178,24 +232,7 @@ ASTEROIDS.player = (function () {
 //                    }
 //                }                    
 //            }
-//
-//            if (asteroids_game.key) {
-//                if (asteroids_game.key.isDown(asteroids_game.key.UP)) {
-//                    this.accelerate();
-//                }
-//                if (asteroids_game.key.isDown(asteroids_game.key.LEFT)) {
-//                    this.rotate(-5);
-//                }
-//                if (asteroids_game.key.isDown(asteroids_game.key.RIGHT)) {
-//                    this.rotate(5);
-//                }
-//                if (asteroids_game.key.isDown(asteroids_game.key.DOWN)) {
-//                    this.accelerationCoefficient += .1;
-//                }
-//                if (asteroids_game.key.isDown(asteroids_game.key.SPACE)) {
-//                    this.shoot();
-//                }                    
-//            }
+
 //        }
     };
     return player;

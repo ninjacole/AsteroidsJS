@@ -8,240 +8,134 @@ var ASTEROIDS = ASTEROIDS || {};
 ASTEROIDS.namespace('ASTEROIDS.gameBoard');
 
 ASTEROIDS.gameBoard = (function () {
-    
-}());
-
-
-// Closure that exports asteroids game object
-var ASTEROIDS_GAME = (function () {
-    var asteroids_game = {},
-
-
+    // Dependencies
+    var player = ASTEROIDS.player,
+        gameBoard,
     //---------------- Private properties
         currentWave = 1,
         totalWaves = 10,
         fps = 50,
         intervalId = 0,
-        canvas,
-        context;
-
-    //---------------- Public properties
-    asteroids_game.player;
-    asteroids_game.bullets = [], asteroids_game.powerups = [], asteroids_game.powerupMessages = [], asteroids_game.asteroids = [];
-
-
-    //---------------- Public functions
-    asteroids_game.start = (function () {
-        var loops = 0, skipTicks = 1000 / fps, maxFrameSkip = 10, nextGameTick = (new Date).getTime();
-        return function () {
-            loops = 0;
-
-            while ((new Date).getTime() > nextGameTick && loops < maxFrameSkip) {
-                updateAll();
-                nextGameTick += skipTicks;
-                loops++;
-            }
-            if (loops) {
-                drawAll();
-            }
-        };
-    })();
-
-    asteroids_game.setIntervalId = function (id) {
-        intervalId = id;
-    }
-
-    asteroids_game.getIntervalId = function () {
-        return intervalId;
-    }
-
-    asteroids_game.getCanvas = function () {
-        if (!canvas) {
-            setupCanvas();
-        }
-        return canvas;
-    }
-
-    asteroids_game.getCanvasCenterX = function() {
-        if (!canvas) {
-            setupCanvas();
-        }
-        return canvas.width / 2;
-    }
-
-    asteroids_game.getCanvasCenterY = function() {
-        if (!canvas) {
-            setupCanvas();
-        }
-        return canvas.height / 2;
-    }
-
-    asteroids_game.getContext = function () {
-        if (!context) {
-            setupCanvas();
-        }
-        return context;
-    }
-
-    asteroids_game.convertDegreesToRads = function (degrees) {
-        return (Math.PI / 180) * degrees;
-    }
-
-    asteroids_game.getCurrentWave = function () {
-        return currentWave;
-    }
-
-    asteroids_game.point = function (x, y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    asteroids_game.triangle = function (tip, height, width) {
-        this.tip = tip;
-        this.height = height;
-        this.width = width;
-        this.corner1 = new asteroids_game.point(this.tip.x - .5 * this.width, this.tip.y + this.height);
-        this.corner2 = new asteroids_game.point(this.tip.x + .5 * this.width, this.tip.y + this.height);
-
-        this.rotation = 0;
-
-        this.rotate = function (degrees) {
-            this.rotation += degrees;
-            // If we're over 360 degrees, use the remainder
-            // example: 365 % 360 = remainder of 5. Rotation is 5 degrees.
-            if (this.rotation % 360 > 0) {
-                this.rotation = this.rotation % 360;
-            }
-
-            // If we're negative rotation, add 360.
-            // Example, rotated to -5 degrees, becomes 355 in the circle
-            if (this.rotation < 0) {
-                this.rotation = 360 + this.rotation;
-            }
-        }
-
-        this.center = new asteroids_game.point(this.tip.x, this.tip.y + .5 * this.height);
-
-        this.draw = function (context) {
-            context.save();
-            context.translate(this.point.center.x, this.point.center.y);
-            context.rotate(asteroids_game.convertDegreesToRads(this.rotation));
-            context.translate(-1 * this.point.center.x, -1 * this.point.center.y);
-            context.beginPath();
-            context.moveTo(this.tip.x, this.tip.y);
-            context.lineTo(this.corner1.x, this.corner1.y);
-            context.lineTo(this.corner2.x, this.corner2.y);
-            context.lineTo(this.tip.x, this.tip.y);
-            context.fill()
-            context.closePath();
-            context.restore();
-        }
-    }
-
-    // ---------------- Private functions
-    // Setup the canvas
-    function setupCanvas() {
-        canvas = document.createElement('canvas');
-        canvas.id = 'gameCanvas';
-        canvas.width = 1000;
-        canvas.height = 800;
-        document.getElementById('canvasParent').appendChild(canvas);
+        canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d');
-    }
-
-    // Perform physics and mechanic related tasks
-    function updateAll () {
-        asteroids_game.player.update();
-        for (var i = 0; i < asteroids_game.bullets.length; i++) {
-            asteroids_game.bullets[i].update();
-            if (asteroids_game.bullets[i].timeTravelled > asteroids_game.bullets[i].duration) {
-                asteroids_game.bullets.splice(i, 1);
-            }
-        }
-
-        if (asteroids_game.powerups.length < 5) {
-            var rand = Math.random() * 1000;
-            if (rand > 998) {
-                var randAbilityNum = Math.random() * 15;
-                var randAbility = "";
-                if (randAbilityNum < 3) {
-                    randAbility = 'speed';
-                } else if (randAbilityNum >= 3 && randAbilityNum < 6) {
-                    randAbility = 'double';
-                } else if (randAbilityNum >= 6 && randAbilityNum < 10) {
-                    randAbility = 'rear'
-                } else if (randAbilityNum >= 10 && randAbility < 15) {
-                    randAbility = 'spread'
+    
+    // public properties
+    gameBoard = {
+        updateAll: function () {
+            player.update();
+//            for (var i = 0; i < asteroids_game.bullets.length; i++) {
+//                asteroids_game.bullets[i].update();
+//                if (asteroids_game.bullets[i].timeTravelled > asteroids_game.bullets[i].duration) {
+//                    asteroids_game.bullets.splice(i, 1);
+//                }
+//            }
+//
+//            if (asteroids_game.powerups.length < 5) {
+//                var rand = Math.random() * 1000;
+//                if (rand > 998) {
+//                    var randAbilityNum = Math.random() * 15;
+//                    var randAbility = "";
+//                    if (randAbilityNum < 3) {
+//                        randAbility = 'speed';
+//                    } else if (randAbilityNum >= 3 && randAbilityNum < 6) {
+//                        randAbility = 'double';
+//                    } else if (randAbilityNum >= 6 && randAbilityNum < 10) {
+//                        randAbility = 'rear'
+//                    } else if (randAbilityNum >= 10 && randAbility < 15) {
+//                        randAbility = 'spread'
+//                    }
+//                    asteroids_game.powerups.push(new asteroids_game.powerup(context, Math.random() * canvas.width, Math.random() * canvas.height, randAbility));
+//                }
+//            }
+//
+//            for (var i = 0; i < asteroids_game.powerupMessages.length; i++) {
+//                if (asteroids_game.powerupMessages[i].duration < asteroids_game.powerupMessages[i].runningTime) {
+//                    asteroids_game.powerupMessages.splice(i, 1);
+//                }
+//            }
+//
+//            for (var i = 0; i < asteroids_game.asteroids.length; i++) {
+//                asteroids_game.asteroids[i].update();
+//            }
+//
+//            for (var i = 0; i < asteroids_game.asteroids.length; i++) {
+//                for (var j = 0; j < asteroids_game.bullets.length; j++) {
+//                    var dx = asteroids_game.asteroids[i].x - asteroids_game.bullets[j].x;
+//                    var dy = asteroids_game.asteroids[i].y - asteroids_game.bullets[j].y;
+//
+//                    var distance = Math.sqrt(dx * dx + dy * dy);
+//                    if (distance < asteroids_game.asteroids[i].width) {
+//                        asteroids_game.asteroids[i].explosionSound.play();
+//                        if (asteroids_game.asteroids[i].size > 1) {
+//                            var randy = Math.random() > .5 ? -1 : 1;
+//                            var randx = Math.random() > .5 ? -1 : 1;
+//                            var asterAfterx = asteroids_game.asteroids[i].vx + randx;
+//                            var asterAftery = asteroids_game.asteroids[i].vy + randy;
+//
+//                            asteroids_game.asteroids.push(new asteroids_game.asteroid(
+//                            asteroids_game.asteroids[i].x + 8,
+//                            asteroids_game.asteroids[i].y + 8,
+//                            asterAfterx,
+//                            asterAftery,
+//                            2,
+//                            asteroids_game.asteroids[i].size - 1))
+//
+//                            asteroids_game.asteroids.push(new asteroids_game.asteroid(
+//                            asteroids_game.asteroids[i].x - 8,
+//                            asteroids_game.asteroids[i].y - 8,
+//                            asterAfterx,
+//                            asterAftery,
+//                            2,
+//                            asteroids_game.asteroids[i].size - 1))
+//                        }
+//                        asteroids_game.asteroids.splice(i, 1);
+//                        asteroids_game.bullets.splice(j, 1);
+//                        break;
+//                    }
+//                }
+//            }
+        },
+        drawAll: function () {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            player.draw();
+//            for (var i = 0; i < asteroids_game.bullets.length; i++) {
+//                asteroids_game.bullets[i].draw();
+//            }
+//            for (var i = 0; i < asteroids_game.powerups.length; i++) {
+//                asteroids_game.powerups[i].draw();
+//            }
+//            for (var i = 0; i < asteroids_game.powerupMessages.length; i++) {
+//                asteroids_game.powerupMessages[i].draw();
+//            }
+//            for (var i = 0; i < asteroids_game.asteroids.length; i++) {
+//                asteroids_game.asteroids[i].draw();
+//            }          
+        },
+        start: (function () {
+            var loops = 0,
+                skipTicks = 1000 / fps,
+                maxFrameSkip = 10,
+                nextGameTick = new Date().getTime();
+            return function () {
+                loops = 0;
+                
+                while (new Date().getTime() > nextGameTick && loops < maxFrameSkip) {
+                    ASTEROIDS.gameBoard.updateAll();
+                    nextGameTick += skipTicks;
+                    loops += 1;
                 }
-                asteroids_game.powerups.push(new asteroids_game.powerup(context, Math.random() * canvas.width, Math.random() * canvas.height, randAbility));
-            }
-        }
-
-        for (var i = 0; i < asteroids_game.powerupMessages.length; i++) {
-            if (asteroids_game.powerupMessages[i].duration < asteroids_game.powerupMessages[i].runningTime) {
-                asteroids_game.powerupMessages.splice(i, 1);
-            }
-        }
-
-        for (var i = 0; i < asteroids_game.asteroids.length; i++) {
-            asteroids_game.asteroids[i].update();
-        }
-
-        for (var i = 0; i < asteroids_game.asteroids.length; i++) {
-            for (var j = 0; j < asteroids_game.bullets.length; j++) {
-                var dx = asteroids_game.asteroids[i].x - asteroids_game.bullets[j].x;
-                var dy = asteroids_game.asteroids[i].y - asteroids_game.bullets[j].y;
-
-                var distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < asteroids_game.asteroids[i].width) {
-                    asteroids_game.asteroids[i].explosionSound.play();
-                    if (asteroids_game.asteroids[i].size > 1) {
-                        var randy = Math.random() > .5 ? -1 : 1;
-                        var randx = Math.random() > .5 ? -1 : 1;
-                        var asterAfterx = asteroids_game.asteroids[i].vx + randx;
-                        var asterAftery = asteroids_game.asteroids[i].vy + randy;
-
-                        asteroids_game.asteroids.push(new asteroids_game.asteroid(
-                        asteroids_game.asteroids[i].x + 8,
-                        asteroids_game.asteroids[i].y + 8,
-                        asterAfterx,
-                        asterAftery,
-                        2,
-                        asteroids_game.asteroids[i].size - 1))
-
-                        asteroids_game.asteroids.push(new asteroids_game.asteroid(
-                        asteroids_game.asteroids[i].x - 8,
-                        asteroids_game.asteroids[i].y - 8,
-                        asterAfterx,
-                        asterAftery,
-                        2,
-                        asteroids_game.asteroids[i].size - 1))
-                    }
-                    asteroids_game.asteroids.splice(i, 1);
-                    asteroids_game.bullets.splice(j, 1);
-                    break;
+                if (loops) {
+                    ASTEROIDS.gameBoard.drawAll();
                 }
-            }
+            };
+        }()),
+        setIntervalId: function (id) {
+            intervalId = id;
+        },
+        getIntervalId: function () {
+            return intervalId;
         }
-    }
-
-    // Perform animation related tasks
-    function drawAll () {
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        asteroids_game.player.draw();
-        for (var i = 0; i < asteroids_game.bullets.length; i++) {
-            asteroids_game.bullets[i].draw();
-        }
-        for (var i = 0; i < asteroids_game.powerups.length; i++) {
-            asteroids_game.powerups[i].draw();
-        }
-        for (var i = 0; i < asteroids_game.powerupMessages.length; i++) {
-            asteroids_game.powerupMessages[i].draw();
-        }
-        for (var i = 0; i < asteroids_game.asteroids.length; i++) {
-            asteroids_game.asteroids[i].draw();
-        }
-    }
-
-    return asteroids_game;
-})();
+    };
+    return gameBoard;
+    
+}());
