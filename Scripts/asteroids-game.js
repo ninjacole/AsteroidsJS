@@ -1,13 +1,51 @@
+/*jslint node: true */
+'use strict';
+
+// global object
+var ASTEROIDS = ASTEROIDS || {};
+
+// util function for adding new namespaces
+ASTEROIDS.namespace = function (ns_string) {
+    var parts = ns_string.split('.'),
+        parent = ASTEROIDS,
+        i;
+    
+    // strip redundant leading global
+    if (parts[0] === "ASTEROIDS") {
+        parts = parts.slice(1);
+    }
+    
+    for (i = 0; i < parts.length; i += 1) {
+        // create a property if it doesn't exist
+        if (typeof parent[parts[i]] === "undefined") {
+            parent[parts[i]] = {};
+        }
+        parent = parent[parts[i]];
+    }
+    return parent;
+};
+
+
+// Create gameboard namespace
+ASTEROIDS.namespace('ASTEROIDS.gameBoard');
+
+ASTEROIDS.gameBoard = (function () {
+    
+}());
+
+
 // Closure that exports asteroids game object
 var ASTEROIDS_GAME = (function () {
-    var asteroids_game = {};
+    var asteroids_game = {},
 
 
     //---------------- Private properties
-    var currentWave = 1, totalWaves = 10, fps = 50, intervalId = 0;
-    var canvas;
-    var context;
-
+        currentWave = 1,
+        totalWaves = 10,
+        fps = 50,
+        intervalId = 0,
+        canvas,
+        context;
 
     //---------------- Public properties
     asteroids_game.player;
