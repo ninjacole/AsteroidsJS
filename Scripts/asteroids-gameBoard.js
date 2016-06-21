@@ -10,8 +10,10 @@ ASTEROIDS.namespace('ASTEROIDS.gameBoard');
 ASTEROIDS.gameBoard = (function () {
     // Dependencies
     var player = ASTEROIDS.player,
-        gameBoard,
+        weapon = ASTEROIDS.weapon,
+        bulletsFired = weapon.getBulletsFired(),
     //---------------- Private properties
+        gameBoard,
         currentWave = 1,
         totalWaves = 10,
         fps = 50,
@@ -23,6 +25,14 @@ ASTEROIDS.gameBoard = (function () {
     gameBoard = {
         updateAll: function () {
             player.update();
+            var i;
+            for (i = 0; i < bulletsFired.length; i += 1) {
+                if (bulletsFired[i].canTravel()) {
+                    bulletsFired[i].update();
+                } else {
+                    bulletsFired.splice(i, 1);
+                }
+            }
 //            for (var i = 0; i < asteroids_game.bullets.length; i++) {
 //                asteroids_game.bullets[i].update();
 //                if (asteroids_game.bullets[i].timeTravelled > asteroids_game.bullets[i].duration) {
@@ -96,8 +106,14 @@ ASTEROIDS.gameBoard = (function () {
 //            }
         },
         drawAll: function () {
+            var i;
             context.clearRect(0, 0, canvas.width, canvas.height);
             player.draw();
+            
+            for (i = 0; i < bulletsFired.length; i += 1) {
+                bulletsFired[i].draw();
+            }
+            
 //            for (var i = 0; i < asteroids_game.bullets.length; i++) {
 //                asteroids_game.bullets[i].draw();
 //            }

@@ -7,9 +7,13 @@ var ASTEROIDS = ASTEROIDS || {};
 ASTEROIDS.namespace('ASTEROIDS.player');
 
 ASTEROIDS.player = (function () {
-    // private properties
+    // dependencies
     var utils = ASTEROIDS.utils,
         key = ASTEROIDS.key,
+        bullet = ASTEROIDS.bullet,
+        weapon = ASTEROIDS.weapon,
+        
+        // private variables
         powerupSound = document.getElementById('powerupSound'),
         canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d'),
@@ -22,11 +26,10 @@ ASTEROIDS.player = (function () {
         rotation = 0,
         lastFired = new Date().getTime(),
         accelerationCoefficient = 0.1,
-        maxSpeed = 20,
+        maxSpeed = 15,
         maxAccelerationCoefficient = 1,
         fireRate = 300,
         maxFireRate = 500,
-        weapon = "",
         player;
     
     // public interface
@@ -43,25 +46,12 @@ ASTEROIDS.player = (function () {
         getVY: function () {
             return vy;
         },
-        setVX: function (value) {
-            if (vx + value > maxSpeed) {
-                vx = maxSpeed;
-            } else {
-                vx += value;
-            }
-        },
-        setVY: function (value) {
-            if (vy + value > maxSpeed) {
-                vy = maxSpeed;
-            } else {
-                vy += value;
-            }
-        },
         accelerate: function () {
             var vx = Math.sin((Math.PI / 180) * (180 - rotation)) * accelerationCoefficient,
                 vy = Math.cos((Math.PI / 180) * (180 - rotation)) * accelerationCoefficient;
-            this.setVX(vx);
-            this.setVY(vy);
+            
+            this.updateVX(vx);
+            this.updateVY(vy);
         },
         adjustFireRate: function (value) {
             if (fireRate + value > maxFireRate) {
@@ -81,17 +71,19 @@ ASTEROIDS.player = (function () {
             // change weapon to be new weapon type
         },
         updateVX: function (value) {
-            if (vx + value > maxSpeed) {
+            vx += value;
+            if (vx > maxSpeed) {
                 vx = maxSpeed;
-            } else {
-                vx += value;
+            } else if (vx < -1 * maxSpeed) {
+                vx = -1 * maxSpeed;
             }
         },
         updateVY: function (value) {
-            if (vy + value > maxSpeed) {
+            vy += value;
+            if (vy > maxSpeed) {
                 vy = maxSpeed;
-            } else {
-                vy += value;
+            } else if (vy < -1 * maxSpeed) {
+                vy = -1 * maxSpeed;
             }
         },
         draw: function () {
@@ -131,7 +123,14 @@ ASTEROIDS.player = (function () {
         shoot: function () {
             if (this.isFireReady()) {
                 this.isFiring();
-                weapon.fire();
+                var playerData = {
+                    x: x,
+                    y: y + 0.5 * height,
+                    vx: vx,
+                    vy: vy,
+                    rotation: rotation
+                };
+                weapon.fire(playerData);
             }
         },
         update: function () {
@@ -152,6 +151,7 @@ ASTEROIDS.player = (function () {
             }
             
             if (key.isDown(key.UP)) {
+                console.log(vx);
                 this.accelerate();
             }
             if (key.isDown(key.LEFT)) {
