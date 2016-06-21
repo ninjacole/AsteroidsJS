@@ -6,14 +6,13 @@ var ASTEROIDS = ASTEROIDS || {};
 
 ASTEROIDS.namespace('ASTEROIDS.Bullet');
 
-ASTEROIDS.Bullet = function (playerData, offset) {
+ASTEROIDS.Bullet = function (playerData, rotation, offset) {
     // dependencies
     var utils = ASTEROIDS.utils,
         // private variables
         duration = 700,
         startTime = new Date().getTime(),
         timeTravelled = 0,
-        rotation = playerData.rotation,
         width = 6,
         height = 6,
         speed = 7,

@@ -12,6 +12,8 @@ ASTEROIDS.player = (function () {
         key = ASTEROIDS.key,
         bullet = ASTEROIDS.bullet,
         weapon = ASTEROIDS.weapon,
+        powerup = ASTEROIDS.Powerup,
+        powerupTypes = ASTEROIDS.powerupTypes,
         
         // private variables
         powerupSound = document.getElementById('powerupSound'),
@@ -127,10 +129,9 @@ ASTEROIDS.player = (function () {
                     x: x,
                     y: y + 0.5 * height,
                     vx: vx,
-                    vy: vy,
-                    rotation: rotation
+                    vy: vy
                 };
-                weapon.fire(playerData);
+                weapon.fire(playerData, rotation);
             }
         },
         update: function () {
@@ -151,7 +152,6 @@ ASTEROIDS.player = (function () {
             }
             
             if (key.isDown(key.UP)) {
-                console.log(vx);
                 this.accelerate();
             }
             if (key.isDown(key.LEFT)) {
@@ -161,10 +161,31 @@ ASTEROIDS.player = (function () {
                 this.rotate(5);
             }
             if (key.isDown(key.DOWN)) {
-                this.accelerationCoefficient += 0.1;
+                console.log(this.getAccelerationCoefficient());
             }
             if (key.isDown(key.SPACE)) {
                 this.shoot();
+            }
+        },
+        getHeight: function () {
+            return height;
+        },
+        getAccelerationCoefficient: function () {
+            return accelerationCoefficient;
+        },
+        gainPowerup: function (powerup) {
+            powerup.playSound();
+            if (powerup.getType() === powerupTypes.SPEED) {
+                this.adjustAccelerationCoefficient(0.06);
+            }
+            if (powerup.getType() === powerupTypes.DOUBLE) {
+                weapon.setType(powerupTypes.DOUBLE);
+            }
+            if (powerup.getType() === powerupTypes.REAR) {
+                weapon.setType(powerupTypes.REAR);
+            }
+            if (powerup.getType() === powerupTypes.SPREAD) {
+                weapon.setType(powerupTypes.SPREAD);
             }
         }
 //        gainPowerup: function (powerup) {

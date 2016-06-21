@@ -13,9 +13,11 @@ ASTEROIDS.gameBoard = (function () {
         weapon = ASTEROIDS.weapon,
         Powerup = ASTEROIDS.Powerup,
         Asteroid = ASTEROIDS.Asteroid,
+        PowerupMessage = ASTEROIDS.PowerupMessage,
+        powerupTypes = ASTEROIDS.powerupTypes,
         asteroids = [],
         powerups = [],
-        powerupMessage = ASTEROIDS.PowerupMessage,
+        powerupMessages = [],
         //---------------- Private properties
         bulletsFired = weapon.getBulletsFired(),
         gameBoard,
@@ -94,6 +96,34 @@ ASTEROIDS.gameBoard = (function () {
             asteroids.push(asteroid1);
             asteroids.push(asteroid2);
         },
+        detectPowerupPlayerCollision = function () {
+            var i,
+                distance,
+                dx,
+                dy,
+                message,
+                type;
+            for (i = 0; i < powerups.length; i += 1) {
+                dx = powerups[i].getX() - player.getX();
+                dy = powerups[i].getY() - player.getY();
+                distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < powerups[i].getRadius() + player.getHeight()) {
+                    player.gainPowerup(powerups[i]);
+                    type = powerups[i].getType();
+                    if (type === powerupTypes.SPEED) {
+                        message = "Speed+! Current speed is " + player.getAccelerationCoefficient().toFixed(1) * 10;
+                    } else if (type === powerupTypes.DOUBLE) {
+                        message = "Double gun!";
+                    } else if (type === powerupTypes.REAR) {
+                        message = "Rear gun!";
+                    } else if (type === powerupTypes.SPREAD) {
+                        message = "Spread gun!";
+                    }
+                    powerupMessages.push(new PowerupMessage(powerups[i].getX(), powerups[i].getY(), message));
+                    powerups.splice(i, 1);
+                }
+            }
+        },
         detectBulletAsteroidCollision = function () {
             var i,
                 j,
@@ -118,10 +148,13 @@ ASTEROIDS.gameBoard = (function () {
                         if (asteroids[i].getSize() > 1) {
                             splitAsteroid(asteroids[i], bulletsFired[j].getVX(), bulletsFired[j].getVY());
                         } else {
-                            powers.push(new Powerup())
+                            if (Math.random() > 0.7) {
+                                powerups.push(new Powerup(asteroids[i].getX(), asteroids[i].getY()));
+                            }
                         }
                         asteroids.splice(i, 1);
                         bulletsFired.splice(j, 1);
+                        break;
                     }
                 }
             }
@@ -143,7 +176,13 @@ ASTEROIDS.gameBoard = (function () {
             for (i = 0; i < asteroids.length; i += 1) {
                 asteroids[i].update();
             }
+            
+            for (i = 0; i < powerups.length; i += 1) {
+                powerups[i].draw();
+            }
+            
             detectBulletAsteroidCollision();
+            detectPowerupPlayerCollision();
         },
 //            if (asteroids_game.powerups.length < 5) {
 //                var rand = Math.random() * 1000;
@@ -191,6 +230,15 @@ ASTEROIDS.gameBoard = (function () {
 //            }
             for (i = 0; i < asteroids.length; i += 1) {
                 asteroids[i].draw();
+            }
+            for (i = 0; i < powerups.length; i += 1) {
+                powerups[i].draw();
+            }
+            for (i = 0; i < powerupMessages.length; i += 1) {
+                powerupMessages[i].draw();
+                if (powerupMessages[i].timeExpired()) {
+                    powerupMessages.splice(i, 1);
+                }
             }
         },
         spawnAsteroids: function () {

@@ -6,15 +6,19 @@ var ASTEROIDS = ASTEROIDS || {};
 
 ASTEROIDS.namespace('ASTEROIDS.Powerup');
 ASTEROIDS.namespace('ASTEROIDS.PowerupMessage');
+ASTEROIDS.namespace('ASTEROIDS.powerupTypes');
 
-ASTEROIDS.Powerup = function (x, y, type) {
+
+ASTEROIDS.Powerup = function (x, y) {
     // dependencies
-    var radius = 20,
+    var powerupTypes = ASTEROIDS.powerupTypes,
+        radius = 20,
         pulse = 0.5,
         pulseChange = 0.5,
         powerupSound = document.getElementById('powerupSound'),
         canvas = document.getElementById('gameCanvas'),
-        context = canvas.getContext('2d');
+        context = canvas.getContext('2d'),
+        type = powerupTypes.RANDOM();
     
     
     this.getRadGrad = function () {
@@ -41,6 +45,26 @@ ASTEROIDS.Powerup = function (x, y, type) {
         context.fill();
         context.restore();
     };
+    
+    this.playSound = function () {
+        powerupSound.play();
+    };
+    
+    this.getX = function () {
+        return x;
+    };
+    
+    this.getY = function () {
+        return y;
+    };
+    
+    this.getRadius = function () {
+        return radius;
+    };
+    
+    this.getType = function () {
+        return type;
+    };
 };
 
 ASTEROIDS.PowerupMessage = function (x, y, message) {
@@ -48,7 +72,7 @@ ASTEROIDS.PowerupMessage = function (x, y, message) {
         startTime = new Date().getTime(),
         runningTime = 0,
         duration = 1500,
-        canvas = document.getElementById('canvas'),
+        canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d');
 
     this.draw = function () {
@@ -58,4 +82,31 @@ ASTEROIDS.PowerupMessage = function (x, y, message) {
         context.strokeText(message, x, y);
         context.restore();
     };
+    
+    this.timeExpired = function () {
+        return runningTime > duration;
+    };
 };
+
+ASTEROIDS.powerupTypes = (function () {
+    var powerupTypes = {
+        SPEED: 'speed',
+        DOUBLE: 'double',
+        REAR: 'rear',
+        SPREAD: 'spread',
+        RANDOM: function () {
+            var result = Math.random() * 40;
+            if (result < 10) {
+                return powerupTypes.SPEED;
+            } else if (result < 20) {
+                return powerupTypes.DOUBLE;
+            } else if (result < 30) {
+                return powerupTypes.REAR;
+            } else if (result < 40) {
+                return powerupTypes.SPREAD;
+            }
+        }
+    };
+    
+    return powerupTypes;
+}());

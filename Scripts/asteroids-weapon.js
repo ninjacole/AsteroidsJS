@@ -28,23 +28,23 @@ ASTEROIDS.weapon = (function () {
                 fireSound.play();
             }
         },
-        fire: function (playerData) {
+        fire: function (playerData, rotation) {
             if (type === 'single') {
                 this.playFireSound(1);
-                bulletsFired.push(new Bullet(playerData, 0));
+                bulletsFired.push(new Bullet(playerData, rotation, 0));
             } else if (type === 'double') {
                 this.playFireSound(2);
-                bulletsFired.push(new Bullet(playerData, 2));
-                bulletsFired.push(new Bullet(playerData, -2));
+                bulletsFired.push(new Bullet(playerData, rotation, 2));
+                bulletsFired.push(new Bullet(playerData, rotation, -2));
             } else if (type === 'rear') {
                 this.playFireSound(2);
-                bulletsFired.push(new Bullet(playerData, 0));
-                bulletsFired.push(new Bullet(playerData, 180));
+                bulletsFired.push(new Bullet(playerData, rotation + 180, 0));
+                bulletsFired.push(new Bullet(playerData, rotation, 0));
             } else if (type === 'spread') {
                 this.playFireSound(3);
-                bulletsFired.push(new Bullet(playerData, 0));
-                bulletsFired.push(new Bullet(playerData, 45));
-                bulletsFired.push(new Bullet(playerData, -45));
+                bulletsFired.push(new Bullet(playerData, rotation, 0));
+                bulletsFired.push(new Bullet(playerData, rotation + 45, 0));
+                bulletsFired.push(new Bullet(playerData, rotation - 45, 0));
             }
         },
         getBulletsFired: function () {
