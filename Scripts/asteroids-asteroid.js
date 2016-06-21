@@ -60,4 +60,32 @@ ASTEROIDS.Asteroid = function (config) {
             y = canvas.height;
         }
     };
+    
+    this.getX = function () {
+        return x;
+    };
+    
+    this.getY = function () {
+        return y;
+    };
+    
+    this.getWidth = function () {
+        return width;
+    };
+    
+    this.playSound = function () {
+        explosionSound.play();
+    };
+    
+    this.getSize = function () {
+        return size;
+    };
+    
+    this.getVX = function () {
+        return vx;
+    };
+    
+    this.getVY = function () {
+        return vy;
+    };
 };

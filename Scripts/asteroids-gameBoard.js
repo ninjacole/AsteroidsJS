@@ -11,9 +11,10 @@ ASTEROIDS.gameBoard = (function () {
     // Dependencies
     var player = ASTEROIDS.player,
         weapon = ASTEROIDS.weapon,
-        powerup = ASTEROIDS.Powerup,
+        Powerup = ASTEROIDS.Powerup,
         Asteroid = ASTEROIDS.Asteroid,
         asteroids = [],
+        powerups = [],
         powerupMessage = ASTEROIDS.PowerupMessage,
         //---------------- Private properties
         bulletsFired = weapon.getBulletsFired(),
@@ -23,7 +24,108 @@ ASTEROIDS.gameBoard = (function () {
         fps = 50,
         intervalId = 0,
         canvas = document.getElementById('gameCanvas'),
-        context = canvas.getContext('2d');
+        context = canvas.getContext('2d'),
+        splitAsteroid = function (asteroid, bulletVX, bulletVY) {
+            var config1 = {},
+                config2 = {},
+                afterVX1,
+                afterVY1,
+                afterVX2,
+                afterVY2,
+                asteroid1,
+                asteroid2,
+                randAngleX1,
+                randAngleX2,
+                randAngleY1,
+                randAngleY2;
+            
+            randAngleX1 = Math.random() * 180;
+            randAngleX2 = Math.random() * 180;
+            randAngleY1 = Math.random() * 180;
+            randAngleY2 = Math.random() * 180;
+            
+            afterVX1 = Math.sin((Math.PI / 180) * (180 - randAngleX1)) + bulletVX * 0.25;
+            afterVX2 = Math.sin((Math.PI / 180) * (180 + randAngleX2)) + bulletVX * 0.25;
+            
+            afterVY1 = Math.cos((Math.PI / 180) * (180 - randAngleY1)) + bulletVY * 0.25;
+            afterVY2 = Math.cos((Math.PI / 180) * (180 + randAngleY2)) + bulletVY * 0.25;
+
+            
+            if (afterVX1 > 20) {
+                afterVX1 = 20;
+            } else if (afterVX1 < -20) {
+                afterVX1 = -20;
+            }
+            if (afterVX2 > 20) {
+                afterVX2 = 20;
+            } else if (afterVX2 < -20) {
+                afterVX2 = -20;
+            }
+            
+            if (afterVY1 > 20) {
+                afterVY1 = 20;
+            } else if (afterVY1 < -20) {
+                afterVY1 = -20;
+            }
+            if (afterVY1 > 20) {
+                afterVY1 = 20;
+            } else if (afterVY1 < -20) {
+                afterVY1 = -20;
+            }
+            config1 = {
+                x: asteroid.getX() + 8,
+                y: asteroid.getY() + 8,
+                vx: afterVX1,
+                vy: afterVY1,
+                spinFactor: 2,
+                size: asteroid.getSize() - 1
+            };
+            config2 = {
+                x: asteroid.getX() - 8,
+                y: asteroid.getY() - 8,
+                vx: afterVX2,
+                vy: afterVY2,
+                spinFactor: 2,
+                size: asteroid.getSize() - 1
+            };
+            asteroid1 = new Asteroid(config1);
+            asteroid2 = new Asteroid(config2);
+
+            asteroids.push(asteroid1);
+            asteroids.push(asteroid2);
+        },
+        detectBulletAsteroidCollision = function () {
+            var i,
+                j,
+                dx,
+                dy,
+                distance,
+                randx,
+                randy,
+                asterAfterx,
+                asterAftery,
+                asteroidsToSplit = [],
+                asteroidsToRemove = [],
+                bulletsToRemove = [];
+            
+            for (i = 0; i < asteroids.length; i += 1) {
+                for (j = 0; j < bulletsFired.length; j += 1) {
+                    dx = asteroids[i].getX() - bulletsFired[j].getX();
+                    dy = asteroids[i].getY() - bulletsFired[j].getY();
+                    distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < asteroids[i].getWidth()) {
+                        asteroids[i].playSound();
+                        if (asteroids[i].getSize() > 1) {
+                            splitAsteroid(asteroids[i], bulletsFired[j].getVX(), bulletsFired[j].getVY());
+                        } else {
+                            powers.push(new Powerup())
+                        }
+                        asteroids.splice(i, 1);
+                        bulletsFired.splice(j, 1);
+                    }
+                }
+            }
+        };
     
     // public properties
     gameBoard = {
@@ -41,6 +143,8 @@ ASTEROIDS.gameBoard = (function () {
             for (i = 0; i < asteroids.length; i += 1) {
                 asteroids[i].update();
             }
+            detectBulletAsteroidCollision();
+        },
 //            if (asteroids_game.powerups.length < 5) {
 //                var rand = Math.random() * 1000;
 //                if (rand > 998) {
@@ -67,43 +171,6 @@ ASTEROIDS.gameBoard = (function () {
 //
 
 //
-//            for (var i = 0; i < asteroids_game.asteroids.length; i++) {
-//                for (var j = 0; j < asteroids_game.bullets.length; j++) {
-//                    var dx = asteroids_game.asteroids[i].x - asteroids_game.bullets[j].x;
-//                    var dy = asteroids_game.asteroids[i].y - asteroids_game.bullets[j].y;
-//
-//                    var distance = Math.sqrt(dx * dx + dy * dy);
-//                    if (distance < asteroids_game.asteroids[i].width) {
-//                        asteroids_game.asteroids[i].explosionSound.play();
-//                        if (asteroids_game.asteroids[i].size > 1) {
-//                            var randy = Math.random() > .5 ? -1 : 1;
-//                            var randx = Math.random() > .5 ? -1 : 1;
-//                            var asterAfterx = asteroids_game.asteroids[i].vx + randx;
-//                            var asterAftery = asteroids_game.asteroids[i].vy + randy;
-//
-//                            asteroids_game.asteroids.push(new asteroids_game.asteroid(
-//                            asteroids_game.asteroids[i].x + 8,
-//                            asteroids_game.asteroids[i].y + 8,
-//                            asterAfterx,
-//                            asterAftery,
-//                            2,
-//                            asteroids_game.asteroids[i].size - 1))
-//
-//                            asteroids_game.asteroids.push(new asteroids_game.asteroid(
-//                            asteroids_game.asteroids[i].x - 8,
-//                            asteroids_game.asteroids[i].y - 8,
-//                            asterAfterx,
-//                            asterAftery,
-//                            2,
-//                            asteroids_game.asteroids[i].size - 1))
-//                        }
-//                        asteroids_game.asteroids.splice(i, 1);
-//                        asteroids_game.bullets.splice(j, 1);
-//                        break;
-//                    }
-//                }
-//            }
-        },
         drawAll: function () {
             var i;
             context.clearRect(0, 0, canvas.width, canvas.height);

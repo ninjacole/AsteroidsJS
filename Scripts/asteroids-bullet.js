@@ -64,6 +64,22 @@ ASTEROIDS.Bullet = function (playerData, offset) {
     this.canTravel = function () {
         return timeTravelled < duration;
     };
+    
+    this.getX = function () {
+        return x;
+    };
+    
+    this.getY = function () {
+        return y;
+    };
+    
+    this.getVX = function () {
+        return vx;
+    };
+    
+    this.getVY = function () {
+        return vy;
+    };
 
     init();
 };
