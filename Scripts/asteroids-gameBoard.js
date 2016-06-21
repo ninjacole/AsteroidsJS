@@ -11,8 +11,12 @@ ASTEROIDS.gameBoard = (function () {
     // Dependencies
     var player = ASTEROIDS.player,
         weapon = ASTEROIDS.weapon,
+        powerup = ASTEROIDS.Powerup,
+        Asteroid = ASTEROIDS.Asteroid,
+        asteroids = [],
+        powerupMessage = ASTEROIDS.PowerupMessage,
+        //---------------- Private properties
         bulletsFired = weapon.getBulletsFired(),
-    //---------------- Private properties
         gameBoard,
         currentWave = 1,
         totalWaves = 10,
@@ -33,13 +37,10 @@ ASTEROIDS.gameBoard = (function () {
                     bulletsFired.splice(i, 1);
                 }
             }
-//            for (var i = 0; i < asteroids_game.bullets.length; i++) {
-//                asteroids_game.bullets[i].update();
-//                if (asteroids_game.bullets[i].timeTravelled > asteroids_game.bullets[i].duration) {
-//                    asteroids_game.bullets.splice(i, 1);
-//                }
-//            }
-//
+            
+            for (i = 0; i < asteroids.length; i += 1) {
+                asteroids[i].update();
+            }
 //            if (asteroids_game.powerups.length < 5) {
 //                var rand = Math.random() * 1000;
 //                if (rand > 998) {
@@ -64,9 +65,7 @@ ASTEROIDS.gameBoard = (function () {
 //                }
 //            }
 //
-//            for (var i = 0; i < asteroids_game.asteroids.length; i++) {
-//                asteroids_game.asteroids[i].update();
-//            }
+
 //
 //            for (var i = 0; i < asteroids_game.asteroids.length; i++) {
 //                for (var j = 0; j < asteroids_game.bullets.length; j++) {
@@ -123,11 +122,44 @@ ASTEROIDS.gameBoard = (function () {
 //            for (var i = 0; i < asteroids_game.powerupMessages.length; i++) {
 //                asteroids_game.powerupMessages[i].draw();
 //            }
-//            for (var i = 0; i < asteroids_game.asteroids.length; i++) {
-//                asteroids_game.asteroids[i].draw();
-//            }          
+            for (i = 0; i < asteroids.length; i += 1) {
+                asteroids[i].draw();
+            }
         },
-        start: (function () {
+        spawnAsteroids: function () {
+            var asteroidCount = currentWave * 5 - 2,
+                velCox,
+                velCoy,
+                x,
+                y,
+                vx,
+                vy,
+                spinFactor,
+                size,
+                config,
+                i;
+            
+            for (i = 0; i < asteroidCount; i += 1) {
+                velCox = Math.random() < 0.5 ? -1 : 1;
+                velCoy = Math.random() < 0.5 ? -1 : 1;
+                x = Math.random() * canvas.width;
+                y = Math.random() * canvas.height;
+                vx = Math.ceil(Math.random() * 5 * velCox);
+                vy = Math.ceil(Math.random() * 5 * velCoy);
+                spinFactor = Math.ceil(Math.random() * 4);
+                size = Math.ceil(Math.random() * 6);
+                config = {
+                    x: x,
+                    y: y,
+                    vx: vx,
+                    vy: vy,
+                    spinFactor: spinFactor,
+                    size: size
+                };
+                asteroids.push(new Asteroid(config));
+            }
+        },
+        loop: (function () {
             var loops = 0,
                 skipTicks = 1000 / fps,
                 maxFrameSkip = 10,
@@ -145,11 +177,12 @@ ASTEROIDS.gameBoard = (function () {
                 }
             };
         }()),
-        setIntervalId: function (id) {
-            intervalId = id;
+        start: function () {
+            this.spawnAsteroids();
+            intervalId = setInterval(this.loop, 0);
         },
-        getIntervalId: function () {
-            return intervalId;
+        stop: function () {
+            
         }
     };
     return gameBoard;
