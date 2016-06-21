@@ -94,8 +94,9 @@ ASTEROIDS.powerupTypes = (function () {
         DOUBLE: 'double',
         REAR: 'rear',
         SPREAD: 'spread',
+        FIRE_RATE: 'fire rate',
         RANDOM: function () {
-            var result = Math.random() * 40;
+            var result = Math.random() * 50;
             if (result < 10) {
                 return powerupTypes.SPEED;
             } else if (result < 20) {
@@ -104,6 +105,8 @@ ASTEROIDS.powerupTypes = (function () {
                 return powerupTypes.REAR;
             } else if (result < 40) {
                 return powerupTypes.SPREAD;
+            } else if (result < 50) {
+                return powerupTypes.FIRE_RATE;
             }
         }
     };

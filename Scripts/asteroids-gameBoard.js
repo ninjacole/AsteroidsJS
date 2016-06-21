@@ -15,6 +15,7 @@ ASTEROIDS.gameBoard = (function () {
         Asteroid = ASTEROIDS.Asteroid,
         PowerupMessage = ASTEROIDS.PowerupMessage,
         powerupTypes = ASTEROIDS.powerupTypes,
+        key = ASTEROIDS.key,
         asteroids = [],
         powerups = [],
         powerupMessages = [],
@@ -118,6 +119,8 @@ ASTEROIDS.gameBoard = (function () {
                         message = "Rear gun!";
                     } else if (type === powerupTypes.SPREAD) {
                         message = "Spread gun!";
+                    } else if (type === powerupTypes.FIRE_RATE) {
+                        message = "Fire rate+! Current fire delay is " + player.getFireRate();
                     }
                     powerupMessages.push(new PowerupMessage(powerups[i].getX(), powerups[i].getY(), message));
                     powerups.splice(i, 1);
@@ -163,6 +166,9 @@ ASTEROIDS.gameBoard = (function () {
     // public properties
     gameBoard = {
         updateAll: function () {
+            if (key.isDown(key.DOWN)) {
+                this.spawnAsteroids();
+            }
             player.update();
             var i;
             for (i = 0; i < bulletsFired.length; i += 1) {
@@ -184,32 +190,6 @@ ASTEROIDS.gameBoard = (function () {
             detectBulletAsteroidCollision();
             detectPowerupPlayerCollision();
         },
-//            if (asteroids_game.powerups.length < 5) {
-//                var rand = Math.random() * 1000;
-//                if (rand > 998) {
-//                    var randAbilityNum = Math.random() * 15;
-//                    var randAbility = "";
-//                    if (randAbilityNum < 3) {
-//                        randAbility = 'speed';
-//                    } else if (randAbilityNum >= 3 && randAbilityNum < 6) {
-//                        randAbility = 'double';
-//                    } else if (randAbilityNum >= 6 && randAbilityNum < 10) {
-//                        randAbility = 'rear'
-//                    } else if (randAbilityNum >= 10 && randAbility < 15) {
-//                        randAbility = 'spread'
-//                    }
-//                    asteroids_game.powerups.push(new asteroids_game.powerup(context, Math.random() * canvas.width, Math.random() * canvas.height, randAbility));
-//                }
-//            }
-//
-//            for (var i = 0; i < asteroids_game.powerupMessages.length; i++) {
-//                if (asteroids_game.powerupMessages[i].duration < asteroids_game.powerupMessages[i].runningTime) {
-//                    asteroids_game.powerupMessages.splice(i, 1);
-//                }
-//            }
-//
-
-//
         drawAll: function () {
             var i;
             context.clearRect(0, 0, canvas.width, canvas.height);
@@ -219,15 +199,6 @@ ASTEROIDS.gameBoard = (function () {
                 bulletsFired[i].draw();
             }
             
-//            for (var i = 0; i < asteroids_game.bullets.length; i++) {
-//                asteroids_game.bullets[i].draw();
-//            }
-//            for (var i = 0; i < asteroids_game.powerups.length; i++) {
-//                asteroids_game.powerups[i].draw();
-//            }
-//            for (var i = 0; i < asteroids_game.powerupMessages.length; i++) {
-//                asteroids_game.powerupMessages[i].draw();
-//            }
             for (i = 0; i < asteroids.length; i += 1) {
                 asteroids[i].draw();
             }
@@ -301,5 +272,4 @@ ASTEROIDS.gameBoard = (function () {
         }
     };
     return gameBoard;
-    
 }());

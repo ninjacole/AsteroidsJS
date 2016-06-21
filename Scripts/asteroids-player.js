@@ -23,15 +23,22 @@ ASTEROIDS.player = (function () {
         y = canvas.height / 2,
         vx = 0,
         vy = 0,
-        width = 15,
-        height = 30,
+        width = 20,
+        height = 20,
         rotation = 0,
         lastFired = new Date().getTime(),
         accelerationCoefficient = 0.1,
         maxSpeed = 15,
         maxAccelerationCoefficient = 1,
         fireRate = 300,
-        maxFireRate = 500,
+        maxFireRate = 100,
+        setFireRate = function (value) {
+            fireRate -= value;
+            if (fireRate < maxFireRate) {
+                fireRate = maxFireRate;
+            }
+        },
+        rearGun = false,
         player;
     
     // public interface
@@ -131,7 +138,7 @@ ASTEROIDS.player = (function () {
                     vx: vx,
                     vy: vy
                 };
-                weapon.fire(playerData, rotation);
+                weapon.fire(playerData, rotation, rearGun);
             }
         },
         update: function () {
@@ -160,9 +167,6 @@ ASTEROIDS.player = (function () {
             if (key.isDown(key.RIGHT)) {
                 this.rotate(5);
             }
-            if (key.isDown(key.DOWN)) {
-                console.log(this.getAccelerationCoefficient());
-            }
             if (key.isDown(key.SPACE)) {
                 this.shoot();
             }
@@ -173,6 +177,9 @@ ASTEROIDS.player = (function () {
         getAccelerationCoefficient: function () {
             return accelerationCoefficient;
         },
+        getFireRate: function () {
+            return fireRate;
+        },
         gainPowerup: function (powerup) {
             powerup.playSound();
             if (powerup.getType() === powerupTypes.SPEED) {
@@ -182,62 +189,15 @@ ASTEROIDS.player = (function () {
                 weapon.setType(powerupTypes.DOUBLE);
             }
             if (powerup.getType() === powerupTypes.REAR) {
-                weapon.setType(powerupTypes.REAR);
+                rearGun = true;
             }
             if (powerup.getType() === powerupTypes.SPREAD) {
                 weapon.setType(powerupTypes.SPREAD);
             }
+            if (powerup.getType() === powerupTypes.FIRE_RATE) {
+                setFireRate(50);
+            }
         }
-//        gainPowerup: function (powerup) {
-//            powerupSound.play();
-//            if (powerup.ability === 'speed') {
-//                this.setAccelerationCoefficient(0.1);
-//                ASTEROIDS.powerupMessages.push(new ASTEROIDS.powerupMessage(this.x, this.y, "Speed+! Current speed is " + this.accelerationCoefficient.toFixed(1) * 10));
-//            }
-//            if (powerup.ability === 'double') {
-//                this.weaponType = 'double';
-//                asteroids_game.powerupMessages.push(new asteroids_game.powerupMessage(this.x, this.y, "Double gun!"));
-//            }
-//            if (powerup.ability === 'rear') {
-//                this.weaponType = 'rear';
-//                asteroids_game.powerupMessages.push(new asteroids_game.powerupMessage(this.x, this.y, "Rear gun!"));
-//            }
-//            if (powerup.ability === 'spread') {
-//                this.weaponType = 'spread';
-//                asteroids_game.powerupMessages.push(new asteroids_game.powerupMessage(this.x, this.y, "Spread gun!"));
-//            }
-//        }
-//        
-//                this.update = function () {
-//            var canvas = asteroids_game.getCanvas();
-//            this.x += this.vx;
-//            this.y += this.vy;
-//
-//            if (this.x + this.vx > canvas.width) {
-//                this.x = 0;
-//            }
-//            if (this.x + this.vx < 0) {
-//                this.x = canvas.width;
-//            }
-//            if (this.y + this.vy > canvas.height) {
-//                this.y = 0;
-//            }
-//            if (this.y + this.vy < 0) {
-//                this.y = canvas.height;
-//            }
-//
-//            if (asteroids_game.powerups) {
-//                for (var i = 0; i < asteroids_game.powerups.length; i++) {
-//                    var dx = asteroids_game.powerups[i].x - this.x;
-//                    var dy = asteroids_game.powerups[i].y - this.y;
-//                    var distance = Math.sqrt(dx * dx + dy * dy);
-//
-//                    if (distance < asteroids_game.powerups[i].radius + this.h) {
-//                        this.gainPowerup(asteroids_game.powerups[i]);
-//                        asteroids_game.powerups.splice(i, 1);
-//                    }
-//                }                    
-//            }
 //
 //            if (asteroids_game.asteroids) {
 //                for (var i = 0; i < asteroids_game.asteroids.length; i++) {

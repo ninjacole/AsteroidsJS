@@ -29,15 +29,19 @@ ASTEROIDS.Bullet = function (playerData, rotation, offset) {
 
     this.draw = function () {
         context.save();
+        context.fillStyle = "green";
         context.translate(x, y);
         context.rotate(utils.convertDegreesToRads(rotation));
+        context.beginPath();
         if (offset < 0) {
-            context.fillRect(offset - width, -0.5 * height, width, height);
+            context.arc(offset - width, -0.5 * height, 3, utils.convertDegreesToRads(0), utils.convertDegreesToRads(360));
         } else if (offset > 0) {
-            context.fillRect(offset, -0.5 * height, width, height);
+            context.arc(offset, -0.5 * height, 3, utils.convertDegreesToRads(0), utils.convertDegreesToRads(360));
         } else {
-            context.fillRect(0, 0, width, height);
+            context.arc(0, 0, 3, utils.convertDegreesToRads(0), utils.convertDegreesToRads(360));
         }
+        context.fill();
+        context.closePath();
 
         context.restore();
 
