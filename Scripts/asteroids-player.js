@@ -23,8 +23,8 @@ ASTEROIDS.player = (function () {
         y = canvas.height / 2,
         vx = 0,
         vy = 0,
-        width = 20,
-        height = 20,
+        width = 15,
+        height = 30,
         rotation = 0,
         lastFired = new Date().getTime(),
         accelerationCoefficient = 0.1,
@@ -39,7 +39,8 @@ ASTEROIDS.player = (function () {
             }
         },
         rearGun = false,
-        player;
+        player,
+        engineRunning = false;
     
     // public interface
     player = {
@@ -107,6 +108,17 @@ ASTEROIDS.player = (function () {
             context.lineTo(x, y);
             context.fill();
             context.closePath();
+            
+            if (engineRunning) {
+                context.beginPath();
+                context.fillStyle = 'red';
+                context.moveTo(x - (0.5 * width), y + height);
+                context.lineTo(x, y + height + (0.5 * height));
+                context.lineTo(x + (0.5 * width), y + height);
+                context.lineTo(x - (0.5 * width), y + height);
+                context.fill();
+                context.closePath();
+            }
             context.restore();
         },
         rotate: function (degrees) {
@@ -160,6 +172,9 @@ ASTEROIDS.player = (function () {
             
             if (key.isDown(key.UP)) {
                 this.accelerate();
+                engineRunning = true;
+            } else {
+                engineRunning = false;
             }
             if (key.isDown(key.LEFT)) {
                 this.rotate(-5);
