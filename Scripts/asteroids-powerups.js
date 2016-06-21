@@ -1,56 +1,61 @@
-var ASTEROIDS_GAME = (function (asteroids_game) {
-    asteroids_game.powerup = function (context, x, y, ability) {
-        this.x = x;
-        this.y = y;
-        this.radius = 20;
-        this.pulse = .5;
-        this.pulseChange = .5;
-        this.ability = ability;
-        this.powerupSound = document.getElementById('powerupSound');
+/*jslint node: true */
+'use strict';
 
-        this.getRadGrad = function () {
-            if (this.pulse === this.radius - 1) {
-                this.pulseChange = -1;
-            } else if (this.pulse === 1) {
-                this.pulseChange = 1;
-            }
-            this.pulse += this.pulseChange;
+// global object reference or creation
+var ASTEROIDS = ASTEROIDS || {};
 
-            var radgrad = context.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.pulse);
-            radgrad.addColorStop(.5, '#C60F0F');
-            radgrad.addColorStop(.9, '#751F0E')
-            return radgrad;
+ASTEROIDS.namespace('ASTEROIDS.Powerup');
+ASTEROIDS.namespace('ASTEROIDS.PowerupMessage');
+
+ASTEROIDS.Powerup = function (x, y, type) {
+    // dependencies
+    var radius = 20,
+        pulse = 0.5,
+        pulseChange = 0.5,
+        powerupSound = document.getElementById('powerupSound'),
+        canvas = document.getElementById('gameCanvas'),
+        context = canvas.getContext('2d');
+    
+    
+    this.getRadGrad = function () {
+        if (pulse === radius - 1) {
+            pulseChange = -1;
+        } else if (pulse === 1) {
+            pulseChange = 1;
         }
+        
+        pulse += pulseChange;
 
-        this.draw = function () {
-            var context = asteroids_game.getContext();
-            context.save();
-            context.beginPath();
-            context.arc(this.x, this.y, this.radius, 0, Math.PI * 2, true);
-            context.fillStyle = this.getRadGrad();
-            context.fill();
-            context.restore();
-        }
+        var radgrad = context.createRadialGradient(x, y, 0, x, y, pulse);
+        radgrad.addColorStop(0.5, '#C60F0F');
+        radgrad.addColorStop(0.9, '#751F0E');
+        
+        return radgrad;
     };
 
-    asteroids_game.powerupMessage = function(x, y, message, font) {
-        this.x = x;
-        this.y = y;
-        this.message = message;
-        this.font = font || "15px Arial black";
-        this.startTime = (new Date).getTime();
-        this.runningTime = 0;
-        this.duration = 1500;
-        this.context = asteroids_game.getContext();
+    this.draw = function () {
+        context.save();
+        context.beginPath();
+        context.arc(x, y, radius, 0, Math.PI * 2, true);
+        context.fillStyle = this.getRadGrad();
+        context.fill();
+        context.restore();
+    };
+};
 
-        this.draw = function () {
-            this.runningTime = (new Date).getTime() - this.startTime;
-            this.context.save();
-            this.context.font = this.font;
-            this.context.strokeText(message, this.x, this.y);
-            this.context.restore();
-        }
-    }
+ASTEROIDS.PowerupMessage = function (x, y, message) {
+    var font = "15px Arial black",
+        startTime = new Date().getTime(),
+        runningTime = 0,
+        duration = 1500,
+        canvas = document.getElementById('canvas'),
+        context = canvas.getContext('2d');
 
-    return asteroids_game;
-}(ASTEROIDS_GAME));
+    this.draw = function () {
+        runningTime = new Date().getTime() - startTime;
+        context.save();
+        context.font = font;
+        context.strokeText(message, x, y);
+        context.restore();
+    };
+};
