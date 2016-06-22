@@ -28,6 +28,7 @@ ASTEROIDS.gameBoard = (function () {
         intervalId = 0,
         canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d'),
+        bgPic = document.getElementById('bgpic'),
         splitAsteroid = function (asteroid, bulletVX, bulletVY) {
             var config1 = {},
                 config2 = {},
@@ -41,6 +42,7 @@ ASTEROIDS.gameBoard = (function () {
                 randAngleX2,
                 randAngleY1,
                 randAngleY2;
+            
             
             randAngleX1 = Math.random() * 180;
             randAngleX2 = Math.random() * 180;
@@ -91,8 +93,8 @@ ASTEROIDS.gameBoard = (function () {
                 spinFactor: 2,
                 size: asteroid.getSize() - 1
             };
-            asteroid1 = new Asteroid(config1);
-            asteroid2 = new Asteroid(config2);
+            asteroid1 = new Asteroid(config1, asteroid.getImg());
+            asteroid2 = new Asteroid(config2, asteroid.getImg());
 
             asteroids.push(asteroid1);
             asteroids.push(asteroid2);
@@ -136,17 +138,14 @@ ASTEROIDS.gameBoard = (function () {
                 randx,
                 randy,
                 asterAfterx,
-                asterAftery,
-                asteroidsToSplit = [],
-                asteroidsToRemove = [],
-                bulletsToRemove = [];
+                asterAftery;
             
             for (i = 0; i < asteroids.length; i += 1) {
                 for (j = 0; j < bulletsFired.length; j += 1) {
-                    dx = asteroids[i].getX() - bulletsFired[j].getX();
-                    dy = asteroids[i].getY() - bulletsFired[j].getY();
+                    dx = asteroids[i].getCenterX() - bulletsFired[j].getCenterX();
+                    dy = asteroids[i].getCenterY() - bulletsFired[j].getCenterY();
                     distance = Math.sqrt(dx * dx + dy * dy);
-                    if (distance < asteroids[i].getWidth()) {
+                    if (distance <= asteroids[i].getWidth() / 2 + bulletsFired[j].getWidth() / 2) {
                         asteroids[i].playSound();
                         if (asteroids[i].getSize() > 1) {
                             splitAsteroid(asteroids[i], bulletsFired[j].getVX(), bulletsFired[j].getVY());
@@ -191,8 +190,14 @@ ASTEROIDS.gameBoard = (function () {
             detectPowerupPlayerCollision();
         },
         drawAll: function () {
-            var i;
+            var i, j;
             context.clearRect(0, 0, canvas.width, canvas.height);
+            context.save();
+            context.drawImage(bgPic, 0, 0);
+            context.restore();
+            
+            
+            
             player.draw();
             
             for (i = 0; i < bulletsFired.length; i += 1) {

@@ -13,8 +13,8 @@ ASTEROIDS.Bullet = function (playerData, rotation, offset) {
         duration = 700,
         startTime = new Date().getTime(),
         timeTravelled = 0,
-        width = 6,
-        height = 6,
+        width = 5,
+        height = 5,
         speed = 7,
         x = playerData.x,
         y = playerData.y,
@@ -22,6 +22,7 @@ ASTEROIDS.Bullet = function (playerData, rotation, offset) {
         vy = playerData.vy,
         canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d'),
+        img = document.getElementById('bullpng'),
         init = function () {
             vx += Math.sin(utils.convertDegreesToRads(180 - rotation)) * speed;
             vy += Math.cos(utils.convertDegreesToRads(180 - rotation)) * speed;
@@ -29,19 +30,21 @@ ASTEROIDS.Bullet = function (playerData, rotation, offset) {
 
     this.draw = function () {
         context.save();
-        context.fillStyle = "green";
+//        context.fillStyle = "#3BFF6F";
         context.translate(x, y);
         context.rotate(utils.convertDegreesToRads(rotation));
-        context.beginPath();
-        if (offset < 0) {
-            context.arc(offset - width, -0.5 * height, 3, utils.convertDegreesToRads(0), utils.convertDegreesToRads(360));
-        } else if (offset > 0) {
-            context.arc(offset, -0.5 * height, 3, utils.convertDegreesToRads(0), utils.convertDegreesToRads(360));
-        } else {
-            context.arc(0, 0, 3, utils.convertDegreesToRads(0), utils.convertDegreesToRads(360));
-        }
-        context.fill();
-        context.closePath();
+        context.translate(-1 * x, -1 * y);
+        context.drawImage(img, x + 0.5 * width, y + 0.5 * height);
+//        context.beginPath();
+//        if (offset < 0) {
+//            context.arc(offset - width, -0.5 * height, 3, utils.convertDegreesToRads(0), utils.convertDegreesToRads(360));
+//        } else if (offset > 0) {
+//            context.arc(offset, -0.5 * height, 3, utils.convertDegreesToRads(0), utils.convertDegreesToRads(360));
+//        } else {
+//            context.arc(0, 0, 3, utils.convertDegreesToRads(0), utils.convertDegreesToRads(360));
+//        }
+//        context.fill();
+//        context.closePath();
 
         context.restore();
 
@@ -82,6 +85,18 @@ ASTEROIDS.Bullet = function (playerData, rotation, offset) {
     
     this.getVY = function () {
         return vy;
+    };
+    
+    this.getCenterX = function () {
+        return x + 0.5 * width;
+    };
+    
+    this.getCenterY = function () {
+        return y + 0.5 * height;
+    };
+    
+    this.getWidth = function () {
+        return width;
     };
 
     init();

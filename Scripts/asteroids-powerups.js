@@ -68,7 +68,7 @@ ASTEROIDS.Powerup = function (x, y) {
 };
 
 ASTEROIDS.PowerupMessage = function (x, y, message) {
-    var font = "15px Arial black",
+    var font = "15px Consolas",
         startTime = new Date().getTime(),
         runningTime = 0,
         duration = 1500,
@@ -79,6 +79,7 @@ ASTEROIDS.PowerupMessage = function (x, y, message) {
         runningTime = new Date().getTime() - startTime;
         context.save();
         context.font = font;
+        context.strokeStyle = 'white';
         context.strokeText(message, x, y);
         context.restore();
     };

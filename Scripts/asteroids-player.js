@@ -19,12 +19,13 @@ ASTEROIDS.player = (function () {
         powerupSound = document.getElementById('powerupSound'),
         canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d'),
+        img = document.getElementById('player'),
         x = canvas.width / 2,
         y = canvas.height / 2,
         vx = 0,
         vy = 0,
-        width = 15,
-        height = 30,
+        width = 40,
+        height = 40,
         rotation = 0,
         lastFired = new Date().getTime(),
         accelerationCoefficient = 0.1,
@@ -98,27 +99,21 @@ ASTEROIDS.player = (function () {
         },
         draw: function () {
             context.save();
-            context.translate(x, y + 0.5 * height);
+            context.translate(x + 0.5 * width, y + 0.5 * height);
             context.rotate(utils.convertDegreesToRads(rotation));
-            context.translate(-1 * x, -1 * (y + 0.5 * height));
-            context.beginPath();
-            context.moveTo(x, y);
-            context.lineTo(x - (0.5 * width), y + height);
-            context.lineTo(x + (0.5 * width), y + height);
-            context.lineTo(x, y);
-            context.fill();
-            context.closePath();
-            
-            if (engineRunning) {
-                context.beginPath();
-                context.fillStyle = 'red';
-                context.moveTo(x - (0.5 * width), y + height);
-                context.lineTo(x, y + height + (0.5 * height));
-                context.lineTo(x + (0.5 * width), y + height);
-                context.lineTo(x - (0.5 * width), y + height);
-                context.fill();
-                context.closePath();
-            }
+            context.translate(-1 * (x + 0.5 * width), -1 * (y + 0.5 * height));
+            context.drawImage(img, x, y, width, height);
+//            
+//            if (engineRunning) {
+//                context.beginPath();
+//                context.fillStyle = 'red';
+//                context.moveTo(x - (0.5 * width), y + height);
+//                context.lineTo(x, y + height + (0.5 * height));
+//                context.lineTo(x + (0.5 * width), y + height);
+//                context.lineTo(x - (0.5 * width), y + height);
+//                context.fill();
+//                context.closePath();
+//            }
             context.restore();
         },
         rotate: function (degrees) {
@@ -145,7 +140,7 @@ ASTEROIDS.player = (function () {
             if (this.isFireReady()) {
                 this.isFiring();
                 var playerData = {
-                    x: x,
+                    x: x + 0.5 * width,
                     y: y + 0.5 * height,
                     vx: vx,
                     vy: vy

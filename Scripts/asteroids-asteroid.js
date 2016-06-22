@@ -6,7 +6,7 @@ var ASTEROIDS = ASTEROIDS || {};
 
 ASTEROIDS.namespace('ASTEROIDS.Asteroid');
 
-ASTEROIDS.Asteroid = function (config) {
+ASTEROIDS.Asteroid = function (config, previousImg) {
     var utils = ASTEROIDS.utils,
         x = config.x,
         y = config.y,
@@ -15,11 +15,15 @@ ASTEROIDS.Asteroid = function (config) {
         spinFactor = config.spinFactor,
         size = config.size,
         rotation = 0,
-        height = size * 15,
-        width = size * 15,
+        height = size * 20,
+        width = size * 20,
         explosionSound = document.getElementById('explosionSound'),
         canvas = document.getElementById('gameCanvas'),
-        context = canvas.getContext('2d');
+        context = canvas.getContext('2d'),
+        aster1 = document.getElementById('aster1'),
+        aster2 = document.getElementById('aster2'),
+        img;
+    
     this.rotate = function (degrees) {
         rotation += degrees;
         // If we're over 360 degrees, use the remainder
@@ -36,10 +40,13 @@ ASTEROIDS.Asteroid = function (config) {
     };
     
     this.draw = function () {
+        var centerx = x + 0.5 * width,
+            centery = y + 0.5 * height;
         context.save();
-        context.translate(x, y);
+        context.translate(centerx, centery);
         context.rotate(utils.convertDegreesToRads(rotation));
-        context.fillRect(-0.5 * width, -0.5 * height, width, height);
+        context.translate(-1 * centerx, -1 * centery);
+        context.drawImage(img, x, y, width, height);
         context.restore();
     };
 
@@ -59,6 +66,18 @@ ASTEROIDS.Asteroid = function (config) {
         if (y + vy < 0) {
             y = canvas.height;
         }
+    };
+    
+    this.getImg = function () {
+        return img;
+    };
+    
+    this.getCenterX = function () {
+        return x + 0.5 * width;
+    };
+    
+    this.getCenterY = function () {
+        return y + 0.5 * height;
     };
     
     this.getX = function () {
@@ -88,4 +107,14 @@ ASTEROIDS.Asteroid = function (config) {
     this.getVY = function () {
         return vy;
     };
+    
+    this.init = function () {
+        if (previousImg) {
+            img = previousImg;
+        } else {
+            img = Math.random() > 0.5 ? aster1 : aster2;
+        }
+    };
+    
+    this.init();
 };

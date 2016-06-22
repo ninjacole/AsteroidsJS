@@ -34,8 +34,8 @@ ASTEROIDS.weapon = (function () {
                 bulletsFired.push(new Bullet(playerData, rotation, 0));
             } else if (type === 'double') {
                 this.playFireSound(2);
-                bulletsFired.push(new Bullet(playerData, rotation, 2));
-                bulletsFired.push(new Bullet(playerData, rotation, -2));
+                bulletsFired.push(new Bullet(playerData, rotation, 4));
+                bulletsFired.push(new Bullet(playerData, rotation, -4));
             } else if (type === 'spread') {
                 this.playFireSound(3);
                 bulletsFired.push(new Bullet(playerData, rotation, 0));
