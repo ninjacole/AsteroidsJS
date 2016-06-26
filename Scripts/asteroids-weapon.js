@@ -28,24 +28,19 @@ ASTEROIDS.weapon = (function () {
                 fireSound.play();
             }
         },
-        fire: function (playerData, rotation, rearGun) {
+        fire: function (playerData, rearGun) {
             if (type === 'single') {
                 this.playFireSound(1);
-                bulletsFired.push(new Bullet(playerData, rotation, 0));
+                bulletsFired.push(new Bullet(playerData.centerBulletPoint, playerData.vx, playerData.vy, playerData.rotation));
             } else if (type === 'double') {
                 this.playFireSound(2);
-                bulletsFired.push(new Bullet(playerData, rotation, 4));
-                bulletsFired.push(new Bullet(playerData, rotation, -4));
+                bulletsFired.push(new Bullet(playerData.rightBulletPoint, playerData.vx, playerData.vy, playerData.rotation));
+                bulletsFired.push(new Bullet(playerData.leftBulletPoint,  playerData.vx, playerData.vy, playerData.rotation));
             } else if (type === 'spread') {
                 this.playFireSound(3);
-                bulletsFired.push(new Bullet(playerData, rotation, 0));
-                bulletsFired.push(new Bullet(playerData, rotation + 45, 0));
-                bulletsFired.push(new Bullet(playerData, rotation - 45, 0));
-            }
-            
-            if (rearGun) {
-                this.playFireSound(2);
-                bulletsFired.push(new Bullet(playerData, rotation + 180, 0));
+                bulletsFired.push(new Bullet(playerData.rightBulletPoint, playerData.vx, playerData.vy, playerData.rotation));
+                bulletsFired.push(new Bullet(playerData.centerBulletPoint, playerData.vx, playerData.vy, playerData.rotation));
+                bulletsFired.push(new Bullet(playerData.leftBulletPoint, playerData.vx, playerData.vy, playerData.rotation));
             }
         },
         getBulletsFired: function () {

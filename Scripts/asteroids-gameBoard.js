@@ -145,7 +145,7 @@ ASTEROIDS.gameBoard = (function () {
                     dx = asteroids[i].getCenterX() - bulletsFired[j].getCenterX();
                     dy = asteroids[i].getCenterY() - bulletsFired[j].getCenterY();
                     distance = Math.sqrt(dx * dx + dy * dy);
-                    if (distance <= asteroids[i].getWidth() / 2 + bulletsFired[j].getWidth() / 2) {
+                    if (distance <= asteroids[i].getWidth() / 2 + bulletsFired[j].getRadius()) {
                         asteroids[i].playSound();
                         if (asteroids[i].getSize() > 1) {
                             splitAsteroid(asteroids[i], bulletsFired[j].getVX(), bulletsFired[j].getVY());
@@ -166,6 +166,7 @@ ASTEROIDS.gameBoard = (function () {
     gameBoard = {
         updateAll: function () {
             if (key.isDown(key.DOWN)) {
+                //
                 this.spawnAsteroids();
             }
             player.update();

@@ -19,7 +19,7 @@ ASTEROIDS.player = (function () {
         powerupSound = document.getElementById('powerupSound'),
         canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d'),
-        img = document.getElementById('player'),
+        img = document.getElementById('ship2'),
         x = canvas.width / 2,
         y = canvas.height / 2,
         vx = 0,
@@ -39,7 +39,6 @@ ASTEROIDS.player = (function () {
                 fireRate = maxFireRate;
             }
         },
-        rearGun = false,
         player,
         engineRunning = false;
     
@@ -58,8 +57,8 @@ ASTEROIDS.player = (function () {
             return vy;
         },
         accelerate: function () {
-            var vx = Math.sin((Math.PI / 180) * (180 - rotation)) * accelerationCoefficient,
-                vy = Math.cos((Math.PI / 180) * (180 - rotation)) * accelerationCoefficient;
+            var vx = Math.sin((utils.convertDegreesToRads(180 - rotation))) * accelerationCoefficient,
+                vy = Math.cos((utils.convertDegreesToRads(180 - rotation))) * accelerationCoefficient;
             
             this.updateVX(vx);
             this.updateVY(vy);
@@ -77,9 +76,6 @@ ASTEROIDS.player = (function () {
             } else {
                 accelerationCoefficient += value;
             }
-        },
-        updateWeapon: function (weaponType) {
-            // change weapon to be new weapon type
         },
         updateVX: function (value) {
             vx += value;
@@ -99,10 +95,11 @@ ASTEROIDS.player = (function () {
         },
         draw: function () {
             context.save();
-            context.translate(x + 0.5 * width, y + 0.5 * height);
+            context.translate(x, y);
             context.rotate(utils.convertDegreesToRads(rotation));
-            context.translate(-1 * (x + 0.5 * width), -1 * (y + 0.5 * height));
-            context.drawImage(img, x, y, width, height);
+
+            context.translate(-1 * x, -1 * y);
+            context.drawImage(img, x - 0.5 * width, y - 0.5 * height, width, height);
 //            
 //            if (engineRunning) {
 //                context.beginPath();
@@ -136,16 +133,36 @@ ASTEROIDS.player = (function () {
         isFiring: function () {
             lastFired = new Date().getTime();
         },
+        getCenterBulletPoint: function () {
+            var hyp = 0.5 * height,
+                magx = Math.sin((utils.convertDegreesToRads(180 - rotation))) * hyp,
+                magy = Math.cos((utils.convertDegreesToRads(180 - rotation))) * hyp;
+            return {x: x + magx, y: y + magy};
+        },
+        getRightBulletPoint: function () {
+            var hyp = Math.sqrt(Math.pow(0.5 * width, 2)),
+                magx = Math.sin((utils.convertDegreesToRads(180 - rotation + 90))) * hyp,
+                magy = Math.cos((utils.convertDegreesToRads(180 - rotation + 90))) * hyp;
+            return {x: x + magx, y: y + magy};
+        },
+        getLeftBulletPoint: function () {
+            var hyp = Math.sqrt(Math.pow(0.5 * width, 2)),
+                magx = Math.sin((utils.convertDegreesToRads(180 - rotation - 90))) * hyp,
+                magy = Math.cos((utils.convertDegreesToRads(180 - rotation - 90))) * hyp;
+            return {x: x + magx, y: y + magy};
+        },
         shoot: function () {
             if (this.isFireReady()) {
                 this.isFiring();
                 var playerData = {
-                    x: x + 0.5 * width,
-                    y: y + 0.5 * height,
+                    centerBulletPoint: this.getCenterBulletPoint(),
+                    rightBulletPoint: this.getRightBulletPoint(),
+                    leftBulletPoint: this.getLeftBulletPoint(),
                     vx: vx,
-                    vy: vy
+                    vy: vy,
+                    rotation: rotation
                 };
-                weapon.fire(playerData, rotation, rearGun);
+                weapon.fire(playerData);
             }
         },
         update: function () {
@@ -198,9 +215,6 @@ ASTEROIDS.player = (function () {
             if (powerup.getType() === powerupTypes.DOUBLE) {
                 weapon.setType(powerupTypes.DOUBLE);
             }
-            if (powerup.getType() === powerupTypes.REAR) {
-                rearGun = true;
-            }
             if (powerup.getType() === powerupTypes.SPREAD) {
                 weapon.setType(powerupTypes.SPREAD);
             }
@@ -208,23 +222,6 @@ ASTEROIDS.player = (function () {
                 setFireRate(50);
             }
         }
-//
-//            if (asteroids_game.asteroids) {
-//                for (var i = 0; i < asteroids_game.asteroids.length; i++) {
-//                    var dx = asteroids_game.asteroids[i].x - this.x;
-//                    var dy = asteroids_game.asteroids[i].y - this.y;
-//                    var distance = Math.sqrt(dx * dx + dy * dy);
-//
-//                    if (distance < asteroids_game.asteroids[i].width * .5) {
-//                        this.vx = 0;
-//                        this.vy = 0;
-//                        this.x = canvas.width / 2;
-//                        this.y = canvas.height / 2;
-//                    }
-//                }                    
-//            }
-
-//        }
     };
     return player;
 }());
