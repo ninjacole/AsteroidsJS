@@ -29,6 +29,7 @@ ASTEROIDS.gameBoard = (function () {
         canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d'),
         bgPic = document.getElementById('bgpic'),
+        playerLives = 4,
         splitAsteroid = function (asteroid, bulletVX, bulletVY) {
             var config1 = {},
                 config2 = {},
@@ -112,19 +113,7 @@ ASTEROIDS.gameBoard = (function () {
                 distance = Math.sqrt(dx * dx + dy * dy);
                 if (distance < powerups[i].getRadius() + player.getHeight()) {
                     player.gainPowerup(powerups[i]);
-                    type = powerups[i].getType();
-                    if (type === powerupTypes.SPEED) {
-                        message = "Speed+! Current speed is " + player.getAccelerationCoefficient().toFixed(1) * 10;
-                    } else if (type === powerupTypes.DOUBLE) {
-                        message = "Double gun!";
-                    } else if (type === powerupTypes.REAR) {
-                        message = "Rear gun!";
-                    } else if (type === powerupTypes.SPREAD) {
-                        message = "Spread gun!";
-                    } else if (type === powerupTypes.FIRE_RATE) {
-                        message = "Fire rate+! Current fire delay is " + player.getFireRate();
-                    }
-                    powerupMessages.push(new PowerupMessage(powerups[i].getX(), powerups[i].getY(), message));
+                    powerupMessages.push(new PowerupMessage(powerups[i]));
                     powerups.splice(i, 1);
                 }
             }

@@ -67,13 +67,17 @@ ASTEROIDS.Powerup = function (x, y) {
     };
 };
 
-ASTEROIDS.PowerupMessage = function (x, y, message) {
-    var font = "15px Consolas",
+ASTEROIDS.PowerupMessage = function (powerup) {
+    var powerupTypes = ASTEROIDS.powerupTypes,
+        font = "15px Consolas",
         startTime = new Date().getTime(),
         runningTime = 0,
         duration = 1500,
         canvas = document.getElementById('gameCanvas'),
-        context = canvas.getContext('2d');
+        context = canvas.getContext('2d'),
+        message,
+        x,
+        y;
 
     this.draw = function () {
         runningTime = new Date().getTime() - startTime;
@@ -87,6 +91,23 @@ ASTEROIDS.PowerupMessage = function (x, y, message) {
     this.timeExpired = function () {
         return runningTime > duration;
     };
+    
+    this.init = function () {
+        var type = powerup.getType();
+        x = powerup.getX();
+        y = powerup.getY();
+        if (type === powerupTypes.SPEED) {
+            message = "Speed+!";
+        } else if (type === powerupTypes.DOUBLE) {
+            message = "Double gun!";
+        } else if (type === powerupTypes.SPREAD) {
+            message = "Spread gun!";
+        } else if (type === powerupTypes.FIRE_RATE) {
+            message = "Fire rate+!";
+        }
+    };
+    
+    this.init();
 };
 
 ASTEROIDS.powerupTypes = (function () {
