@@ -221,6 +221,15 @@ ASTEROIDS.player = (function () {
             if (powerup.getType() === powerupTypes.FIRE_RATE) {
                 setFireRate(50);
             }
+        },
+        die: function () {
+            weapon.setType('single');
+            accelerationCoefficient = 0.1;
+            fireRate = 300;
+            x = canvas.width / 2;
+            y = canvas.height / 2;
+            vx = 0;
+            vy = 0;
         }
     };
     return player;

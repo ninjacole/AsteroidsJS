@@ -111,10 +111,25 @@ ASTEROIDS.gameBoard = (function () {
                 dx = powerups[i].getX() - player.getX();
                 dy = powerups[i].getY() - player.getY();
                 distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < powerups[i].getRadius() + player.getHeight()) {
+                if (distance < powerups[i].getRadius() + player.getHeight() * 0.5) {
                     player.gainPowerup(powerups[i]);
                     powerupMessages.push(new PowerupMessage(powerups[i]));
                     powerups.splice(i, 1);
+                }
+            }
+        },
+        detectAsteroidPlayerCollision = function () {
+            var i,
+                distance,
+                dx,
+                dy;
+            for (i = 0; i  < asteroids.length; i += 1) {
+                dx = asteroids[i].getCenterX() - player.getX();
+                dy = asteroids[i].getCenterY() - player.getY();
+                distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < asteroids[i].getWidth() * 0.5 + player.getHeight() * 0.5) {
+                    playerLives -= 1;
+                    player.die();
                 }
             }
         },
@@ -178,6 +193,7 @@ ASTEROIDS.gameBoard = (function () {
             
             detectBulletAsteroidCollision();
             detectPowerupPlayerCollision();
+            detectAsteroidPlayerCollision();
         },
         drawAll: function () {
             var i, j;
