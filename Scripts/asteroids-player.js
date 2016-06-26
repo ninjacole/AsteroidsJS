@@ -41,7 +41,7 @@ ASTEROIDS.player = (function () {
         },
         player,
         timeOfDeath = new Date().getTime(),
-        respawnTime = 3000,
+        respawnTime = 500,
         alive = true,
         engineRunning = false;
     
@@ -231,23 +231,27 @@ ASTEROIDS.player = (function () {
             }
         },
         die: function () {
+            this.hide();
             alive = false;
-            x = -1000;
-            y = -1000;
             playerDeathSound.play();
             weapon.setType('single');
             accelerationCoefficient = 0.1;
             fireRate = 300;
-            vx = 0;
-            vy = 0;
             rotation = 0;
             timeOfDeath = new Date().getTime();
             img = document.getElementById('ship-single');
-            setTimeout(function () {
-                alive = true;
-                x = canvas.width / 2;
-                y = canvas.height / 2;
-            }, respawnTime);
+            setTimeout(this.show, respawnTime);
+        },
+        hide: function () {
+            x = -1000;
+            y = -1000;
+            vx = 0;
+            vy = 0;
+        },
+        show: function () {
+            alive = true;
+            x = canvas.width / 2;
+            y = canvas.height / 2;
         }
     };
     return player;
