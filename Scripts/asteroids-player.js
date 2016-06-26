@@ -16,10 +16,10 @@ ASTEROIDS.player = (function () {
         powerupTypes = ASTEROIDS.powerupTypes,
         
         // private variables
-        powerupSound = document.getElementById('powerupSound'),
+        playerDeathSound = document.getElementById('playerDeathSound'),
         canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d'),
-        img = document.getElementById('ship2'),
+        img = document.getElementById('ship-single'),
         x = canvas.width / 2,
         y = canvas.height / 2,
         vx = 0,
@@ -40,10 +40,16 @@ ASTEROIDS.player = (function () {
             }
         },
         player,
+        timeOfDeath = new Date().getTime(),
+        respawnTime = 3000,
+        alive = true,
         engineRunning = false;
     
     // public interface
     player = {
+        isAlive: function () {
+            return alive;
+        },
         getX: function () {
             return x;
         },
@@ -214,22 +220,34 @@ ASTEROIDS.player = (function () {
             }
             if (powerup.getType() === powerupTypes.DOUBLE) {
                 weapon.setType(powerupTypes.DOUBLE);
+                img = document.getElementById('ship-double');
             }
             if (powerup.getType() === powerupTypes.SPREAD) {
                 weapon.setType(powerupTypes.SPREAD);
+                img = document.getElementById('ship-double');
             }
             if (powerup.getType() === powerupTypes.FIRE_RATE) {
                 setFireRate(50);
             }
         },
         die: function () {
+            alive = false;
+            x = -1000;
+            y = -1000;
+            playerDeathSound.play();
             weapon.setType('single');
             accelerationCoefficient = 0.1;
             fireRate = 300;
-            x = canvas.width / 2;
-            y = canvas.height / 2;
             vx = 0;
             vy = 0;
+            rotation = 0;
+            timeOfDeath = new Date().getTime();
+            img = document.getElementById('ship-single');
+            setTimeout(function () {
+                alive = true;
+                x = canvas.width / 2;
+                y = canvas.height / 2;
+            }, respawnTime);
         }
     };
     return player;

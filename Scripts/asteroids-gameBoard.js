@@ -15,6 +15,7 @@ ASTEROIDS.gameBoard = (function () {
         Asteroid = ASTEROIDS.Asteroid,
         PowerupMessage = ASTEROIDS.PowerupMessage,
         powerupTypes = ASTEROIDS.powerupTypes,
+        playerImg = document.getElementById('ship-single'),
         key = ASTEROIDS.key,
         asteroids = [],
         powerups = [],
@@ -173,7 +174,11 @@ ASTEROIDS.gameBoard = (function () {
                 //
                 this.spawnAsteroids();
             }
-            player.update();
+            
+            if (player.isAlive()) {
+                player.update();
+            }
+            
             var i;
             for (i = 0; i < bulletsFired.length; i += 1) {
                 if (bulletsFired[i].canTravel()) {
@@ -200,16 +205,22 @@ ASTEROIDS.gameBoard = (function () {
             context.clearRect(0, 0, canvas.width, canvas.height);
             context.save();
             context.drawImage(bgPic, 0, 0);
+            context.fillStyle = 'white';
+            context.font = "30px Consolas";
+            context.fillText("Level: " + currentWave, 50, 30);
+            context.translate(50, 30);
+            for (i = 0; i < playerLives; i += 1) {
+                context.drawImage(playerImg, i * 25, 15, 20, 20);
+            }
             context.restore();
             
-            
-            
-            player.draw();
-            
+            if (player.isAlive()) {
+                player.draw();
+            }
             for (i = 0; i < bulletsFired.length; i += 1) {
                 bulletsFired[i].draw();
             }
-            
+
             for (i = 0; i < asteroids.length; i += 1) {
                 asteroids[i].draw();
             }

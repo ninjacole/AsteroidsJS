@@ -22,7 +22,6 @@ ASTEROIDS.Bullet = function (bulletPoint, playervx, playervy, playerRotation) {
         rotation = playerRotation,
         vx = playervx + Math.sin(utils.convertDegreesToRads(180 - rotation)) * speed,
         vy = playervy + Math.cos(utils.convertDegreesToRads(180 - rotation)) * speed;
-    console.log(vx + ", " + vy);
     
     this.draw = function () {
         context.save();
