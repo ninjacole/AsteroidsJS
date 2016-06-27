@@ -7,6 +7,16 @@ var ASTEROIDS = ASTEROIDS || {};
 // Create gameboard namespace
 ASTEROIDS.namespace('ASTEROIDS.gameBoard');
 
+ASTEROIDS.namespace('ASTEROIDS.gameState');
+
+ASTEROIDS.gameState = {
+    WAVE_ACTIVE: 'wave active',
+    START_MENU: 'start menu',
+    HIGH_SCORE_MENU: 'high score menu',
+    WAVE_TRANSITION: 'wave transition',
+    GAME_OVER: 'game over'
+};
+
 ASTEROIDS.gameBoard = (function () {
     // Dependencies
     var player = ASTEROIDS.player,
@@ -16,6 +26,7 @@ ASTEROIDS.gameBoard = (function () {
         PowerupMessage = ASTEROIDS.PowerupMessage,
         powerupTypes = ASTEROIDS.powerupTypes,
         ScoreMessage = ASTEROIDS.ScoreMessage,
+        gameState = ASTEROIDS.gameState,
         that = this,
         playerImg = document.getElementById('ship-single'),
         key = ASTEROIDS.key,
@@ -34,10 +45,9 @@ ASTEROIDS.gameBoard = (function () {
         context = canvas.getContext('2d'),
         bgPic = document.getElementById('bgpic'),
         playerLives = 4,
-        waveActive = true,
-        gameOver = false,
         timeBetweenWaves = 5000,
         score = 0,
+        state = gameState.WAVE_ACTIVE,
         splitAsteroid = function (asteroid, bulletVX, bulletVY) {
             var config1 = {},
                 config2 = {},
@@ -141,7 +151,7 @@ ASTEROIDS.gameBoard = (function () {
                     playerLives -= 1;
                     player.die();
                     if (playerLives === 0) {
-                        gameOver = true;
+                        state = gameState.GAME_OVER;
                     }
                 }
             }
@@ -155,7 +165,9 @@ ASTEROIDS.gameBoard = (function () {
                 randx,
                 randy,
                 asterAfterx,
-                asterAftery;
+                asterAftery,
+                bullvx,
+                bullvy;
             
             for (i = 0; i < asteroids.length; i += 1) {
                 for (j = 0; j < bulletsFired.length; j += 1) {
@@ -163,22 +175,27 @@ ASTEROIDS.gameBoard = (function () {
                     dy = asteroids[i].getCenterY() - bulletsFired[j].getCenterY();
                     distance = Math.sqrt(dx * dx + dy * dy);
                     if (distance <= asteroids[i].getWidth() / 2 + bulletsFired[j].getRadius()) {
-                        asteroids[i].playSound();
-                        score += 600 / asteroids[i].getSize();
-                        scoreMessages.push(new ScoreMessage(600 / asteroids[i].getSize(), {x: asteroids[i].getCenterX(), y: asteroids[i].getCenterY() }));
-                        if (asteroids[i].getSize() > 1) {
-                            splitAsteroid(asteroids[i], bulletsFired[j].getVX(), bulletsFired[j].getVY());
-                        } else {
-                            if (Math.random() > 0.7) {
-                                powerups.push(new Powerup(asteroids[i].getX(), asteroids[i].getY()));
-                            }
-                        }
-                        asteroids.splice(i, 1);
+                        bullvx = bulletsFired[j].getVX();
+                        bullvy = bulletsFired[j].getVY();
                         bulletsFired.splice(j, 1);
-                        if (asteroids.length === 0) {
-                            gameBoard.waveEnd();
+                        asteroids[i].receiveDamage();
+                        if (asteroids[i].getHitpoints() === 0) {
+                            asteroids[i].playSound();
+                            score += 600 / asteroids[i].getSize();
+                            scoreMessages.push(new ScoreMessage(600 / asteroids[i].getSize(), {x: asteroids[i].getCenterX(), y: asteroids[i].getCenterY() }));
+                            if (asteroids[i].getSize() > 1) {
+                                splitAsteroid(asteroids[i], bullvx, bullvy);
+                            } else {
+                                if (Math.random() > 0.7) {
+                                    powerups.push(new Powerup(asteroids[i].getX(), asteroids[i].getY()));
+                                }
+                            }
+                            asteroids.splice(i, 1);
+                            if (asteroids.length === 0) {
+                                gameBoard.waveEnd();
+                            }
+                            break;
                         }
-                        break;
                     }
                 }
             }
@@ -187,7 +204,7 @@ ASTEROIDS.gameBoard = (function () {
     // public properties
     gameBoard = {
         updateAll: function () {
-            if (waveActive) {
+            if (state === gameState.WAVE_ACTIVE) {
                 if (key.isDown(key.DOWN)) {
                     this.waveEnd();
                 }
@@ -245,7 +262,7 @@ ASTEROIDS.gameBoard = (function () {
             context.clearRect(0, 0, canvas.width, canvas.height);
             context.drawImage(bgPic, 0, 0);
             this.drawUI();
-            if (waveActive) {
+            if (state === gameState.WAVE_ACTIVE) {
                 if (player.isAlive()) {
                     player.draw();
                 }
@@ -302,7 +319,7 @@ ASTEROIDS.gameBoard = (function () {
                 vx = Math.ceil(Math.random() * 5 * velCox);
                 vy = Math.ceil(Math.random() * 5 * velCoy);
                 spinFactor = Math.ceil(Math.random() * 4);
-                size = 6;
+                size = 4;
                 config = {
                     x: x,
                     y: y,
@@ -323,16 +340,17 @@ ASTEROIDS.gameBoard = (function () {
                 loops = 0;
                 
                 while (new Date().getTime() > nextGameTick && loops < maxFrameSkip) {
-                    if (!gameOver) {
+                    if (state === gameState.WAVE_ACTIVE) {
                         ASTEROIDS.gameBoard.updateAll();
-                        nextGameTick += skipTicks;
-                        loops += 1;
+                    } else if (state === gameState.GAME_OVER) {
+                        console.log('todo');
                     }
+                    nextGameTick += skipTicks;
+                    loops += 1;
                 }
                 if (loops) {
-                    if (gameOver) {
+                    if (state === gameState.GAME_OVER) {
                         ASTEROIDS.gameBoard.drawGameOver();
-                        clearInterval(intervalId);
                     } else {
                         ASTEROIDS.gameBoard.drawAll();
                     }
@@ -348,13 +366,13 @@ ASTEROIDS.gameBoard = (function () {
         },
         waveEnd: function () {
             currentWave += 1;
-            waveActive = false;
+            state = gameState.WAVE_TRANSITION;
             player.hide();
             this.stop();
             setTimeout(this.waveBegin, timeBetweenWaves);
         },
         waveBegin: function () {
-            waveActive = true;
+            state = gameState.WAVE_ACTIVE;
             player.show();
             ASTEROIDS.gameBoard.spawnAsteroids();
         }

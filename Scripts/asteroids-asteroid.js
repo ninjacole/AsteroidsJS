@@ -15,9 +15,11 @@ ASTEROIDS.Asteroid = function (config, previousImg) {
         spinFactor = config.spinFactor,
         size = config.size,
         rotation = 0,
-        height = size * 20,
-        width = size * 20,
+        height = size * 25,
+        width = size * 25,
+        hitpoints = size,
         explosionSound = document.getElementById('explosionSound'),
+        damageSound = document.getElementById('asteroid-takes-damage'),
         canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d'),
         aster1 = document.getElementById('aster1'),
@@ -37,6 +39,15 @@ ASTEROIDS.Asteroid = function (config, previousImg) {
         if (rotation < 0) {
             rotation = 360 + rotation;
         }
+    };
+    
+    this.receiveDamage = function () {
+        damageSound.play();
+        hitpoints -= 1;
+    };
+    
+    this.getHitpoints = function () {
+        return hitpoints;
     };
     
     this.draw = function () {
