@@ -13,42 +13,40 @@ ASTEROIDS.Powerup = function (x, y) {
     // dependencies
     var powerupTypes = ASTEROIDS.powerupTypes,
         radius = 20,
-        pulse = 0.5,
-        pulseChange = 0.5,
         powerupSound = document.getElementById('powerupSound'),
         canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d'),
         type = powerupTypes.RANDOM(),
         duration = 7000,
-        spawnTime = new Date().getTime();
+        spawnTime = new Date().getTime(),
+        ball0 = document.getElementById('ball0'),
+        ball1 = document.getElementById('ball1'),
+        ball2 = document.getElementById('ball2'),
+        ballCounter = 0,
+        ballIndex = 0,
+        ballDir = 1,
+        ballImgs = [ball0, ball1, ball2];
     
     this.isExpired = function () {
         return new Date().getTime() - spawnTime > duration;
     };
     
-    this.getRadGrad = function () {
-        if (pulse === radius - 1) {
-            pulseChange = -1;
-        } else if (pulse === 1) {
-            pulseChange = 1;
-        }
-        
-        pulse += pulseChange;
-
-        var radgrad = context.createRadialGradient(x, y, 0, x, y, pulse);
-        radgrad.addColorStop(0.5, '#C60F0F');
-        radgrad.addColorStop(0.9, '#751F0E');
-        
-        return radgrad;
-    };
-
     this.draw = function () {
         context.save();
-        context.beginPath();
-        context.arc(x, y, radius, 0, Math.PI * 2, true);
-        context.fillStyle = this.getRadGrad();
-        context.fill();
+        if (ballCounter === 0) {
+            ballDir = 1;
+        } else if (ballCounter === 25) {
+            ballIndex = 0;
+        } else if (ballCounter === 50) {
+            ballIndex = 1;
+        } else if (ballCounter === 75) {
+            ballIndex = 2;
+        } else if (ballCounter === 100) {
+            ballDir = -1;
+        }
+        context.drawImage(ballImgs[ballIndex], x + 0.5 * radius, y + 0.5 * radius);
         context.restore();
+        ballCounter += ballDir;
     };
     
     this.playSound = function () {

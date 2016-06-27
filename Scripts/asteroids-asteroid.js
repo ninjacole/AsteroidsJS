@@ -25,6 +25,11 @@ ASTEROIDS.Asteroid = function (config, previousImg) {
         aster1 = document.getElementById('aster1'),
         aster2 = document.getElementById('aster2'),
         asterGray = document.getElementById('aster-gray'),
+        brown0 = document.getElementById('aster-brown'),
+        brown1 = document.getElementById('aster-brown-1'),
+        brown2 = document.getElementById('aster-brown-2'),
+        brown3 = document.getElementById('aster-brown-3'),
+        brownImages = [brown3, brown2, brown1, brown0],
         img;
     
     this.rotate = function (degrees) {
@@ -45,6 +50,7 @@ ASTEROIDS.Asteroid = function (config, previousImg) {
     this.receiveDamage = function () {
         damageSound.play();
         hitpoints -= 1;
+        img = brownImages[hitpoints - 1];
     };
     
     this.getHitpoints = function () {
@@ -121,12 +127,7 @@ ASTEROIDS.Asteroid = function (config, previousImg) {
     };
     
     this.init = function () {
-        if (previousImg) {
-            img = previousImg;
-        } else {
-            img = asterGray;
-            //img = Math.random() > 0.5 ? aster1 : aster2;
-        }
+        img = brownImages[hitpoints - 1];
     };
     
     this.init();
