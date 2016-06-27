@@ -226,10 +226,6 @@ ASTEROIDS.gameBoard = (function () {
                     asteroids[i].update();
                 }
 
-                for (i = 0; i < powerups.length; i += 1) {
-                    powerups[i].draw();
-                }
-
                 detectBulletAsteroidCollision();
                 detectPowerupPlayerCollision();
                 detectAsteroidPlayerCollision();
@@ -265,6 +261,13 @@ ASTEROIDS.gameBoard = (function () {
             if (state === gameState.WAVE_ACTIVE) {
                 if (player.isAlive()) {
                     player.draw();
+                }
+                for (i = 0; i < powerups.length; i += 1) {
+                    if (powerups[i].isExpired()) {
+                        powerups.splice(i, 1);
+                    } else {
+                        powerups[i].draw();
+                    }
                 }
                 for (i = 0; i < bulletsFired.length; i += 1) {
                     bulletsFired[i].draw();

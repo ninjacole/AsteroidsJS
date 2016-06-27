@@ -24,6 +24,7 @@ ASTEROIDS.Asteroid = function (config, previousImg) {
         context = canvas.getContext('2d'),
         aster1 = document.getElementById('aster1'),
         aster2 = document.getElementById('aster2'),
+        asterGray = document.getElementById('aster-gray'),
         img;
     
     this.rotate = function (degrees) {
@@ -123,7 +124,8 @@ ASTEROIDS.Asteroid = function (config, previousImg) {
         if (previousImg) {
             img = previousImg;
         } else {
-            img = Math.random() > 0.5 ? aster1 : aster2;
+            img = asterGray;
+            //img = Math.random() > 0.5 ? aster1 : aster2;
         }
     };
     

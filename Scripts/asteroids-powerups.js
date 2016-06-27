@@ -18,8 +18,13 @@ ASTEROIDS.Powerup = function (x, y) {
         powerupSound = document.getElementById('powerupSound'),
         canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d'),
-        type = powerupTypes.RANDOM();
+        type = powerupTypes.RANDOM(),
+        duration = 7000,
+        spawnTime = new Date().getTime();
     
+    this.isExpired = function () {
+        return new Date().getTime() - spawnTime > duration;
+    };
     
     this.getRadGrad = function () {
         if (pulse === radius - 1) {
