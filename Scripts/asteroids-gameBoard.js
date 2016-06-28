@@ -29,6 +29,8 @@ ASTEROIDS.gameBoard = (function () {
         gameState = ASTEROIDS.gameState,
         Enemy = ASTEROIDS.enemy,
         utils = ASTEROIDS.utils,
+        energy = ASTEROIDS.energy,
+        shield = ASTEROIDS.shield,
         enemyDeathSound = document.getElementById('enemy-death'),
         that = this,
         playerImg = document.getElementById('ship-single'),
@@ -157,7 +159,7 @@ ASTEROIDS.gameBoard = (function () {
                 distance,
                 dx,
                 dy;
-            if (!player.isRecentlySpawned()) {
+            if (!shield.isUp()) {
                 for (i = 0; i  < asteroids.length; i += 1) {
                     dx = asteroids[i].getCenterX() - player.getX();
                     dy = asteroids[i].getCenterY() - player.getY();
@@ -280,13 +282,11 @@ ASTEROIDS.gameBoard = (function () {
     gameBoard = {
         updateAll: function () {
             if (state === gameState.WAVE_ACTIVE) {
-                if (key.isDown(key.DOWN)) {
-                    enemies.push(new Enemy());
-                }
-
                 if (player.isAlive()) {
                     player.update();
                 }
+                
+                energy.update();
 
                 var i;
                 for (i = 0; i < bulletsFired.length; i += 1) {
@@ -329,13 +329,22 @@ ASTEROIDS.gameBoard = (function () {
         },
         drawUI: function () {
             var i;
+            
             context.save();
             context.fillStyle = 'white';
             context.font = "30px Consolas";
+            // draw level and score at 30 Y
             context.fillText("Level: " + currentWave + " Score: " + score, 50, 30);
             context.translate(50, 30);
+            // draw player lives at 45 Y
             for (i = 0; i < playerLives; i += 1) {
                 context.drawImage(playerImg, i * 25, 15, 20, 20);
+            }
+            
+            context.fillStyle = 'blue';
+            // draw energy bar at 60
+            for (i = 0; i < energy.getAvailable(); i += 1) {
+                context.fillRect(i * 2, 50, 1, 10);
             }
             context.restore();
         },

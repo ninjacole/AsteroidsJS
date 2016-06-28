@@ -14,13 +14,18 @@ ASTEROIDS.player = (function () {
         weapon = ASTEROIDS.weapon,
         powerup = ASTEROIDS.Powerup,
         powerupTypes = ASTEROIDS.powerupTypes,
+        shield = ASTEROIDS.shield,
         
         // private variables
         playerDeathSound = document.getElementById('playerDeathSound'),
-        playerShieldShound = document.getElementById('shield-up'),
         canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d'),
-        img = document.getElementById('ship-single'),
+        ship_single = document.getElementById('ship-single'),
+        ship_single_moving = document.getElementById('ship-single-moving'),
+        ship_double = document.getElementById('ship-double'),
+        ship_double_moving = document.getElementById('ship-double-moving'),
+        img = ship_single,
+        energy = 100,
         x = canvas.width / 2,
         y = canvas.height / 2,
         vx = 0,
@@ -41,10 +46,10 @@ ASTEROIDS.player = (function () {
             }
         },
         player,
+        isEngineRunning = false,
         timeOfDeath = new Date().getTime(),
         respawnTime = 500,
         alive = true,
-        engineRunning = false,
         timeOfLastSpawn = new Date().getTime(),
         safeTime = 2000;
     
@@ -64,6 +69,9 @@ ASTEROIDS.player = (function () {
         },
         getVY: function () {
             return vy;
+        },
+        getEnergy: function () {
+            return energy;
         },
         accelerate: function () {
             var vx = Math.sin((utils.convertDegreesToRads(180 - rotation))) * accelerationCoefficient,
@@ -107,28 +115,11 @@ ASTEROIDS.player = (function () {
             context.translate(x, y);
             context.rotate(utils.convertDegreesToRads(rotation));
             context.translate(-1 * x, -1 * y);
-            if (this.isRecentlySpawned()) {
-                context.save();
-                context.strokeStyle = 'green';
-                context.lineWidth = 5;
-                context.beginPath();
-                context.arc(x, y, 0.5 * height + 10, 0, Math.PI * 2);
-                context.stroke();
-                context.closePath();
-                context.restore();
+
+            if (shield.isUp()) {
+                shield.draw(x, y, height * 0.5 + 10);
             }
             context.drawImage(img, x - 0.5 * width, y - 0.5 * height, width, height);
-//            
-//            if (engineRunning) {
-//                context.beginPath();
-//                context.fillStyle = 'red';
-//                context.moveTo(x - (0.5 * width), y + height);
-//                context.lineTo(x, y + height + (0.5 * height));
-//                context.lineTo(x + (0.5 * width), y + height);
-//                context.lineTo(x - (0.5 * width), y + height);
-//                context.fill();
-//                context.closePath();
-//            }
             context.restore();
         },
         rotate: function (degrees) {
@@ -186,12 +177,22 @@ ASTEROIDS.player = (function () {
         update: function () {
             x = utils.getXChange(x, vx);
             y = utils.getYChange(y, vy);
+            if (isEngineRunning && weapon.getType() === 'single') {
+                img = ship_single_moving;
+            } else if (isEngineRunning) {
+                img = ship_double_moving;
+                context.drawImage(ship_double_moving, x - 0.5 * width, y - 0.5 * height, width, height);
+            } else if (weapon.getType() === 'single') {
+                img = ship_single;
+            } else {
+                img = ship_double;
+            }
             
             if (key.isDown(key.UP)) {
                 this.accelerate();
-                engineRunning = true;
+                isEngineRunning = true;
             } else {
-                engineRunning = false;
+                isEngineRunning = false;
             }
             if (key.isDown(key.LEFT)) {
                 this.rotate(-5);
@@ -202,6 +203,16 @@ ASTEROIDS.player = (function () {
             if (key.isDown(key.SPACE)) {
                 this.shoot();
             }
+            if (key.isDown(key.DOWN)) {
+                shield.activate();
+            } else if (this.isRecentlySpawned()) {
+                shield.activate(true);
+            } else {
+                shield.deactivate();
+            }
+        },
+        isRecentlySpawned: function () {
+            return new Date().getTime() - timeOfLastSpawn < safeTime;
         },
         getHeight: function () {
             return height;
@@ -217,10 +228,8 @@ ASTEROIDS.player = (function () {
                 this.adjustAccelerationCoefficient(0.06);
             } else if (powerupType === powerupTypes.DOUBLE) {
                 weapon.setType(powerupTypes.DOUBLE);
-                img = document.getElementById('ship-double');
             } else if (powerupType === powerupTypes.SPREAD) {
                 weapon.setType(powerupTypes.SPREAD);
-                img = document.getElementById('ship-double');
             } else if (powerupType === powerupTypes.FIRE_RATE) {
                 setFireRate(50);
             }
@@ -237,9 +246,6 @@ ASTEROIDS.player = (function () {
             img = document.getElementById('ship-single');
             setTimeout(this.show, respawnTime);
         },
-        isRecentlySpawned: function () {
-            return new Date().getTime() - timeOfLastSpawn < safeTime;
-        },
         hide: function () {
             x = -1000;
             y = -1000;
@@ -247,7 +253,6 @@ ASTEROIDS.player = (function () {
             vy = 0;
         },
         show: function () {
-            playerShieldShound.play();
             timeOfLastSpawn = new Date().getTime();
             alive = true;
             x = canvas.width / 2;
