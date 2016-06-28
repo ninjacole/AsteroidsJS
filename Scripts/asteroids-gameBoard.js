@@ -195,6 +195,8 @@ ASTEROIDS.gameBoard = (function () {
                 j,
                 dx,
                 dy,
+                x,
+                y,
                 distance,
                 randx,
                 randy,
@@ -234,13 +236,18 @@ ASTEROIDS.gameBoard = (function () {
                 }
             }
             
+            // player bullets colliding with enemies
             for (i = 0; i < enemies.length; i += 1) {
                 for (j = 0; j < bulletsFired.length; j += 1) {
                     dx = enemies[i].getX() - bulletsFired[j].getCenterX();
                     dy = enemies[i].getY() - bulletsFired[j].getCenterY();
                     distance = Math.sqrt(dx * dx + dy * dy);
                     if (distance <= enemies[i].getWidth() / 2 + bulletsFired[j].getRadius()) {
+                        x = enemies[i].getX();
+                        y = enemies[i].getY();
                         enemies.splice(i, 1);
+                        score += 1000;
+                        scoreMessages.push(new ScoreMessage(1000, {x: x, y: y }));
                         enemyDeathSound.play();
                         bulletsFired.splice(j, 1);
                         break;
@@ -322,10 +329,10 @@ ASTEROIDS.gameBoard = (function () {
             }
         },
         spawnEnemy: function () {
-//            if (enemies.length < 3 * currentWave) {
-//                enemies.push(new Enemy());
-//                lastEnemySpawned = new Date().getTime();
-//            }
+            if (enemies.length < 3 * currentWave) {
+                enemies.push(new Enemy());
+                lastEnemySpawned = new Date().getTime();
+            }
         },
         drawUI: function () {
             var i;
