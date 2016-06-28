@@ -51,7 +51,6 @@ ASTEROIDS.gameBoard = (function () {
         canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d'),
         bgPic = document.getElementById('bgpic'),
-        playerLives = 4,
         timeBetweenWaves = 5000,
         score = 0,
         enemyPeriodicity = 5000 / currentWave,
@@ -165,9 +164,8 @@ ASTEROIDS.gameBoard = (function () {
                     dy = asteroids[i].getCenterY() - player.getY();
                     distance = Math.sqrt(dx * dx + dy * dy);
                     if (distance < asteroids[i].getWidth() * 0.5 + player.getHeight() * 0.5) {
-                        playerLives -= 1;
                         player.die();
-                        if (playerLives === 0) {
+                        if (player.getLives() === 0) {
                             state = gameState.GAME_OVER;
                         }
                     }
@@ -179,10 +177,9 @@ ASTEROIDS.gameBoard = (function () {
                     dy = enemyBulletsFired[i].getY() - player.getY();
                     distance = Math.sqrt(dx * dx + dy * dy);
                     if (distance < enemyBulletsFired[i].getRadius() + player.getHeight() * 0.5) {
-                        playerLives -= 1;
                         player.die();
                         enemyBulletsFired.splice(i, 1);
-                        if (playerLives === 0) {
+                        if (player.getLives() === 0) {
                             state = gameState.GAME_OVER;
                         }
                     }
@@ -344,7 +341,7 @@ ASTEROIDS.gameBoard = (function () {
             context.fillText("Level: " + currentWave + " Score: " + score, 50, 30);
             context.translate(50, 30);
             // draw player lives at 45 Y
-            for (i = 0; i < playerLives; i += 1) {
+            for (i = 0; i < player.getLives(); i += 1) {
                 context.drawImage(playerImg, i * 25, 15, 20, 20);
             }
             

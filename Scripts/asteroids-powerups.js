@@ -118,6 +118,8 @@ ASTEROIDS.PowerupMessage = function (type, x, y) {
             message = "Spread gun!";
         } else if (type === powerupTypes.FIRE_RATE) {
             message = "Fire rate+!";
+        } else if (type === powerupTypes.EXTRA_LIFE) {
+            message = "Extra life!";
         }
     };
     
@@ -130,8 +132,9 @@ ASTEROIDS.powerupTypes = (function () {
         DOUBLE: 'double',
         SPREAD: 'spread',
         FIRE_RATE: 'fire rate',
+        EXTRA_LIFE: 'extra life',
         RANDOM: function () {
-            var result = Math.random() * 40;
+            var result = Math.random() * 45;
             if (result < 10) {
                 return powerupTypes.SPEED;
             } else if (result < 20) {
@@ -140,6 +143,8 @@ ASTEROIDS.powerupTypes = (function () {
                 return powerupTypes.SPREAD;
             } else if (result < 40) {
                 return powerupTypes.FIRE_RATE;
+            } else if (result < 45) {
+                return powerupTypes.EXTRA_LIFE;
             }
         }
     };

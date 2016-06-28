@@ -33,6 +33,7 @@ ASTEROIDS.player = (function () {
         width = 40,
         height = 40,
         rotation = 0,
+        lives = 5,
         lastFired = new Date().getTime(),
         accelerationCoefficient = 0.1,
         maxSpeed = 15,
@@ -69,6 +70,9 @@ ASTEROIDS.player = (function () {
         },
         getVY: function () {
             return vy;
+        },
+        getLives: function () {
+            return lives;
         },
         getEnergy: function () {
             return energy;
@@ -232,9 +236,12 @@ ASTEROIDS.player = (function () {
                 weapon.setType(powerupTypes.SPREAD);
             } else if (powerupType === powerupTypes.FIRE_RATE) {
                 setFireRate(50);
+            } else if (powerupType === powerupTypes.EXTRA_LIFE) {
+                lives += 1;
             }
         },
         die: function () {
+            lives -= 1;
             this.hide();
             alive = false;
             playerDeathSound.play();
