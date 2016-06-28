@@ -200,20 +200,16 @@ ASTEROIDS.player = (function () {
         getFireRate: function () {
             return fireRate;
         },
-        gainPowerup: function (powerup) {
-            powerup.playSound();
-            if (powerup.getType() === powerupTypes.SPEED) {
+        gainPowerup: function (powerupType) {
+            if (powerupType === powerupTypes.SPEED) {
                 this.adjustAccelerationCoefficient(0.06);
-            }
-            if (powerup.getType() === powerupTypes.DOUBLE) {
+            } else if (powerupType === powerupTypes.DOUBLE) {
                 weapon.setType(powerupTypes.DOUBLE);
                 img = document.getElementById('ship-double');
-            }
-            if (powerup.getType() === powerupTypes.SPREAD) {
+            } else if (powerupType === powerupTypes.SPREAD) {
                 weapon.setType(powerupTypes.SPREAD);
                 img = document.getElementById('ship-double');
-            }
-            if (powerup.getType() === powerupTypes.FIRE_RATE) {
+            } else if (powerupType === powerupTypes.FIRE_RATE) {
                 setFireRate(50);
             }
         },

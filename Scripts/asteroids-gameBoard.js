@@ -131,17 +131,24 @@ ASTEROIDS.gameBoard = (function () {
                 dx,
                 dy,
                 message,
-                type;
+                type,
+                x,
+                y;
             for (i = 0; i < powerups.length; i += 1) {
-                dx = powerups[i].getX() - player.getX();
-                dy = powerups[i].getY() - player.getY();
+                dx = powerups[i].getCenterPoint().x - player.getX();
+                dy = powerups[i].getCenterPoint().y - player.getY();
                 distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < powerups[i].getRadius() + player.getHeight() * 0.5) {
-                    player.gainPowerup(powerups[i]);
-                    powerupMessages.push(new PowerupMessage(powerups[i]));
+                if (distance < powerups[i].getWidth() * 0.5 + player.getHeight() * 0.5) {
+                    powerups[i].playSound();
+                    type = powerups[i].getType();
+                    x = powerups[i].getX();
+                    y = powerups[i].getY();
                     powerups.splice(i, 1);
+                    player.gainPowerup(type);
+                    powerupMessages.push(new PowerupMessage(type, x, y));
                     score += 100;
-                    scoreMessages.push(new ScoreMessage(100, {x: powerups[i].getX(), y: powerups[i].getY() }));
+                    scoreMessages.push(new ScoreMessage(100, {x: x, y: y }));
+                    break;
                 }
             }
         },
@@ -312,10 +319,10 @@ ASTEROIDS.gameBoard = (function () {
             }
         },
         spawnEnemy: function () {
-            if (enemies.length < 3 * currentWave) {
-                enemies.push(new Enemy());
-                lastEnemySpawned = new Date().getTime();
-            }
+//            if (enemies.length < 3 * currentWave) {
+//                enemies.push(new Enemy());
+//                lastEnemySpawned = new Date().getTime();
+//            }
         },
         drawUI: function () {
             var i;

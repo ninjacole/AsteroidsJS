@@ -12,7 +12,7 @@ ASTEROIDS.namespace('ASTEROIDS.powerupTypes');
 ASTEROIDS.Powerup = function (x, y) {
     // dependencies
     var powerupTypes = ASTEROIDS.powerupTypes,
-        radius = 20,
+        radius = 16,
         powerupSound = document.getElementById('powerupSound'),
         canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d'),
@@ -25,6 +25,8 @@ ASTEROIDS.Powerup = function (x, y) {
         ballCounter = 0,
         ballIndex = 0,
         ballDir = 1,
+        height = 32,
+        width = 32,
         ballImgs = [ball0, ball1, ball2];
     
     this.isExpired = function () {
@@ -44,7 +46,7 @@ ASTEROIDS.Powerup = function (x, y) {
         } else if (ballCounter === 100) {
             ballDir = -1;
         }
-        context.drawImage(ballImgs[ballIndex], x + 0.5 * radius, y + 0.5 * radius);
+        context.drawImage(ballImgs[ballIndex], x, y, width, height);
         context.restore();
         ballCounter += ballDir;
     };
@@ -68,9 +70,23 @@ ASTEROIDS.Powerup = function (x, y) {
     this.getType = function () {
         return type;
     };
+    
+    this.getWidth = function () {
+        return width;
+    };
+    
+    this.getHeight = function () {
+        return height;
+    };
+    
+    this.getCenterPoint = function () {
+        var cx = x + 0.5 * width,
+            cy = y + 0.5 * height;
+        return {x: cx, y: cy};
+    };
 };
 
-ASTEROIDS.PowerupMessage = function (powerup) {
+ASTEROIDS.PowerupMessage = function (type, x, y) {
     var powerupTypes = ASTEROIDS.powerupTypes,
         font = "15px Consolas",
         startTime = new Date().getTime(),
@@ -78,9 +94,7 @@ ASTEROIDS.PowerupMessage = function (powerup) {
         duration = 1500,
         canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d'),
-        message,
-        x,
-        y;
+        message;
 
     this.draw = function () {
         runningTime = new Date().getTime() - startTime;
@@ -96,9 +110,6 @@ ASTEROIDS.PowerupMessage = function (powerup) {
     };
     
     this.init = function () {
-        var type = powerup.getType();
-        x = powerup.getX();
-        y = powerup.getY();
         if (type === powerupTypes.SPEED) {
             message = "Speed+!";
         } else if (type === powerupTypes.DOUBLE) {
