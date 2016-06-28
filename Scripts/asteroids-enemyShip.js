@@ -26,7 +26,7 @@ ASTEROIDS.enemy = function () {
         vy = Math.random() * 3,
         width = 40,
         height = 40,
-        lastFired = new Date().getTime(),
+        lastFired = utils.getCurrentTime(),
         accelerationCoefficient = 0.1,
         maxSpeed = 15,
         maxAccelerationCoefficient = 1,
@@ -38,7 +38,7 @@ ASTEROIDS.enemy = function () {
                 fireRate = maxFireRate;
             }
         },
-        lastChangedDirection = new Date().getTime(),
+        lastChangedDirection = utils.getCurrentTime(),
         directionChangeRate = 5000,
         enemy,
         init;
@@ -64,7 +64,7 @@ ASTEROIDS.enemy = function () {
             return height;
         },
         changeDirection: function () {
-            lastChangedDirection = new Date().getTime();
+            lastChangedDirection = utils.getCurrentTime();
             var vxchange = Math.random() * 3,
                 vychange = Math.random() * 3;
             if (Math.random() > 0.5) {
@@ -82,16 +82,16 @@ ASTEROIDS.enemy = function () {
             context.restore();
         },
         canShoot: function () {
-            return new Date().getTime() - lastFired > fireRate;
+            return utils.getCurrentTime() - lastFired > fireRate;
         },
         shoot: function () {
             if (this.canShoot()) {
-                lastFired = new Date().getTime();
+                lastFired = utils.getCurrentTime();
                 weapon.fireEnemyBullet(x, y, player.getX(), player.getY());
             }
         },
         canChangeDirection: function () {
-            return new Date().getTime() - lastChangedDirection > directionChangeRate;
+            return utils.getCurrentTime() - lastChangedDirection > directionChangeRate;
         },
         update: function () {
             if (this.canChangeDirection()) {

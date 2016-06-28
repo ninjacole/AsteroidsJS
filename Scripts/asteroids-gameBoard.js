@@ -31,16 +31,16 @@ ASTEROIDS.gameBoard = (function () {
         utils = ASTEROIDS.utils,
         energy = ASTEROIDS.energy,
         shield = ASTEROIDS.shield,
+        key = ASTEROIDS.key,
+        //---------------- Private properties
         enemyDeathSound = document.getElementById('enemy-death'),
         that = this,
         playerImg = document.getElementById('ship-single'),
-        key = ASTEROIDS.key,
         asteroids = [],
         powerups = [],
         powerupMessages = [],
         scoreMessages = [],
         enemies = [],
-        //---------------- Private properties
         bulletsFired = weapon.getBulletsFired(),
         enemyBulletsFired = weapon.getEnemyBulletsFired(),
         gameBoard,
@@ -53,8 +53,8 @@ ASTEROIDS.gameBoard = (function () {
         bgPic = document.getElementById('bgpic'),
         timeBetweenWaves = 5000,
         score = 0,
-        enemyPeriodicity = 5000 / currentWave,
-        lastEnemySpawned = new Date().getTime(),
+        enemyPeriodicity = 15000 / currentWave,
+        lastEnemySpawnedTime = utils.getCurrentTime(),
         state = gameState.WAVE_ACTIVE,
         splitAsteroid = function (asteroid, bulletVX, bulletVY) {
             var config1 = {},
@@ -317,7 +317,7 @@ ASTEROIDS.gameBoard = (function () {
                     enemies[i].update();
                 }
                 
-                if (new Date().getTime() - lastEnemySpawned > enemyPeriodicity) {
+                if (utils.getCurrentTime() - lastEnemySpawnedTime > enemyPeriodicity) {
                     this.spawnEnemy();
                 }
                 detectBulletAsteroidCollision();
@@ -328,7 +328,7 @@ ASTEROIDS.gameBoard = (function () {
         spawnEnemy: function () {
             if (enemies.length < 3 * currentWave) {
                 enemies.push(new Enemy());
-                lastEnemySpawned = new Date().getTime();
+                lastEnemySpawnedTime = utils.getCurrentTime();
             }
         },
         drawUI: function () {
@@ -456,11 +456,11 @@ ASTEROIDS.gameBoard = (function () {
             var loops = 0,
                 skipTicks = 1000 / fps,
                 maxFrameSkip = 10,
-                nextGameTick = new Date().getTime();
+                nextGameTick = utils.getCurrentTime();
             return function () {
                 loops = 0;
                 
-                while (new Date().getTime() > nextGameTick && loops < maxFrameSkip) {
+                while (utils.getCurrentTime() > nextGameTick && loops < maxFrameSkip) {
                     if (state === gameState.WAVE_ACTIVE) {
                         ASTEROIDS.gameBoard.updateAll();
                     } else if (state === gameState.GAME_OVER) {

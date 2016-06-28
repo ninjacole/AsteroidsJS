@@ -9,7 +9,7 @@ ASTEROIDS.namespace('ASTEROIDS.shield');
 ASTEROIDS.shield = (function () {
     var energy = ASTEROIDS.energy,
         shield,
-        energyConsumption = 0.4,
+        energyConsumption = 1.0,
         upSound = document.getElementById('shield-up'),
         canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d'),
@@ -31,11 +31,15 @@ ASTEROIDS.shield = (function () {
         },
         activate: function (temp) {
             if (temp) {
-                upSound.play();
+                if (!isActive) {
+                    upSound.play();
+                }
                 isActive = true;
             } else {
                 if (energy.isAvailable(energyConsumption)) {
-                    upSound.play();
+                    if (!isActive) {
+                        upSound.play();
+                    }
                     energy.consume(energyConsumption);
                     isActive = true;
                 } else {

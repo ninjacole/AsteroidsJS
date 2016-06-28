@@ -22,14 +22,11 @@ ASTEROIDS.Asteroid = function (config, previousImg) {
         damageSound = document.getElementById('asteroid-takes-damage'),
         canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d'),
-        aster1 = document.getElementById('aster1'),
-        aster2 = document.getElementById('aster2'),
-        asterGray = document.getElementById('aster-gray'),
-        brown0 = document.getElementById('aster-brown'),
-        brown1 = document.getElementById('aster-brown-1'),
-        brown2 = document.getElementById('aster-brown-2'),
-        brown3 = document.getElementById('aster-brown-3'),
-        brownImages = [brown3, brown2, brown1, brown0],
+        gray = document.getElementById('aster-gray'),
+        gray1dmg = document.getElementById('aster-gray-1dmg'),
+        gray2dmg = document.getElementById('aster-gray-2dmg'),
+        gray3dmg = document.getElementById('aster-gray-3dmg'),
+        grayImages = [gray3dmg, gray2dmg, gray1dmg, gray],
         img;
     
     this.rotate = function (degrees) {
@@ -50,7 +47,7 @@ ASTEROIDS.Asteroid = function (config, previousImg) {
     this.receiveDamage = function () {
         damageSound.play();
         hitpoints -= 1;
-        img = brownImages[hitpoints - 1];
+        img = grayImages[hitpoints - 1];
     };
     
     this.getHitpoints = function () {
@@ -127,7 +124,7 @@ ASTEROIDS.Asteroid = function (config, previousImg) {
     };
     
     this.init = function () {
-        img = brownImages[hitpoints - 1];
+        img = grayImages[hitpoints - 1];
     };
     
     this.init();

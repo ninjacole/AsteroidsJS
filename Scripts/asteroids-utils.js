@@ -56,9 +56,12 @@ ASTEROIDS.utils = (function () {
             return y;
         },
         getSpawnPoint: function () {
-            var x = Math.random() > 0.5 ? 50 : canvas.width - 50,
-                y = Math.random() > 0.5 ? 50 : canvas.height - 50;
+            var x = Math.random() > 0.5 ? 200 : canvas.width - 200,
+                y = Math.random() > 0.5 ? 200 : canvas.height - 200;
             return {x: x, y: y};
+        },
+        getCurrentTime: function () {
+            return new Date().getTime();
         }
     };
     return utils;
