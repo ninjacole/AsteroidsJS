@@ -4,57 +4,55 @@
 // global object reference or creation
 var ASTEROIDS = ASTEROIDS || {};
 
-ASTEROIDS.namespace('ASTEROIDS.Bullet');
+ASTEROIDS.namespace('ASTEROIDS.EnemyBullet');
 
-ASTEROIDS.Bullet = function (bulletPoint, playervx, playervy, playerRotation) {
-    // dependencies
-    var utils = ASTEROIDS.utils,
-        // private variables
-        duration = 700,
-        startTime = new Date().getTime(),
-        timeTravelled = 0,
+ASTEROIDS.EnemyBullet = function EnemyBullet(x, y, playerx, playery) {
+    var speed = 5,
+        vx,
+        vy,
         radius = 5,
-        speed = 7,
-        x = bulletPoint.x,
-        y = bulletPoint.y,
         canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d'),
-        rotation = playerRotation,
-        vx = playervx + Math.sin(utils.convertDegreesToRads(180 - rotation)) * speed,
-        vy = playervy + Math.cos(utils.convertDegreesToRads(180 - rotation)) * speed;
+        angle;
     
+    function init() {
+        var dx = playerx - x,
+            dy = playery - y,
+            angle = Math.atan2(-dy, dx);
+
+        if (angle < 0) {
+            angle += Math.PI * 2;
+        }
+
+        angle = angle * 180 / Math.PI;
+        angle += 180;
+        
+        vx = Math.cos(Math.PI / 180 * (180 - angle)) * speed;
+        vy = Math.sin(Math.PI / 180 * (180 - angle)) * speed;
+    }
+    
+    init();
+          
     this.draw = function () {
         context.save();
-        context.fillStyle = "#3BFF6F";
+        context.fillStyle = 'red';
         context.beginPath();
         context.arc(x, y, radius, 0, Math.PI * 2);
         context.fill();
         context.closePath();
-
         context.restore();
     };
-
+    
     this.update = function () {
         x += vx;
         y += vy;
-        
-        if (x + vx > canvas.width) {
-            x = 0;
-        } else if (x + vx < 0) {
-            x = canvas.width;
-        }
-
-        if (y + vy > canvas.height) {
-            y = 0;
-        } else if (y + vy < 0) {
-            y = canvas.height;
-        }
-        
-        timeTravelled = new Date().getTime() - startTime;
     };
     
     this.canTravel = function () {
-        return timeTravelled < duration;
+        if ((x < canvas.width && x > 0) && (y < canvas.height && y > 0)) {
+            return true;
+        }
+        return false;
     };
     
     this.getX = function () {

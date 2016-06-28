@@ -172,21 +172,8 @@ ASTEROIDS.player = (function () {
             }
         },
         update: function () {
-            x += vx;
-            y += vy;
-
-            if (x + vx > canvas.width) {
-                x = 0;
-            }
-            if (x + vx < 0) {
-                x = canvas.width;
-            }
-            if (y + vy > canvas.height) {
-                y = 0;
-            }
-            if (y + vy < 0) {
-                y = canvas.height;
-            }
+            x = utils.getXChange(x, vx);
+            y = utils.getYChange(y, vy);
             
             if (key.isDown(key.UP)) {
                 this.accelerate();

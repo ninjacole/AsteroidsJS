@@ -27,8 +27,39 @@ ASTEROIDS.namespace = function (ns_string) {
 
 ASTEROIDS.namespace('ASTEROIDS.utils');
 
-ASTEROIDS.utils = {
-    convertDegreesToRads: function (degrees) {
-        return (Math.PI / 180) * degrees;
-    }
-};
+ASTEROIDS.utils = (function () {
+    var canvas = document.getElementById('gameCanvas'),
+        context = canvas.getContext('2d'),
+        utils;
+    utils = {
+        convertDegreesToRads: function (degrees) {
+            return (Math.PI / 180) * degrees;
+        },
+        getXChange: function (x, vx) {
+            x += vx;
+            if (x + vx > canvas.width) {
+                x = 0;
+            }
+            if (x + vx < 0) {
+                x = canvas.width;
+            }
+            return x;
+        },
+        getYChange: function (y, vy) {
+            y += vy;
+            if (y + vy > canvas.height) {
+                y = 0;
+            }
+            if (y + vy < 0) {
+                y = canvas.height;
+            }
+            return y;
+        },
+        getSpawnPoint: function () {
+            var x = Math.random() > 0.5 ? 50 : canvas.width - 50,
+                y = Math.random() > 0.5 ? 50 : canvas.height - 50;
+            return {x: x, y: y};
+        }
+    };
+    return utils;
+}());

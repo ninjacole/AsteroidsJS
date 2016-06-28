@@ -10,9 +10,12 @@ ASTEROIDS.weapon = (function () {
     // private variables
     var weapon,
         Bullet = ASTEROIDS.Bullet,
+        EnemyBullet = ASTEROIDS.EnemyBullet,
         bulletsFired = [],
+        enemyBulletsFired = [],
         type = 'single',
-        fireSound = document.getElementById('laserSound');
+        fireSound = document.getElementById('laserSound'),
+        enemyFireSound = document.getElementById('enemy-shoot');
     // public api
     weapon = {
         setType: function (value) {
@@ -45,8 +48,14 @@ ASTEROIDS.weapon = (function () {
         },
         getBulletsFired: function () {
             return bulletsFired;
+        },
+        getEnemyBulletsFired: function () {
+            return enemyBulletsFired;
+        },
+        fireEnemyBullet: function (x, y, playerx, playery) {
+            enemyFireSound.play();
+            enemyBulletsFired.push(new EnemyBullet(x, y, playerx, playery));
         }
-        
     };
     return weapon;
 }());
