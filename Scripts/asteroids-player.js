@@ -17,6 +17,7 @@ ASTEROIDS.player = (function () {
         
         // private variables
         playerDeathSound = document.getElementById('playerDeathSound'),
+        playerShieldShound = document.getElementById('shield-up'),
         canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d'),
         img = document.getElementById('ship-single'),
@@ -43,7 +44,9 @@ ASTEROIDS.player = (function () {
         timeOfDeath = new Date().getTime(),
         respawnTime = 500,
         alive = true,
-        engineRunning = false;
+        engineRunning = false,
+        timeOfLastSpawn = new Date().getTime(),
+        safeTime = 2000;
     
     // public interface
     player = {
@@ -103,8 +106,17 @@ ASTEROIDS.player = (function () {
             context.save();
             context.translate(x, y);
             context.rotate(utils.convertDegreesToRads(rotation));
-
             context.translate(-1 * x, -1 * y);
+            if (this.isRecentlySpawned()) {
+                context.save();
+                context.strokeStyle = 'green';
+                context.lineWidth = 5;
+                context.beginPath();
+                context.arc(x, y, 0.5 * height + 10, 0, Math.PI * 2);
+                context.stroke();
+                context.closePath();
+                context.restore();
+            }
             context.drawImage(img, x - 0.5 * width, y - 0.5 * height, width, height);
 //            
 //            if (engineRunning) {
@@ -225,6 +237,9 @@ ASTEROIDS.player = (function () {
             img = document.getElementById('ship-single');
             setTimeout(this.show, respawnTime);
         },
+        isRecentlySpawned: function () {
+            return new Date().getTime() - timeOfLastSpawn < safeTime;
+        },
         hide: function () {
             x = -1000;
             y = -1000;
@@ -232,6 +247,8 @@ ASTEROIDS.player = (function () {
             vy = 0;
         },
         show: function () {
+            playerShieldShound.play();
+            timeOfLastSpawn = new Date().getTime();
             alive = true;
             x = canvas.width / 2;
             y = canvas.height / 2;

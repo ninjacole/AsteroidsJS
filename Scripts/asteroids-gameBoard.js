@@ -157,33 +157,36 @@ ASTEROIDS.gameBoard = (function () {
                 distance,
                 dx,
                 dy;
-            for (i = 0; i  < asteroids.length; i += 1) {
-                dx = asteroids[i].getCenterX() - player.getX();
-                dy = asteroids[i].getCenterY() - player.getY();
-                distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < asteroids[i].getWidth() * 0.5 + player.getHeight() * 0.5) {
-                    playerLives -= 1;
-                    player.die();
-                    if (playerLives === 0) {
-                        state = gameState.GAME_OVER;
+            if (!player.isRecentlySpawned()) {
+                for (i = 0; i  < asteroids.length; i += 1) {
+                    dx = asteroids[i].getCenterX() - player.getX();
+                    dy = asteroids[i].getCenterY() - player.getY();
+                    distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < asteroids[i].getWidth() * 0.5 + player.getHeight() * 0.5) {
+                        playerLives -= 1;
+                        player.die();
+                        if (playerLives === 0) {
+                            state = gameState.GAME_OVER;
+                        }
+                    }
+                }
+
+                // player enemy bullet collision
+                for (i = 0; i  < enemyBulletsFired.length; i += 1) {
+                    dx = enemyBulletsFired[i].getX() - player.getX();
+                    dy = enemyBulletsFired[i].getY() - player.getY();
+                    distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < enemyBulletsFired[i].getRadius() + player.getHeight() * 0.5) {
+                        playerLives -= 1;
+                        player.die();
+                        enemyBulletsFired.splice(i, 1);
+                        if (playerLives === 0) {
+                            state = gameState.GAME_OVER;
+                        }
                     }
                 }
             }
-            
-            // player enemy bullet collision
-            for (i = 0; i  < enemyBulletsFired.length; i += 1) {
-                dx = enemyBulletsFired[i].getX() - player.getX();
-                dy = enemyBulletsFired[i].getY() - player.getY();
-                distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < enemyBulletsFired[i].getRadius() + player.getHeight() * 0.5) {
-                    playerLives -= 1;
-                    player.die();
-                    enemyBulletsFired.splice(i, 1);
-                    if (playerLives === 0) {
-                        state = gameState.GAME_OVER;
-                    }
-                }
-            }
+
         },
         detectBulletAsteroidCollision = function () {
             var i,
