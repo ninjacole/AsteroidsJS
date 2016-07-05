@@ -30,7 +30,15 @@ ASTEROIDS.Bullet = function (bulletPoint, playervx, playervy, playerRotation) {
         context.fill();
         context.closePath();
     };
-
+    
+    this.getCircleCollider = function () {
+        return {
+            radius: radius,
+            x: x,
+            y: y
+        };
+    };
+    
     this.update = function () {
         x += vx;
         y += vy;

@@ -77,6 +77,13 @@ ASTEROIDS.player = (function () {
         getEnergy: function () {
             return energy;
         },
+        getCircleCollider: function () {
+            return {
+                radius: width / 2,
+                x: x,
+                y: y
+            };
+        },
         accelerate: function () {
             var vx = Math.sin((utils.convertDegreesToRads(180 - rotation))) * accelerationCoefficient,
                 vy = Math.cos((utils.convertDegreesToRads(180 - rotation))) * accelerationCoefficient;

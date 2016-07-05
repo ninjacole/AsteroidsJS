@@ -26,7 +26,6 @@ ASTEROIDS.gameBoard = (function () {
         context = ASTEROIDS.context,
         gameLoopManager = new ASTEROIDS.GameLoopManager(),
         //---------------- Private properties
-        enemyDeathSound = document.getElementById('enemy-death'),
         that = this,
         playerImg = document.getElementById('ship-single'),
         enemyImg = document.getElementById('enemy'),
@@ -50,228 +49,178 @@ ASTEROIDS.gameBoard = (function () {
         lastEnemySpawnedTime = Date.now(),
         i,
         j,
-        splitAsteroid = function (asteroid, bulletVX, bulletVY) {
-            var config1 = {},
-                config2 = {},
-                afterVX1,
-                afterVY1,
-                afterVX2,
-                afterVY2,
-                asteroid1,
-                asteroid2,
-                randAngleX1,
-                randAngleX2,
-                randAngleY1,
-                randAngleY2;
+        splitAsteroid = function (size, x, y, bulletVX, bulletVY) {
+            var config = {},
+                afterVX,
+                afterVY,
+                randAngleX,
+                randAngleY;
             
-            
-            randAngleX1 = Math.random() * 180;
-            randAngleX2 = Math.random() * 180;
-            randAngleY1 = Math.random() * 180;
-            randAngleY2 = Math.random() * 180;
-            
-            afterVX1 = Math.sin((Math.PI / 180) * (180 - randAngleX1)) + bulletVX * 0.25;
-            afterVX2 = Math.sin((Math.PI / 180) * (180 + randAngleX2)) + bulletVX * 0.25;
-            
-            afterVY1 = Math.cos((Math.PI / 180) * (180 - randAngleY1)) + bulletVY * 0.25;
-            afterVY2 = Math.cos((Math.PI / 180) * (180 + randAngleY2)) + bulletVY * 0.25;
+            for (i = 0; i < 2; i += 1) {
+                randAngleX = Math.random() * 180;
+                randAngleY = Math.random() * 180;
+                
+                if (i === 0) {
+                    afterVX = Math.sin((Math.PI / 180) * (180 - randAngleX)) + bulletVX * 0.25;
+                    afterVY = Math.cos((Math.PI / 180) * (180 - randAngleY)) + bulletVY * 0.25;
+                } else {
+                    afterVX = Math.sin((Math.PI / 180) * (180 + randAngleX)) + bulletVX * 0.25;
+                    afterVY = Math.cos((Math.PI / 180) * (180 + randAngleY)) + bulletVY * 0.25;
+                }
 
-            
-            if (afterVX1 > 20) {
-                afterVX1 = 20;
-            } else if (afterVX1 < -20) {
-                afterVX1 = -20;
-            }
-            if (afterVX2 > 20) {
-                afterVX2 = 20;
-            } else if (afterVX2 < -20) {
-                afterVX2 = -20;
-            }
-            
-            if (afterVY1 > 20) {
-                afterVY1 = 20;
-            } else if (afterVY1 < -20) {
-                afterVY1 = -20;
-            }
-            if (afterVY1 > 20) {
-                afterVY1 = 20;
-            } else if (afterVY1 < -20) {
-                afterVY1 = -20;
-            }
-            config1 = {
-                x: asteroid.getX() + 8,
-                y: asteroid.getY() + 8,
-                vx: afterVX1,
-                vy: afterVY1,
-                spinFactor: 2,
-                size: asteroid.getSize() - 1
-            };
-            config2 = {
-                x: asteroid.getX() - 8,
-                y: asteroid.getY() - 8,
-                vx: afterVX2,
-                vy: afterVY2,
-                spinFactor: 2,
-                size: asteroid.getSize() - 1
-            };
-            asteroid1 = new Asteroid(config1, asteroid.getImg());
-            asteroid2 = new Asteroid(config2, asteroid.getImg());
+                if (afterVX > 20) {
+                    afterVX = 20;
+                } else if (afterVX < -20) {
+                    afterVX = -20;
+                }
 
-            asteroids.push(asteroid1);
-            asteroids.push(asteroid2);
+                if (afterVY > 20) {
+                    afterVY = 20;
+                } else if (afterVY < -20) {
+                    afterVY = -20;
+                }
+
+                config = {
+                    x: x + (i === 0 ? 8 : -8),
+                    y: y + (i === 0 ? 8 : -8),
+                    vx: afterVX,
+                    vy: afterVY,
+                    spinFactor: 2,
+                    size: size - 1
+                };
+                asteroids.push(new Asteroid(config));
+            }
         },
         detectPowerupPlayerCollision = function () {
-            var i,
-                distance,
-                dx,
-                dy,
+            var distance,
                 message,
-                type,
-                x,
-                y;
-            for (i = 0; i < powerups.length; i += 1) {
-                dx = powerups[i].getCenterPoint().x - player.getX();
-                dy = powerups[i].getCenterPoint().y - player.getY();
-                distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < powerups[i].getWidth() * 0.5 + player.getHeight() * 0.5) {
+                type;
+            for (i = powerups.length - 1; i >= 0; i -= 1) {
+                if (utils.isCircleCollision(player.getCircleCollider(), powerups[i].getCircleCollider())) {
                     powerups[i].playSound();
                     type = powerups[i].getType();
-                    x = powerups[i].getX();
-                    y = powerups[i].getY();
-                    powerups.splice(i, 1);
                     player.gainPowerup(type);
-                    powerupMessages.push(new PowerupMessage(type, x, y));
+                    powerupMessages.push(new PowerupMessage(type, powerups[i].getX(), powerups[i].getY()));
                     score += 100;
-                    scoreMessages.push(new ScoreMessage(100, {x: x, y: y }));
-                    break;
+                    scoreMessages.push(new ScoreMessage(100, {x: powerups[i].getX(), y: powerups[i].getY() }));
+                    powerups.splice(i, 1);
+                }
+            }
+        },
+        detectEnemyBulletPlayerCollision = function () {
+            // player enemy bullet collision
+            if (!shield.isUp()) {
+                for (i = enemyBulletsFired.length - 1; i >= 0; i -= 1) {
+                    if (utils.isCircleCollision(player.getCircleCollider(), enemyBulletsFired[i].getCircleCollider())) {
+                        player.die();
+                        enemyBulletsFired.splice(i, 1);
+                    }
                 }
             }
         },
         detectAsteroidPlayerCollision = function () {
-            var i,
-                distance,
+            var distance,
                 dx,
                 dy;
             if (!shield.isUp()) {
-                for (i = 0; i  < asteroids.length; i += 1) {
-                    dx = asteroids[i].getCenterX() - player.getX();
-                    dy = asteroids[i].getCenterY() - player.getY();
-                    distance = Math.sqrt(dx * dx + dy * dy);
-                    if (distance < asteroids[i].getWidth() * 0.5 + player.getHeight() * 0.5) {
+                for (i = asteroids.length - 1; i >= 0; i -= 1) {
+                    if (utils.isCircleCollision(player.getCircleCollider(), asteroids[i].getCircleCollider())) {
                         player.die();
-                        if (player.getLives() === 0) {
-                            gameBoard.gameOver();
-                        }
-                    }
-                }
-
-                // player enemy bullet collision
-                for (i = 0; i  < enemyBulletsFired.length; i += 1) {
-                    dx = enemyBulletsFired[i].getX() - player.getX();
-                    dy = enemyBulletsFired[i].getY() - player.getY();
-                    distance = Math.sqrt(dx * dx + dy * dy);
-                    if (distance < enemyBulletsFired[i].getRadius() + player.getHeight() * 0.5) {
-                        player.die();
-                        enemyBulletsFired.splice(i, 1);
-                        if (player.getLives() === 0) {
-                            gameBoard.gameOver();
-                        }
                     }
                 }
             }
-
         },
-        detectBulletAsteroidCollision = function () {
-            var i,
-                j,
-                dx,
-                dy,
+        detectPlayerBulletEnemyCollision = function () {
+            // player bullets colliding with enemies
+            for (i = enemies.length - 1; i >= 0; i -= 1) {
+                for (j = bulletsFired.length - 1; j >= 0; j -= 1) {
+                    if (utils.isCircleCollision(enemies[i].getCircleCollider(), bulletsFired[j].getCircleCollider())) {
+                        score += 1000;
+                        scoreMessages.push(new ScoreMessage(1000, {x: enemies[i].getX(), y: enemies[i].getY() }));
+                        enemies[i].die();
+                        enemies.splice(i, 1);
+                        bulletsFired.splice(j, 1);
+                    }
+                }
+            }
+        },
+        detectEnemyBulletAsteroidCollision = function () {
+            var bullvx,
+                bullvy,
                 x,
                 y,
-                distance,
-                randx,
-                randy,
-                asterAfterx,
-                asterAftery,
-                bullvx,
-                bullvy;
+                size;
             
-            for (i = 0; i < asteroids.length; i += 1) {
-                for (j = 0; j < bulletsFired.length; j += 1) {
-                    dx = asteroids[i].getCenterX() - bulletsFired[j].getCenterX();
-                    dy = asteroids[i].getCenterY() - bulletsFired[j].getCenterY();
-                    distance = Math.sqrt(dx * dx + dy * dy);
-                    if (distance <= asteroids[i].getWidth() / 2 + bulletsFired[j].getRadius()) {
-                        bullvx = bulletsFired[j].getVX();
-                        bullvy = bulletsFired[j].getVY();
-                        bulletsFired.splice(j, 1);
-                        asteroids[i].receiveDamage();
-                        if (asteroids[i].getHitpoints() === 0) {
-                            asteroids[i].playSound();
-                            score += 600 / asteroids[i].getSize();
-                            scoreMessages.push(new ScoreMessage(600 / asteroids[i].getSize(), {x: asteroids[i].getCenterX(), y: asteroids[i].getCenterY() }));
-                            if (asteroids[i].getSize() > 1) {
-                                splitAsteroid(asteroids[i], bullvx, bullvy);
-                            } else {
-                                if (Math.random() > 0.7) {
-                                    powerups.push(new Powerup(asteroids[i].getX(), asteroids[i].getY()));
-                                }
-                            }
-                            asteroids.splice(i, 1);
-                            if (asteroids.length === 0) {
-                                gameBoard.waveBegin();
-                            }
-                        }
-                    }
-                }
-            }
-            
-            // player bullets colliding with enemies
-            for (i = 0; i < enemies.length; i += 1) {
-                for (j = 0; j < bulletsFired.length; j += 1) {
-                    dx = enemies[i].getX() - bulletsFired[j].getCenterX();
-                    dy = enemies[i].getY() - bulletsFired[j].getCenterY();
-                    distance = Math.sqrt(dx * dx + dy * dy);
-                    if (distance <= enemies[i].getWidth() / 2 + bulletsFired[j].getRadius()) {
-                        x = enemies[i].getX();
-                        y = enemies[i].getY();
-                        enemies.splice(i, 1);
-                        score += 1000;
-                        scoreMessages.push(new ScoreMessage(1000, {x: x, y: y }));
-                        enemyDeathSound.play();
-                        bulletsFired.splice(j, 1);
-                        break;
-                    }
-                }
-            }
-            
-            for (i = 0; i < asteroids.length; i += 1) {
-                for (j = 0; j < enemyBulletsFired.length; j += 1) {
-                    dx = asteroids[i].getCenterX() - enemyBulletsFired[j].getCenterX();
-                    dy = asteroids[i].getCenterY() - enemyBulletsFired[j].getCenterY();
-                    distance = Math.sqrt(dx * dx + dy * dy);
-                    if (distance <= asteroids[i].getWidth() / 2 + enemyBulletsFired[j].getRadius()) {
+            // enemy bullets colliding with asteroids
+            for (i = asteroids.length - 1; i >= 0; i -= 1) {
+                for (j = enemyBulletsFired.length - 1; j >= 0; j -= 1) {
+                    if (utils.isCircleCollision(enemyBulletsFired[j].getCircleCollider(), asteroids[i].getCircleCollider())) {
                         bullvx = enemyBulletsFired[j].getVX();
                         bullvy = enemyBulletsFired[j].getVY();
                         enemyBulletsFired.splice(j, 1);
                         asteroids[i].receiveDamage();
                         if (asteroids[i].getHitpoints() === 0) {
                             asteroids[i].playSound();
-                            if (asteroids[i].getSize() > 1) {
-                                splitAsteroid(asteroids[i], bullvx, bullvy);
+                            x = asteroids[i].getX();
+                            y = asteroids[i].getY();
+                            size = asteroids[i].getSize();
+                            asteroids.splice(i, 1);
+                            if (size > 1) {
+                                splitAsteroid(size, x, y, bullvx, bullvy);
                             } else {
                                 if (Math.random() > 0.7) {
                                     powerups.push(new Powerup(asteroids[i].getX(), asteroids[i].getY()));
                                 }
                             }
+                        }
+                    }
+                }
+            }
+        },
+        detectPlayerBulletAsteroidCollision = function () {
+            var bullvx,
+                bullvy,
+                x,
+                y,
+                size;
+            
+            // player bullets colliding with asteroids
+            for (i = asteroids.length - 1; i >= 0; i -= 1) {
+                for (j = bulletsFired.length - 1; j >= 0; j -= 1) {
+                    if (utils.isCircleCollision(asteroids[i].getCircleCollider(), bulletsFired[j].getCircleCollider())) {
+                        bullvx = bulletsFired[j].getVX();
+                        bullvy = bulletsFired[j].getVY();
+                        bulletsFired.splice(j, 1);
+                        asteroids[i].receiveDamage();
+                        if (asteroids[i].getHitpoints() === 0) {
+                            asteroids[i].playSound();
+                            x = asteroids[i].getX();
+                            y = asteroids[i].getY();
+                            size = asteroids[i].getSize();
+                            score += 600 / asteroids[i].getSize();
+                            scoreMessages.push(new ScoreMessage(600 / asteroids[i].getSize(), {x: asteroids[i].getCenterX(), y: asteroids[i].getCenterY() }));
                             asteroids.splice(i, 1);
-                            if (asteroids.length === 0) {
-                                gameBoard.waveBegin();
+                            if (size > 1) {
+                                splitAsteroid(size, x, y, bullvx, bullvy);
+                            } else {
+                                if (Math.random() > 0.7) {
+                                    powerups.push(new Powerup(x, y));
+                                }
                             }
                         }
                     }
                 }
             }
+        },
+        detectAllCollisions = function () {
+            detectAsteroidPlayerCollision();
+            detectEnemyBulletAsteroidCollision();
+            detectEnemyBulletPlayerCollision();
+
+            detectPlayerBulletAsteroidCollision();
+            detectPlayerBulletEnemyCollision();
+
+            detectPowerupPlayerCollision();
         };
     
     // public properties
@@ -280,65 +229,69 @@ ASTEROIDS.gameBoard = (function () {
             return Date.now() - lastEnemySpawnedTime > (15000 / (currentWave));
         },
         updateAll: function () {
-            detectBulletAsteroidCollision();
-            detectPowerupPlayerCollision();
-            detectAsteroidPlayerCollision();
-            
-            if (player.isAlive()) {
-                player.update();
-            }
+            if (player.getLives() === 0) {
+                gameBoard.gameOver();
+            } else if (asteroids.length === 0 && enemies.length === 0) {
+                gameBoard.waveBegin();
+            } else {
+                detectAllCollisions();
 
-            energy.update();
-            
-            // Update bullets fired
-            for (i = 0; i < bulletsFired.length; i += 1) {
-                if (bulletsFired[i].canTravel()) {
-                    bulletsFired[i].update();
-                } else {
-                    bulletsFired.splice(i, 1);
+                if (player.isAlive()) {
+                    player.update();
                 }
-            }
-            
-            // Remove powerup messages if they're expired
-            for (i = powerupMessages.length - 1; i >= 0; i -= 1) {
-                if (powerupMessages[i].timeExpired()) {
-                    powerupMessages.splice(i, 1);
-                }
-            }
-            
-            // Remove score messages if they're expired
-            for (i = scoreMessages.length - 1; i >= 0; i -= 1) {
-                if (scoreMessages[i].timeExpired()) {
-                    scoreMessages.splice(i, 1);
-                }
-            }
-            
-            // Remove enemy bullets if they're done or update them otherwise
-            for (i = enemyBulletsFired.length - 1; i >= 0; i -= 1) {
-                if (enemyBulletsFired[i].canTravel()) {
-                    enemyBulletsFired[i].update();
-                } else {
-                    enemyBulletsFired.splice(i, 1);
-                }
-            }
-            
-            // Remove powerups if expired
-            for (i = powerups.length - 1; i >= 0; i -= 1) {
-                if (powerups[i].isExpired()) {
-                    powerups.splice(i, 1);
-                }
-            }
-            
-            for (i = 0; i < asteroids.length; i += 1) {
-                asteroids[i].update();
-            }
 
-            for (i = 0; i < enemies.length; i += 1) {
-                enemies[i].update();
-            }
+                energy.update();
 
-            if (this.canSpawnEnemy()) {
-                this.spawnEnemy();
+                // Update bullets fired
+                for (i = 0; i < bulletsFired.length; i += 1) {
+                    if (bulletsFired[i].canTravel()) {
+                        bulletsFired[i].update();
+                    } else {
+                        bulletsFired.splice(i, 1);
+                    }
+                }
+
+                // Remove powerup messages if they're expired
+                for (i = powerupMessages.length - 1; i >= 0; i -= 1) {
+                    if (powerupMessages[i].timeExpired()) {
+                        powerupMessages.splice(i, 1);
+                    }
+                }
+
+                // Remove score messages if they're expired
+                for (i = scoreMessages.length - 1; i >= 0; i -= 1) {
+                    if (scoreMessages[i].timeExpired()) {
+                        scoreMessages.splice(i, 1);
+                    }
+                }
+
+                // Remove enemy bullets if they're done or update them otherwise
+                for (i = enemyBulletsFired.length - 1; i >= 0; i -= 1) {
+                    if (enemyBulletsFired[i].canTravel()) {
+                        enemyBulletsFired[i].update();
+                    } else {
+                        enemyBulletsFired.splice(i, 1);
+                    }
+                }
+
+                // Remove powerups if expired
+                for (i = powerups.length - 1; i >= 0; i -= 1) {
+                    if (powerups[i].isExpired()) {
+                        powerups.splice(i, 1);
+                    }
+                }
+
+                for (i = 0; i < asteroids.length; i += 1) {
+                    asteroids[i].update();
+                }
+
+                for (i = 0; i < enemies.length; i += 1) {
+                    enemies[i].update();
+                }
+
+                if (this.canSpawnEnemy()) {
+                    this.spawnEnemy();
+                }
             }
         },
         spawnEnemy: function () {

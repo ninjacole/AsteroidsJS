@@ -14,7 +14,6 @@ ASTEROIDS.Powerup = function (x, y) {
     var powerupTypes = ASTEROIDS.powerupTypes,
         canvas = ASTEROIDS.canvas,
         context = ASTEROIDS.context,
-        radius = 16,
         powerupSound = document.getElementById('powerupSound'),
         type = powerupTypes.RANDOM(),
         duration = 7000,
@@ -51,6 +50,14 @@ ASTEROIDS.Powerup = function (x, y) {
         ballCounter += ballDir;
     };
     
+    this.getCircleCollider = function () {
+        return {
+            radius: width / 2,
+            x: x + 0.5 * width,
+            y: y + 0.5 * height
+        };
+    };
+    
     this.playSound = function () {
         powerupSound.play();
     };
@@ -61,10 +68,6 @@ ASTEROIDS.Powerup = function (x, y) {
     
     this.getY = function () {
         return y;
-    };
-    
-    this.getRadius = function () {
-        return radius;
     };
     
     this.getType = function () {

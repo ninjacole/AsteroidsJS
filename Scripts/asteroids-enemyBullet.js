@@ -55,6 +55,14 @@ ASTEROIDS.EnemyBullet = function EnemyBullet(x, y, playerx, playery) {
         return false;
     };
     
+    this.getCircleCollider = function () {
+        return {
+            radius: radius,
+            x: this.getCenterX(),
+            y: this.getCenterY()
+        };
+    };
+    
     this.getX = function () {
         return x;
     };

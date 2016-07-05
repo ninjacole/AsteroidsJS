@@ -60,6 +60,12 @@ ASTEROIDS.utils = (function () {
             var x = Math.random() > 0.5 ? 200 : ASTEROIDS.canvas.width - 200,
                 y = Math.random() > 0.5 ? 200 : ASTEROIDS.canvas.height - 200;
             return {x: x, y: y};
+        },
+        isCircleCollision: function (circle1, circle2) {
+            var dx = (circle1.x) - (circle2.x),
+                dy = (circle1.y) - (circle2.y),
+                distance = Math.sqrt(dx * dx + dy * dy);
+            return distance <= circle1.radius + circle2.radius;
         }
     };
     return utils;

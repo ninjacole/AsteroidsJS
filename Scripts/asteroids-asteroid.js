@@ -6,7 +6,7 @@ var ASTEROIDS = ASTEROIDS || {};
 
 ASTEROIDS.namespace('ASTEROIDS.Asteroid');
 
-ASTEROIDS.Asteroid = function (config, previousImg) {
+ASTEROIDS.Asteroid = function (config) {
     var utils = ASTEROIDS.utils,
         canvas = ASTEROIDS.canvas,
         context = ASTEROIDS.context,
@@ -27,9 +27,18 @@ ASTEROIDS.Asteroid = function (config, previousImg) {
         gray2dmg = document.getElementById('aster-gray-2dmg'),
         gray3dmg = document.getElementById('aster-gray-3dmg'),
         grayImages = [gray3dmg, gray2dmg, gray1dmg, gray],
+        that = this,
         img;
     
-    this.rotate = function (degrees) {
+    that.getCircleCollider = function () {
+        return {
+            radius: width / 2,
+            x: that.getCenterX(),
+            y: that.getCenterY()
+        };
+    };
+    
+    that.rotate = function (degrees) {
         rotation += degrees;
         // If we're over 360 degrees, use the remainder
         // example: 365 % 360 = remainder of 5. Rotation is 5 degrees.
@@ -44,34 +53,34 @@ ASTEROIDS.Asteroid = function (config, previousImg) {
         }
     };
     
-    this.receiveDamage = function () {
+    that.receiveDamage = function () {
         damageSound.play();
         hitpoints -= 1;
         img = grayImages[hitpoints - 1];
     };
     
-    this.getHitpoints = function () {
+    that.getHitpoints = function () {
         return hitpoints;
     };
     
-    this.getCenterX = function () {
+    that.getCenterX = function () {
         return x + 0.5 * width;
     };
     
-    this.getCenterY = function () {
+    that.getCenterY = function () {
         return y + 0.5 * height;
     };
     
-    this.draw = function () {
+    that.draw = function () {
         context.save();
-        context.translate(this.getCenterX(), this.getCenterY());
+        context.translate(that.getCenterX(), that.getCenterY());
         context.rotate(utils.convertDegreesToRads(rotation));
-        context.translate(-1 * this.getCenterX(), -1 * this.getCenterY());
+        context.translate(-1 * that.getCenterX(), -1 * that.getCenterY());
         context.drawImage(img, x, y, width, height);
         context.restore();
     };
 
-    this.update = function () {
+    that.update = function () {
         x += vx;
         y += vy;
         this.rotate(spinFactor);
@@ -89,49 +98,49 @@ ASTEROIDS.Asteroid = function (config, previousImg) {
         }
     };
     
-    this.getImg = function () {
+    that.getImg = function () {
         return img;
     };
     
-    this.getCenterX = function () {
+    that.getCenterX = function () {
         return x + 0.5 * width;
     };
     
-    this.getCenterY = function () {
+    that.getCenterY = function () {
         return y + 0.5 * height;
     };
     
-    this.getX = function () {
+    that.getX = function () {
         return x;
     };
     
-    this.getY = function () {
+    that.getY = function () {
         return y;
     };
     
-    this.getWidth = function () {
+    that.getWidth = function () {
         return width;
     };
     
-    this.playSound = function () {
+    that.playSound = function () {
         explosionSound.play();
     };
     
-    this.getSize = function () {
+    that.getSize = function () {
         return size;
     };
     
-    this.getVX = function () {
+    that.getVX = function () {
         return vx;
     };
     
-    this.getVY = function () {
+    that.getVY = function () {
         return vy;
     };
     
-    this.init = function () {
+    that.init = function () {
         img = grayImages[hitpoints - 1];
     };
     
-    this.init();
+    that.init();
 };

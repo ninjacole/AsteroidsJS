@@ -16,11 +16,12 @@ ASTEROIDS.enemy = function () {
         player = ASTEROIDS.player,
         canvas = ASTEROIDS.canvas,
         context = ASTEROIDS.context,
+        enemyDeathSound = document.getElementById('enemy-death'),
         
         // private variables
         img = document.getElementById('enemy'),
-        x = Math.random() > 0.5 ? 50 : canvas.width - 50,
-        y = Math.random() > 0.5 ? 50 : canvas.height - 50,
+        x = Math.random() > 0.5 ? 50 : canvas.width - 200,
+        y = Math.random() > 0.5 ? 50 : canvas.height - 200,
         vx = Math.random() * 3,
         vy = Math.random() * 3,
         width = 40,
@@ -50,6 +51,9 @@ ASTEROIDS.enemy = function () {
         getY: function () {
             return y;
         },
+        die: function () {
+            enemyDeathSound.play();
+        },
         getVX: function () {
             return vx;
         },
@@ -61,6 +65,19 @@ ASTEROIDS.enemy = function () {
         },
         getHeight: function () {
             return height;
+        },
+        getCenterX: function () {
+            return x + 0.5 * width;
+        },
+        getCenterY: function () {
+            return y + 0.5 * height;
+        },
+        getCircleCollider: function () {
+            return {
+                radius: width / 2,
+                x: this.getCenterX(),
+                y: this.getCenterY()
+            };
         },
         changeDirection: function () {
             lastChangedDirection = Date.now();
