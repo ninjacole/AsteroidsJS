@@ -20,8 +20,7 @@ ASTEROIDS.gameBoard = (function () {
         utils = ASTEROIDS.utils,
         energy = ASTEROIDS.energy,
         shield = ASTEROIDS.shield,
-        WaveTransition = ASTEROIDS.WaveTransition,
-        gameOverScreen = ASTEROIDS.gameOverScreen,
+        menu = ASTEROIDS.menu,
         key = ASTEROIDS.key,
         gameLoopManager = new ASTEROIDS.GameLoopManager(),
         //---------------- Private properties
@@ -455,7 +454,19 @@ ASTEROIDS.gameBoard = (function () {
             }
         },
         start: function () {
-            gameBoard.waveBegin();
+            var startMenuItems = ['New Game', 'View high scores'],
+                startMenu = new menu.StartMenu(
+                    startMenuItems,
+                    function (value) {
+                        if (value === 0) {
+                            gameBoard.waveBegin();
+                        } else if (value === 1) {
+                            // TODO
+                            console.log('show high scores not implemented');
+                        }
+                    }
+                );
+            gameLoopManager.run(function () { startMenu.draw(); });
         },
         main: function () {
             gameBoard.updateAll();
@@ -464,7 +475,7 @@ ASTEROIDS.gameBoard = (function () {
         },
         pause: function () {
             var pauseMenuItems = ['Resume', 'Quit'],
-                pauseMenu = new ASTEROIDS.PauseMenu(pauseMenuItems, gameBoard.resume, gameBoard.resume);
+                pauseMenu = new menu.PauseMenu(pauseMenuItems, gameBoard.resume, gameBoard.resume);
             gameLoopManager.run(function () { gameBoard.drawAll(); pauseMenu.drawPauseMenu(); });
         },
         resume: function (index) {
@@ -488,12 +499,9 @@ ASTEROIDS.gameBoard = (function () {
             score = 0;
             player.setLives(5);
         },
-        waveEnd: function () {
-
-        },
         waveBegin: function () {
             currentWave += 1;
-            var waveTransition = new WaveTransition(
+            var waveTransition = new menu.WaveTransition(
                 currentWave,
                 Date.now(),
                 3000,
@@ -507,8 +515,8 @@ ASTEROIDS.gameBoard = (function () {
         },
         gameOver: function () {
             // TODO: show game over screen and high score menu
-            gameOverScreen.configure(Date.now(), function () { gameBoard.resetGame(); gameBoard.start(); });
-            gameLoopManager.run(function () { gameOverScreen.draw(); });
+            menu.gameOverScreen.configure(Date.now(), function () { gameBoard.resetGame(); gameBoard.start(); });
+            gameLoopManager.run(function () { menu.gameOverScreen.draw(); });
         }
     };
 

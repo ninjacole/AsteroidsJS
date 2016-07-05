@@ -5,11 +5,71 @@
 var ASTEROIDS = ASTEROIDS || {};
 
 // Create gameboard namespace
-ASTEROIDS.namespace('ASTEROIDS.pauseMenu');
-ASTEROIDS.namespace('ASTEROIDS.WaveTransition');
-ASTEROIDS.namespace('ASTEROIDS.gameOverScreen');
+ASTEROIDS.namespace('ASTEROIDS.menu');
 
-ASTEROIDS.gameOverScreen = (function () {
+ASTEROIDS.menu.StartMenu = function (startMenuItems, selectionCallback) {
+    var key = ASTEROIDS.key,
+        that = this,
+        canvas = document.getElementById('gameCanvas'),
+        context = canvas.getContext('2d'),
+        canUp = false,
+        canDown = false,
+        selectedMenuItem = 0,
+        i;
+    
+    that.draw = function () {
+        var newSelectedMenuItem;
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.save();
+        context.font = "50px Consolas";
+        context.textAlign = "center";
+        context.fillStyle = 'white';
+        context.fillText("ASTEROIDS!", canvas.width / 2, 100);
+        for (i = 0; i < startMenuItems.length; i += 1) {
+            if (i === selectedMenuItem) {
+                context.fillStyle = 'blue';
+            } else {
+                context.fillStyle = 'white';
+            }
+            context.fillText(startMenuItems[i], canvas.width / 2, (i + 2) * 100);
+        }
+        context.restore();
+        
+        if (key.isDown(key.ENTER)) {
+            selectionCallback(selectedMenuItem);
+        }
+        if (key.isDown(key.DOWN)) {
+            if (canDown) {
+                canDown = false;
+                newSelectedMenuItem = selectedMenuItem + 1;
+                if (newSelectedMenuItem === startMenuItems.length) {
+                    selectedMenuItem = 0;
+                } else {
+                    selectedMenuItem = newSelectedMenuItem;
+                }
+            }
+        } else {
+            canDown = true;
+        }
+        
+        if (key.isDown(key.UP)) {
+            if (canUp) {
+                canUp = false;
+                newSelectedMenuItem = selectedMenuItem - 1;
+                if (newSelectedMenuItem === -1) {
+                    selectedMenuItem = startMenuItems.length - 1;
+                } else {
+                    selectedMenuItem = newSelectedMenuItem;
+                }
+            }
+        } else {
+            canUp = true;
+        }
+    };
+    
+};
+
+ASTEROIDS.menu.gameOverScreen = (function () {
     var gameOverScreen,
         canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d'),
@@ -39,7 +99,7 @@ ASTEROIDS.gameOverScreen = (function () {
     return gameOverScreen;
 }());
 
-ASTEROIDS.WaveTransition = function (wave, transitionStart, transitionLength, callback) {
+ASTEROIDS.menu.WaveTransition = function (wave, transitionStart, transitionLength, callback) {
     var canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d'),
         that = this;
@@ -59,7 +119,7 @@ ASTEROIDS.WaveTransition = function (wave, transitionStart, transitionLength, ca
     };
 };
 
-ASTEROIDS.PauseMenu = function (pausedItems, pauseMenuItemChosenCallback, resumeCallback) {
+ASTEROIDS.menu.PauseMenu = function (pausedItems, pauseMenuItemChosenCallback, resumeCallback) {
     var key = ASTEROIDS.key,
         canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d'),
