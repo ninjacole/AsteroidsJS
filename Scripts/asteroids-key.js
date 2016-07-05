@@ -16,6 +16,11 @@ ASTEROIDS.key = (function () {
         RIGHT: 39,
         DOWN: 40,
         SPACE: 32,
+        ESC: 27,
+        Q: 81,
+        R: 82,
+        E: 69,
+        ENTER: 13,
         
         isDown: function (keyCode) {
             return pressed[keyCode];
@@ -25,6 +30,9 @@ ASTEROIDS.key = (function () {
         },
         onKeyUp: function (event) {
             delete pressed[event.keyCode];
+        },
+        reset: function () {
+            pressed = {};
         }
     };
     

@@ -7,13 +7,12 @@ var ASTEROIDS = ASTEROIDS || {};
 ASTEROIDS.namespace('ASTEROIDS.energy');
 
 ASTEROIDS.energy = (function () {
-    var utils = ASTEROIDS.utils,
-        max = 100,
+    var max = 100,
         min = 0,
         current = 100,
         regenRate = 0.2,
         isRegenerating = true,
-        lastDrained = utils.getCurrentTime(),
+        lastDrained = Date.now(),
         regenCooldown = 1000,
         energy;
     
@@ -33,14 +32,14 @@ ASTEROIDS.energy = (function () {
         consume: function (value) {
             if (this.isAvailable(value)) {
                 current -= value;
-                lastDrained = utils.getCurrentTime();
+                lastDrained = Date.now();
             }
         },
         getAvailable: function () {
             return current;
         },
         canRegen: function () {
-            return utils.getCurrentTime() - lastDrained > regenCooldown;
+            return Date.now() - lastDrained > regenCooldown;
         },
         update: function () {
             if (this.canRegen()) {

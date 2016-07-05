@@ -8,8 +8,7 @@ ASTEROIDS.namespace('ASTEROIDS.enemy');
 
 ASTEROIDS.enemy = function () {
     // dependencies
-    var utils = ASTEROIDS.utils,
-        key = ASTEROIDS.key,
+    var key = ASTEROIDS.key,
         bullet = ASTEROIDS.bullet,
         weapon = ASTEROIDS.weapon,
         powerup = ASTEROIDS.Powerup,
@@ -26,7 +25,7 @@ ASTEROIDS.enemy = function () {
         vy = Math.random() * 3,
         width = 40,
         height = 40,
-        lastFired = utils.getCurrentTime(),
+        lastFired = Date.now(),
         accelerationCoefficient = 0.1,
         maxSpeed = 15,
         maxAccelerationCoefficient = 1,
@@ -38,7 +37,7 @@ ASTEROIDS.enemy = function () {
                 fireRate = maxFireRate;
             }
         },
-        lastChangedDirection = utils.getCurrentTime(),
+        lastChangedDirection = Date.now(),
         directionChangeRate = 5000,
         enemy,
         init;
@@ -64,7 +63,7 @@ ASTEROIDS.enemy = function () {
             return height;
         },
         changeDirection: function () {
-            lastChangedDirection = utils.getCurrentTime();
+            lastChangedDirection = Date.now();
             var vxchange = Math.random() * 3,
                 vychange = Math.random() * 3;
             if (Math.random() > 0.5) {
@@ -82,16 +81,16 @@ ASTEROIDS.enemy = function () {
             context.restore();
         },
         canShoot: function () {
-            return utils.getCurrentTime() - lastFired > fireRate;
+            return Date.now() - lastFired > fireRate;
         },
         shoot: function () {
             if (this.canShoot()) {
-                lastFired = utils.getCurrentTime();
+                lastFired = Date.now();
                 weapon.fireEnemyBullet(x, y, player.getX(), player.getY());
             }
         },
         canChangeDirection: function () {
-            return utils.getCurrentTime() - lastChangedDirection > directionChangeRate;
+            return Date.now() - lastChangedDirection > directionChangeRate;
         },
         update: function () {
             if (this.canChangeDirection()) {

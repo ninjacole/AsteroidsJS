@@ -59,9 +59,6 @@ ASTEROIDS.utils = (function () {
             var x = Math.random() > 0.5 ? 200 : canvas.width - 200,
                 y = Math.random() > 0.5 ? 200 : canvas.height - 200;
             return {x: x, y: y};
-        },
-        getCurrentTime: function () {
-            return new Date().getTime();
         }
     };
     return utils;

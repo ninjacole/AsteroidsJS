@@ -52,6 +52,9 @@ ASTEROIDS.weapon = (function () {
         getEnemyBulletsFired: function () {
             return enemyBulletsFired;
         },
+        resetEnemyBulletsFired: function () {
+            enemyBulletsFired.splice(0, enemyBulletsFired.length);
+        },
         fireEnemyBullet: function (x, y, playerx, playery) {
             enemyFireSound.play();
             enemyBulletsFired.push(new EnemyBullet(x, y, playerx, playery));

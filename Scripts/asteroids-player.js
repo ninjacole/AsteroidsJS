@@ -191,29 +191,6 @@ ASTEROIDS.player = (function () {
             } else {
                 img = ship_double;
             }
-            
-            if (key.isDown(key.UP)) {
-                this.accelerate();
-                isEngineRunning = true;
-            } else {
-                isEngineRunning = false;
-            }
-            if (key.isDown(key.LEFT)) {
-                this.rotate(-5);
-            }
-            if (key.isDown(key.RIGHT)) {
-                this.rotate(5);
-            }
-            if (key.isDown(key.SPACE)) {
-                this.shoot();
-            }
-            if (key.isDown(key.DOWN)) {
-                shield.activate();
-            } else if (this.isRecentlySpawned()) {
-                shield.activate(true);
-            } else {
-                shield.deactivate();
-            }
         },
         isRecentlySpawned: function () {
             return new Date().getTime() - timeOfLastSpawn < safeTime;
@@ -227,6 +204,13 @@ ASTEROIDS.player = (function () {
         getFireRate: function () {
             return fireRate;
         },
+        engineEnabled: function (value) {
+            isEngineRunning = value;
+        },
+        setLives: function (value) {
+            lives = value;
+        },
+        shield: shield,
         gainPowerup: function (powerupType) {
             if (powerupType === powerupTypes.SPEED) {
                 this.adjustAccelerationCoefficient(0.06);
@@ -242,28 +226,30 @@ ASTEROIDS.player = (function () {
         },
         die: function () {
             lives -= 1;
-            this.hide();
+            x = -5000;
+            y = -5000;
+            vx = 0;
+            vy = 0;
+            fireRate = 300;
+            rotation = 0;
             alive = false;
             playerDeathSound.play();
             weapon.setType('single');
             accelerationCoefficient = 0.1;
-            fireRate = 300;
-            rotation = 0;
             timeOfDeath = new Date().getTime();
             img = document.getElementById('ship-single');
-            setTimeout(this.show, respawnTime);
+            if (lives > 0) {
+                setTimeout(this.reset, respawnTime);
+            }
         },
-        hide: function () {
-            x = -1000;
-            y = -1000;
-            vx = 0;
-            vy = 0;
-        },
-        show: function () {
+        reset: function () {
             timeOfLastSpawn = new Date().getTime();
             alive = true;
             x = canvas.width / 2;
             y = canvas.height / 2;
+            vx = 0;
+            vy = 0;
+            rotation = 0;
         }
     };
     return player;
