@@ -352,34 +352,16 @@ ASTEROIDS.gameBoard = (function () {
             }
         },
         spawnAsteroids: function () {
-            var asteroidCount = currentWave,
-                velCox,
-                velCoy,
-                x,
-                y,
-                vx,
-                vy,
-                spinFactor,
-                size,
-                config,
-                i;
+            var config;
             
-            for (i = 0; i < asteroidCount; i += 1) {
-                velCox = Math.random() < 0.5 ? -1 : 1;
-                velCoy = Math.random() < 0.5 ? -1 : 1;
-                x = utils.getSpawnPoint().x;
-                y = utils.getSpawnPoint().y;
-                vx = Math.ceil(Math.random() * 5 * velCox);
-                vy = Math.ceil(Math.random() * 5 * velCoy);
-                spinFactor = Math.ceil(Math.random() * 4);
-                size = 4;
+            for (i = 0; i < currentWave; i += 1) {
                 config = {
-                    x: x,
-                    y: y,
-                    vx: vx,
-                    vy: vy,
-                    spinFactor: spinFactor,
-                    size: size
+                    x: utils.getSpawnPoint().x,
+                    y: utils.getSpawnPoint().y,
+                    vx: Math.ceil(Math.random() * 5 * (Math.random() < 0.5 ? -1 : 1)),
+                    vy: Math.ceil(Math.random() * 5 * (Math.random() < 0.5 ? -1 : 1)),
+                    spinFactor: Math.ceil(Math.random() * 4),
+                    size: 4
                 };
                 asteroids.push(new Asteroid(config));
             }
