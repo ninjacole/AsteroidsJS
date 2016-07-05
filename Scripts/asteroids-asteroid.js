@@ -8,6 +8,8 @@ ASTEROIDS.namespace('ASTEROIDS.Asteroid');
 
 ASTEROIDS.Asteroid = function (config, previousImg) {
     var utils = ASTEROIDS.utils,
+        canvas = ASTEROIDS.canvas,
+        context = ASTEROIDS.context,
         x = config.x,
         y = config.y,
         vx = config.vx,
@@ -20,8 +22,6 @@ ASTEROIDS.Asteroid = function (config, previousImg) {
         hitpoints = size,
         explosionSound = document.getElementById('explosionSound'),
         damageSound = document.getElementById('asteroid-takes-damage'),
-        canvas = document.getElementById('gameCanvas'),
-        context = canvas.getContext('2d'),
         gray = document.getElementById('aster-gray'),
         gray1dmg = document.getElementById('aster-gray-1dmg'),
         gray2dmg = document.getElementById('aster-gray-2dmg'),

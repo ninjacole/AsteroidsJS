@@ -22,6 +22,8 @@ ASTEROIDS.gameBoard = (function () {
         shield = ASTEROIDS.shield,
         menu = ASTEROIDS.menu,
         key = ASTEROIDS.key,
+        canvas = ASTEROIDS.canvas,
+        context = ASTEROIDS.context,
         gameLoopManager = new ASTEROIDS.GameLoopManager(),
         //---------------- Private properties
         enemyDeathSound = document.getElementById('enemy-death'),
@@ -40,8 +42,6 @@ ASTEROIDS.gameBoard = (function () {
         totalWaves = 10,
         fps = 50,
         intervalId = 0,
-        canvas = document.getElementById('gameCanvas'),
-        context = canvas.getContext('2d'),
         bgPic = document.getElementById('bgpic'),
         timeBetweenWaves = 3000,
         score = 0,
@@ -280,12 +280,17 @@ ASTEROIDS.gameBoard = (function () {
             return Date.now() - lastEnemySpawnedTime > (15000 / (currentWave));
         },
         updateAll: function () {
+            detectBulletAsteroidCollision();
+            detectPowerupPlayerCollision();
+            detectAsteroidPlayerCollision();
+            
             if (player.isAlive()) {
                 player.update();
             }
 
             energy.update();
             
+            // Update bullets fired
             for (i = 0; i < bulletsFired.length; i += 1) {
                 if (bulletsFired[i].canTravel()) {
                     bulletsFired[i].update();
@@ -296,7 +301,7 @@ ASTEROIDS.gameBoard = (function () {
             
             // Remove powerup messages if they're expired
             for (i = powerupMessages.length - 1; i >= 0; i -= 1) {
-                if (powerupMessages[i].timeExpired) {
+                if (powerupMessages[i].timeExpired()) {
                     powerupMessages.splice(i, 1);
                 }
             }
@@ -317,6 +322,12 @@ ASTEROIDS.gameBoard = (function () {
                 }
             }
             
+            // Remove powerups if expired
+            for (i = powerups.length - 1; i >= 0; i -= 1) {
+                if (powerups[i].isExpired()) {
+                    powerups.splice(i, 1);
+                }
+            }
             
             for (i = 0; i < asteroids.length; i += 1) {
                 asteroids[i].update();
@@ -329,33 +340,27 @@ ASTEROIDS.gameBoard = (function () {
             if (this.canSpawnEnemy()) {
                 this.spawnEnemy();
             }
-            detectBulletAsteroidCollision();
-            detectPowerupPlayerCollision();
-            detectAsteroidPlayerCollision();
         },
         spawnEnemy: function () {
-            if (enemies.length < 3 * currentWave) {
+            if (enemies.length < 2 * currentWave) {
                 enemies.push(new Enemy());
                 lastEnemySpawnedTime = Date.now();
             }
         },
         drawUI: function () {
-            var i;
-            
             context.save();
             context.fillStyle = 'white';
             context.font = "30px Consolas";
-            // draw level and score at 30 Y
+            
             context.fillText("Level: " + currentWave + " Score: " + score, 50, 30);
-            context.translate(50, 30);
-            // draw player lives at 45 Y
+            
             for (i = 0; i < player.getLives(); i += 1) {
-                context.drawImage(playerImg, i * 25, 15, 20, 20);
+                context.drawImage(playerImg, (i * 25) + 50, 45, 20, 20);
             }
-            context.fillStyle = 'blue';
-            // draw energy bar at 60
+            
+            //context.fillStyle = 'blue';
             for (i = 0; i < energy.getAvailable(); i += 1) {
-                context.fillRect(i * 2, 50, 1, 10);
+                context.fillRect((i * 2) + 50, 100, 1, 10);
             }
             context.restore();
         },
@@ -366,11 +371,7 @@ ASTEROIDS.gameBoard = (function () {
                 player.draw();
             }
             for (i = 0; i < powerups.length; i += 1) {
-                if (powerups[i].isExpired()) {
-                    powerups.splice(i, 1);
-                } else {
-                    powerups[i].draw();
-                }
+                powerups[i].draw();
             }
             for (i = 0; i < enemies.length; i += 1) {
                 enemies[i].draw();

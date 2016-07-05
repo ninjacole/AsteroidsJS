@@ -9,6 +9,8 @@ ASTEROIDS.namespace('ASTEROIDS.Bullet');
 ASTEROIDS.Bullet = function (bulletPoint, playervx, playervy, playerRotation) {
     // dependencies
     var utils = ASTEROIDS.utils,
+        canvas = ASTEROIDS.canvas,
+        context = ASTEROIDS.context,
         // private variables
         duration = 700,
         startTime = Date.now(),
@@ -17,8 +19,6 @@ ASTEROIDS.Bullet = function (bulletPoint, playervx, playervy, playerRotation) {
         speed = 7,
         x = bulletPoint.x,
         y = bulletPoint.y,
-        canvas = document.getElementById('gameCanvas'),
-        context = canvas.getContext('2d'),
         rotation = playerRotation,
         vx = playervx + Math.sin(utils.convertDegreesToRads(180 - rotation)) * speed,
         vy = playervy + Math.cos(utils.convertDegreesToRads(180 - rotation)) * speed;

@@ -12,10 +12,10 @@ ASTEROIDS.namespace('ASTEROIDS.powerupTypes');
 ASTEROIDS.Powerup = function (x, y) {
     // dependencies
     var powerupTypes = ASTEROIDS.powerupTypes,
+        canvas = ASTEROIDS.canvas,
+        context = ASTEROIDS.context,
         radius = 16,
         powerupSound = document.getElementById('powerupSound'),
-        canvas = document.getElementById('gameCanvas'),
-        context = canvas.getContext('2d'),
         type = powerupTypes.RANDOM(),
         duration = 7000,
         spawnTime = Date.now(),
@@ -88,12 +88,12 @@ ASTEROIDS.Powerup = function (x, y) {
 
 ASTEROIDS.PowerupMessage = function (type, x, y) {
     var powerupTypes = ASTEROIDS.powerupTypes,
+        canvas = ASTEROIDS.canvas,
+        context = ASTEROIDS.context,
         font = "15px Consolas",
         startTime = Date.now(),
         runningTime = 0,
         duration = 1500,
-        canvas = document.getElementById('gameCanvas'),
-        context = canvas.getContext('2d'),
         message;
 
     this.draw = function () {

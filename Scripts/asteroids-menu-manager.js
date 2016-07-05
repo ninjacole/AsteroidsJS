@@ -11,26 +11,17 @@ ASTEROIDS.menu.selectSound = document.getElementById('menu-select');
 
 ASTEROIDS.menu.StartMenu = function (startMenuItems, selectionCallback) {
     var key = ASTEROIDS.key,
-        Enemy = ASTEROIDS.enemy,
+        canvas = ASTEROIDS.canvas,
+        context = ASTEROIDS.context,
         that = this,
-        canvas = document.getElementById('gameCanvas'),
-        context = canvas.getContext('2d'),
         canUp = false,
         canDown = false,
         selectedMenuItem = 0,
-        enemies = [],
+        newSelectedMenuItem,
         i;
-    for (i = 0; i < 300; i += 1) {
-        enemies.push(new Enemy());
-    }
     
     that.draw = function () {
-        var newSelectedMenuItem;
         context.clearRect(0, 0, canvas.width, canvas.height);
-        for (i = 0; i < enemies.length; i += 1) {
-            enemies[i].draw();
-            enemies[i].update();
-        }
         context.save();
         context.font = "50px sans-serif";
         context.textAlign = "center";
@@ -49,6 +40,7 @@ ASTEROIDS.menu.StartMenu = function (startMenuItems, selectionCallback) {
         if (key.isDown(key.ENTER)) {
             selectionCallback(selectedMenuItem);
         }
+        
         if (key.isDown(key.DOWN)) {
             if (canDown) {
                 ASTEROIDS.menu.selectSound.play();
@@ -79,13 +71,12 @@ ASTEROIDS.menu.StartMenu = function (startMenuItems, selectionCallback) {
             canUp = true;
         }
     };
-    
 };
 
 ASTEROIDS.menu.gameOverScreen = (function () {
-    var gameOverScreen,
-        canvas = document.getElementById('gameCanvas'),
-        context = canvas.getContext('2d'),
+    var canvas = ASTEROIDS.canvas,
+        context = ASTEROIDS.context,
+        gameOverScreen,
         start,
         cb,
         duration = 4000;
@@ -113,8 +104,8 @@ ASTEROIDS.menu.gameOverScreen = (function () {
 }());
 
 ASTEROIDS.menu.WaveTransition = function (wave, transitionStart, transitionLength, callback) {
-    var canvas = document.getElementById('gameCanvas'),
-        context = canvas.getContext('2d'),
+    var canvas = ASTEROIDS.canvas,
+        context = ASTEROIDS.context,
         that = this;
     
     that.waveTransition = function () {
@@ -134,8 +125,8 @@ ASTEROIDS.menu.WaveTransition = function (wave, transitionStart, transitionLengt
 
 ASTEROIDS.menu.PauseMenu = function (pausedItems, pauseMenuItemChosenCallback, resumeCallback) {
     var key = ASTEROIDS.key,
-        canvas = document.getElementById('gameCanvas'),
-        context = canvas.getContext('2d'),
+        canvas = ASTEROIDS.canvas,
+        context = ASTEROIDS.context,
         selectedPauseItem = 0,
         i,
         canDown = false,

@@ -14,10 +14,10 @@ ASTEROIDS.enemy = function () {
         powerup = ASTEROIDS.Powerup,
         powerupTypes = ASTEROIDS.powerupTypes,
         player = ASTEROIDS.player,
+        canvas = ASTEROIDS.canvas,
+        context = ASTEROIDS.context,
         
         // private variables
-        canvas = document.getElementById('gameCanvas'),
-        context = canvas.getContext('2d'),
         img = document.getElementById('enemy'),
         x = Math.random() > 0.5 ? 50 : canvas.width - 50,
         y = Math.random() > 0.5 ? 50 : canvas.height - 50,

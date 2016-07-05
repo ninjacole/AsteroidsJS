@@ -7,12 +7,12 @@ var ASTEROIDS = ASTEROIDS || {};
 ASTEROIDS.namespace('ASTEROIDS.EnemyBullet');
 
 ASTEROIDS.EnemyBullet = function EnemyBullet(x, y, playerx, playery) {
-    var speed = 5,
+    var canvas = ASTEROIDS.canvas,
+        context = ASTEROIDS.context,
+        speed = 5,
         vx,
         vy,
         radius = 5,
-        canvas = document.getElementById('gameCanvas'),
-        context = canvas.getContext('2d'),
         angle;
     
     function init() {

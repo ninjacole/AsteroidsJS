@@ -18,8 +18,8 @@ ASTEROIDS.player = (function () {
         
         // private variables
         playerDeathSound = document.getElementById('playerDeathSound'),
-        canvas = document.getElementById('gameCanvas'),
-        context = canvas.getContext('2d'),
+        canvas = ASTEROIDS.canvas,
+        context = ASTEROIDS.context,
         ship_single = document.getElementById('ship-single'),
         ship_single_moving = document.getElementById('ship-single-moving'),
         ship_double = document.getElementById('ship-double'),

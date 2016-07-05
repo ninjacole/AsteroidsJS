@@ -26,38 +26,39 @@ ASTEROIDS.namespace = function (ns_string) {
 };
 
 ASTEROIDS.namespace('ASTEROIDS.utils');
+ASTEROIDS.canvas = document.getElementById('gameCanvas');
+ASTEROIDS.context = ASTEROIDS.canvas.getContext('2d');
 
 ASTEROIDS.utils = (function () {
-    var canvas = document.getElementById('gameCanvas'),
-        context = canvas.getContext('2d'),
-        utils;
+    var utils;
+    
     utils = {
         convertDegreesToRads: function (degrees) {
             return (Math.PI / 180) * degrees;
         },
         getXChange: function (x, vx) {
             x += vx;
-            if (x + vx > canvas.width) {
+            if (x + vx > ASTEROIDS.canvas.width) {
                 x = 0;
             }
             if (x + vx < 0) {
-                x = canvas.width;
+                x = ASTEROIDS.canvas.width;
             }
             return x;
         },
         getYChange: function (y, vy) {
             y += vy;
-            if (y + vy > canvas.height) {
+            if (y + vy > ASTEROIDS.canvas.height) {
                 y = 0;
             }
             if (y + vy < 0) {
-                y = canvas.height;
+                y = ASTEROIDS.canvas.height;
             }
             return y;
         },
         getSpawnPoint: function () {
-            var x = Math.random() > 0.5 ? 200 : canvas.width - 200,
-                y = Math.random() > 0.5 ? 200 : canvas.height - 200;
+            var x = Math.random() > 0.5 ? 200 : ASTEROIDS.canvas.width - 200,
+                y = Math.random() > 0.5 ? 200 : ASTEROIDS.canvas.height - 200;
             return {x: x, y: y};
         }
     };
