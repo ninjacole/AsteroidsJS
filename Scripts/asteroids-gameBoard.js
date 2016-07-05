@@ -341,6 +341,7 @@ ASTEROIDS.gameBoard = (function () {
             for (i = 0; i < energy.getAvailable(); i += 1) {
                 context.fillRect(i * 2, 50, 1, 10);
             }
+            context.restore();
         },
         drawAll: function () {
             var i, j;
