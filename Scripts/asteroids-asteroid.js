@@ -54,13 +54,19 @@ ASTEROIDS.Asteroid = function (config, previousImg) {
         return hitpoints;
     };
     
+    this.getCenterX = function () {
+        return x + 0.5 * width;
+    };
+    
+    this.getCenterY = function () {
+        return y + 0.5 * height;
+    };
+    
     this.draw = function () {
-        var centerx = x + 0.5 * width,
-            centery = y + 0.5 * height;
         context.save();
-        context.translate(centerx, centery);
+        context.translate(this.getCenterX(), this.getCenterY());
         context.rotate(utils.convertDegreesToRads(rotation));
-        context.translate(-1 * centerx, -1 * centery);
+        context.translate(-1 * this.getCenterX(), -1 * this.getCenterY());
         context.drawImage(img, x, y, width, height);
         context.restore();
     };

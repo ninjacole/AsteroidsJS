@@ -7,21 +7,32 @@ var ASTEROIDS = ASTEROIDS || {};
 // Create gameboard namespace
 ASTEROIDS.namespace('ASTEROIDS.menu');
 
+ASTEROIDS.menu.selectSound = document.getElementById('menu-select');
+
 ASTEROIDS.menu.StartMenu = function (startMenuItems, selectionCallback) {
     var key = ASTEROIDS.key,
+        Enemy = ASTEROIDS.enemy,
         that = this,
         canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d'),
         canUp = false,
         canDown = false,
         selectedMenuItem = 0,
+        enemies = [],
         i;
+    for (i = 0; i < 300; i += 1) {
+        enemies.push(new Enemy());
+    }
     
     that.draw = function () {
         var newSelectedMenuItem;
         context.clearRect(0, 0, canvas.width, canvas.height);
+        for (i = 0; i < enemies.length; i += 1) {
+            enemies[i].draw();
+            enemies[i].update();
+        }
         context.save();
-        context.font = "50px Consolas";
+        context.font = "50px sans-serif";
         context.textAlign = "center";
         context.fillStyle = 'white';
         context.fillText("ASTEROIDS!", canvas.width / 2, 100);
@@ -40,6 +51,7 @@ ASTEROIDS.menu.StartMenu = function (startMenuItems, selectionCallback) {
         }
         if (key.isDown(key.DOWN)) {
             if (canDown) {
+                ASTEROIDS.menu.selectSound.play();
                 canDown = false;
                 newSelectedMenuItem = selectedMenuItem + 1;
                 if (newSelectedMenuItem === startMenuItems.length) {
@@ -54,6 +66,7 @@ ASTEROIDS.menu.StartMenu = function (startMenuItems, selectionCallback) {
         
         if (key.isDown(key.UP)) {
             if (canUp) {
+                ASTEROIDS.menu.selectSound.play();
                 canUp = false;
                 newSelectedMenuItem = selectedMenuItem - 1;
                 if (newSelectedMenuItem === -1) {
@@ -152,6 +165,7 @@ ASTEROIDS.menu.PauseMenu = function (pausedItems, pauseMenuItemChosenCallback, r
         }
         if (key.isDown(key.DOWN)) {
             if (canDown) {
+                ASTEROIDS.menu.selectSound.play();
                 canDown = false;
                 newSelectedPauseItem = selectedPauseItem + 1;
                 if (newSelectedPauseItem === pausedItems.length) {
@@ -166,6 +180,7 @@ ASTEROIDS.menu.PauseMenu = function (pausedItems, pauseMenuItemChosenCallback, r
         
         if (key.isDown(key.UP)) {
             if (canUp) {
+                ASTEROIDS.menu.selectSound.play();
                 canUp = false;
                 newSelectedPauseItem = selectedPauseItem - 1;
                 if (newSelectedPauseItem === -1) {

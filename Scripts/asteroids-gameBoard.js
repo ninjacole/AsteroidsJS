@@ -48,6 +48,8 @@ ASTEROIDS.gameBoard = (function () {
         canPause = true,
         enemyPeriodicity = 15000 / currentWave + 1,
         lastEnemySpawnedTime = Date.now(),
+        i,
+        j,
         splitAsteroid = function (asteroid, bulletVX, bulletVY) {
             var config1 = {},
                 config2 = {},
@@ -283,8 +285,7 @@ ASTEROIDS.gameBoard = (function () {
             }
 
             energy.update();
-
-            var i;
+            
             for (i = 0; i < bulletsFired.length; i += 1) {
                 if (bulletsFired[i].canTravel()) {
                     bulletsFired[i].update();
@@ -292,15 +293,31 @@ ASTEROIDS.gameBoard = (function () {
                     bulletsFired.splice(i, 1);
                 }
             }
-
-            for (i = 0; i < enemyBulletsFired.length; i += 1) {
+            
+            // Remove powerup messages if they're expired
+            for (i = powerupMessages.length - 1; i >= 0; i -= 1) {
+                if (powerupMessages[i].timeExpired) {
+                    powerupMessages.splice(i, 1);
+                }
+            }
+            
+            // Remove score messages if they're expired
+            for (i = scoreMessages.length - 1; i >= 0; i -= 1) {
+                if (scoreMessages[i].timeExpired()) {
+                    scoreMessages.splice(i, 1);
+                }
+            }
+            
+            // Remove enemy bullets if they're done or update them otherwise
+            for (i = enemyBulletsFired.length - 1; i >= 0; i -= 1) {
                 if (enemyBulletsFired[i].canTravel()) {
                     enemyBulletsFired[i].update();
                 } else {
                     enemyBulletsFired.splice(i, 1);
                 }
             }
-
+            
+            
             for (i = 0; i < asteroids.length; i += 1) {
                 asteroids[i].update();
             }
@@ -343,7 +360,6 @@ ASTEROIDS.gameBoard = (function () {
             context.restore();
         },
         drawAll: function () {
-            var i, j;
             context.clearRect(0, 0, canvas.width, canvas.height);
             this.drawUI();
             if (player.isAlive()) {
@@ -376,16 +392,9 @@ ASTEROIDS.gameBoard = (function () {
             }
             for (i = 0; i < powerupMessages.length; i += 1) {
                 powerupMessages[i].draw();
-                if (powerupMessages[i].timeExpired()) {
-                    powerupMessages.splice(i, 1);
-                }
             }
             for (i = 0; i < scoreMessages.length; i += 1) {
-                if (scoreMessages[i].timeExpired()) {
-                    scoreMessages.splice(i, 1);
-                } else {
-                    scoreMessages[i].draw();
-                }
+                scoreMessages[i].draw();
             }
         },
         spawnAsteroids: function () {

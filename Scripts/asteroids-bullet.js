@@ -11,7 +11,7 @@ ASTEROIDS.Bullet = function (bulletPoint, playervx, playervy, playerRotation) {
     var utils = ASTEROIDS.utils,
         // private variables
         duration = 700,
-        startTime = new Date().getTime(),
+        startTime = Date.now(),
         timeTravelled = 0,
         radius = 5,
         speed = 7,
@@ -24,14 +24,11 @@ ASTEROIDS.Bullet = function (bulletPoint, playervx, playervy, playerRotation) {
         vy = playervy + Math.cos(utils.convertDegreesToRads(180 - rotation)) * speed;
     
     this.draw = function () {
-        context.save();
         context.fillStyle = "#3BFF6F";
         context.beginPath();
         context.arc(x, y, radius, 0, Math.PI * 2);
         context.fill();
         context.closePath();
-
-        context.restore();
     };
 
     this.update = function () {
@@ -50,7 +47,7 @@ ASTEROIDS.Bullet = function (bulletPoint, playervx, playervy, playerRotation) {
             y = canvas.height;
         }
         
-        timeTravelled = new Date().getTime() - startTime;
+        timeTravelled = Date.now() - startTime;
     };
     
     this.canTravel = function () {

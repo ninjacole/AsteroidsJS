@@ -18,7 +18,7 @@ ASTEROIDS.Powerup = function (x, y) {
         context = canvas.getContext('2d'),
         type = powerupTypes.RANDOM(),
         duration = 7000,
-        spawnTime = new Date().getTime(),
+        spawnTime = Date.now(),
         ball0 = document.getElementById('ball0'),
         ball1 = document.getElementById('ball1'),
         ball2 = document.getElementById('ball2'),
@@ -30,7 +30,7 @@ ASTEROIDS.Powerup = function (x, y) {
         ballImgs = [ball0, ball1, ball2];
     
     this.isExpired = function () {
-        return new Date().getTime() - spawnTime > duration;
+        return Date.now() - spawnTime > duration;
     };
     
     this.draw = function () {
@@ -89,7 +89,7 @@ ASTEROIDS.Powerup = function (x, y) {
 ASTEROIDS.PowerupMessage = function (type, x, y) {
     var powerupTypes = ASTEROIDS.powerupTypes,
         font = "15px Consolas",
-        startTime = new Date().getTime(),
+        startTime = Date.now(),
         runningTime = 0,
         duration = 1500,
         canvas = document.getElementById('gameCanvas'),
@@ -97,12 +97,10 @@ ASTEROIDS.PowerupMessage = function (type, x, y) {
         message;
 
     this.draw = function () {
-        runningTime = new Date().getTime() - startTime;
-        context.save();
+        runningTime = Date.now() - startTime;
         context.font = font;
         context.strokeStyle = 'white';
         context.strokeText(message, x, y);
-        context.restore();
     };
     
     this.timeExpired = function () {
