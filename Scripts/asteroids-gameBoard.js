@@ -9,13 +9,15 @@ ASTEROIDS.namespace('ASTEROIDS.gameBoard');
 
 ASTEROIDS.gameBoard = (function () {
     // Dependencies
-    var player = ASTEROIDS.player,
+    var gameBoard,
+        player = ASTEROIDS.player,
         weapon = ASTEROIDS.weapon,
         Powerup = ASTEROIDS.Powerup,
         Asteroid = ASTEROIDS.Asteroid,
         PowerupMessage = ASTEROIDS.PowerupMessage,
         powerupTypes = ASTEROIDS.powerupTypes,
         ScoreMessage = ASTEROIDS.ScoreMessage,
+        EnemyExplosion = ASTEROIDS.EnemyExplosion,
         Enemy = ASTEROIDS.enemy,
         utils = ASTEROIDS.utils,
         energy = ASTEROIDS.energy,
@@ -25,28 +27,22 @@ ASTEROIDS.gameBoard = (function () {
         canvas = ASTEROIDS.canvas,
         context = ASTEROIDS.context,
         gameLoopManager = new ASTEROIDS.GameLoopManager(),
+        enemyManager,
         //---------------- Private properties
         that = this,
         playerImg = document.getElementById('ship-single'),
-        enemyImg = document.getElementById('enemy'),
         asteroids = [],
         powerups = [],
         powerupMessages = [],
         scoreMessages = [],
         enemies = [],
+        enemyExplosions = [],
         bulletsFired = weapon.getBulletsFired(),
         enemyBulletsFired = weapon.getEnemyBulletsFired(),
-        gameBoard,
         currentWave = 0,
         totalWaves = 10,
-        fps = 50,
-        intervalId = 0,
-        bgPic = document.getElementById('bgpic'),
-        timeBetweenWaves = 3000,
         score = 0,
         canPause = true,
-        enemyPeriodicity = 15000 / currentWave + 1,
-        lastEnemySpawnedTime = Date.now(),
         i,
         j,
         splitAsteroid = function (size, x, y, bulletVX, bulletVY) {
@@ -132,14 +128,17 @@ ASTEROIDS.gameBoard = (function () {
         },
         detectPlayerBulletEnemyCollision = function () {
             // player bullets colliding with enemies
-            for (i = enemies.length - 1; i >= 0; i -= 1) {
-                for (j = bulletsFired.length - 1; j >= 0; j -= 1) {
-                    if (utils.isCircleCollision(enemies[i].getCircleCollider(), bulletsFired[j].getCircleCollider())) {
-                        score += 1000;
-                        scoreMessages.push(new ScoreMessage(1000, {x: enemies[i].getX(), y: enemies[i].getY() }));
-                        enemies[i].die();
-                        enemies.splice(i, 1);
-                        bulletsFired.splice(j, 1);
+            if (enemies.length > 0 && bulletsFired.length > 0) {
+                for (i = enemies.length - 1; i >= 0; i -= 1) {
+                    for (j = bulletsFired.length - 1; j >= 0; j -= 1) {
+                        if (utils.isCircleCollision(enemies[i].getCircleCollider(), bulletsFired[j].getCircleCollider())) {
+                            score += 1000;
+                            scoreMessages.push(new ScoreMessage(1000, {x: enemies[i].getX(), y: enemies[i].getY() }));
+                            enemyExplosions.push(new EnemyExplosion({x: enemies[i].getCenterX(), y: enemies[i].getCenterY()}));
+                            enemies[i].die();
+                            enemies.splice(i, 1);
+                            bulletsFired.splice(j, 1);
+                        }
                     }
                 }
             }
@@ -151,9 +150,8 @@ ASTEROIDS.gameBoard = (function () {
                 y,
                 size;
             
-            // enemy bullets colliding with asteroids
-            for (i = asteroids.length - 1; i >= 0; i -= 1) {
-                for (j = enemyBulletsFired.length - 1; j >= 0; j -= 1) {
+            for (j = enemyBulletsFired.length - 1; j >= 0; j -= 1) {
+                for (i = asteroids.length - 1; i >= 0; i -= 1) {
                     if (utils.isCircleCollision(enemyBulletsFired[j].getCircleCollider(), asteroids[i].getCircleCollider())) {
                         bullvx = enemyBulletsFired[j].getVX();
                         bullvy = enemyBulletsFired[j].getVY();
@@ -173,6 +171,7 @@ ASTEROIDS.gameBoard = (function () {
                                 }
                             }
                         }
+                        break;
                     }
                 }
             }
@@ -184,9 +183,8 @@ ASTEROIDS.gameBoard = (function () {
                 y,
                 size;
             
-            // player bullets colliding with asteroids
-            for (i = asteroids.length - 1; i >= 0; i -= 1) {
-                for (j = bulletsFired.length - 1; j >= 0; j -= 1) {
+            for (j = bulletsFired.length - 1; j >= 0; j -= 1) {
+                for (i = asteroids.length - 1; i >= 0; i -= 1) {
                     if (utils.isCircleCollision(asteroids[i].getCircleCollider(), bulletsFired[j].getCircleCollider())) {
                         bullvx = bulletsFired[j].getVX();
                         bullvy = bulletsFired[j].getVY();
@@ -197,8 +195,8 @@ ASTEROIDS.gameBoard = (function () {
                             x = asteroids[i].getX();
                             y = asteroids[i].getY();
                             size = asteroids[i].getSize();
-                            score += 600 / asteroids[i].getSize();
-                            scoreMessages.push(new ScoreMessage(600 / asteroids[i].getSize(), {x: asteroids[i].getCenterX(), y: asteroids[i].getCenterY() }));
+                            score += 600 / size;
+                            scoreMessages.push(new ScoreMessage(600 / size, {x: x, y: y }));
                             asteroids.splice(i, 1);
                             if (size > 1) {
                                 splitAsteroid(size, x, y, bullvx, bullvy);
@@ -208,6 +206,7 @@ ASTEROIDS.gameBoard = (function () {
                                 }
                             }
                         }
+                        break;
                     }
                 }
             }
@@ -225,9 +224,6 @@ ASTEROIDS.gameBoard = (function () {
     
     // public properties
     gameBoard = {
-        canSpawnEnemy: function () {
-            return Date.now() - lastEnemySpawnedTime > (15000 / (currentWave));
-        },
         updateAll: function () {
             if (player.getLives() === 0) {
                 gameBoard.gameOver();
@@ -280,6 +276,12 @@ ASTEROIDS.gameBoard = (function () {
                         powerups.splice(i, 1);
                     }
                 }
+                
+                for (i = enemyExplosions.length - 1; i >= 0; i -= 1) {
+                    if (enemyExplosions[i].timeExpired()) {
+                        enemyExplosions.splice(i, 1);
+                    }
+                }
 
                 for (i = 0; i < asteroids.length; i += 1) {
                     asteroids[i].update();
@@ -288,17 +290,14 @@ ASTEROIDS.gameBoard = (function () {
                 for (i = 0; i < enemies.length; i += 1) {
                     enemies[i].update();
                 }
-
-                if (this.canSpawnEnemy()) {
-                    this.spawnEnemy();
+                
+                if (enemyManager.canSpawnEnemy()) {
+                    enemies.push(enemyManager.createEnemy());
                 }
             }
         },
-        spawnEnemy: function () {
-            if (enemies.length < 2 * currentWave) {
-                enemies.push(new Enemy());
-                lastEnemySpawnedTime = Date.now();
-            }
+        getWave: function () {
+            return currentWave;
         },
         drawUI: function () {
             context.save();
@@ -311,9 +310,9 @@ ASTEROIDS.gameBoard = (function () {
                 context.drawImage(playerImg, (i * 25) + 50, 45, 20, 20);
             }
             
-            //context.fillStyle = 'blue';
+            context.fillStyle = 'green';
             for (i = 0; i < energy.getAvailable(); i += 1) {
-                context.fillRect((i * 2) + 50, 100, 1, 10);
+                context.fillRect((i * 8) + 50, 100, 4, 10);
             }
             context.restore();
         },
@@ -349,6 +348,9 @@ ASTEROIDS.gameBoard = (function () {
             }
             for (i = 0; i < scoreMessages.length; i += 1) {
                 scoreMessages[i].draw();
+            }
+            for (i = 0; i < enemyExplosions.length; i += 1) {
+                enemyExplosions[i].draw();
             }
         },
         spawnAsteroids: function () {
@@ -411,6 +413,7 @@ ASTEROIDS.gameBoard = (function () {
                         }
                     }
                 );
+            enemyManager = new ASTEROIDS.enemyManager(gameBoard.getWave);
             gameLoopManager.run(function () { startMenu.draw(); });
         },
         main: function () {
@@ -436,7 +439,7 @@ ASTEROIDS.gameBoard = (function () {
             powerups = [];
             enemies = [];
             weapon.resetEnemyBulletsFired();
-            lastEnemySpawnedTime = Date.now();
+            enemyManager.reset();
         },
         resetGame: function () {
             gameBoard.resetWave();

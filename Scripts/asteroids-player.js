@@ -25,7 +25,6 @@ ASTEROIDS.player = (function () {
         ship_double = document.getElementById('ship-double'),
         ship_double_moving = document.getElementById('ship-double-moving'),
         img = ship_single,
-        energy = 100,
         x = canvas.width / 2,
         y = canvas.height / 2,
         vx = 0,
@@ -73,9 +72,6 @@ ASTEROIDS.player = (function () {
         },
         getLives: function () {
             return lives;
-        },
-        getEnergy: function () {
-            return energy;
         },
         getCircleCollider: function () {
             return {

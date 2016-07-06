@@ -9,7 +9,7 @@ ASTEROIDS.namespace('ASTEROIDS.shield');
 ASTEROIDS.shield = (function () {
     var energy = ASTEROIDS.energy,
         shield,
-        energyConsumption = 1.0,
+        energyConsumption = 0.25,
         upSound = document.getElementById('shield-up'),
         canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d'),

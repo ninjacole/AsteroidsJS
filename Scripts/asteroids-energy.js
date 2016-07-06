@@ -7,10 +7,10 @@ var ASTEROIDS = ASTEROIDS || {};
 ASTEROIDS.namespace('ASTEROIDS.energy');
 
 ASTEROIDS.energy = (function () {
-    var max = 100,
+    var max = 25,
         min = 0,
-        current = 100,
-        regenRate = 0.2,
+        current = 25,
+        regenRate = 0.05,
         isRegenerating = true,
         lastDrained = Date.now(),
         regenCooldown = 1000,

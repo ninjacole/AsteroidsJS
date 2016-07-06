@@ -34,13 +34,11 @@ ASTEROIDS.EnemyBullet = function EnemyBullet(x, y, playerx, playery) {
     init();
           
     this.draw = function () {
-        context.save();
         context.fillStyle = 'red';
         context.beginPath();
         context.arc(x, y, radius, 0, Math.PI * 2);
         context.fill();
         context.closePath();
-        context.restore();
     };
     
     this.update = function () {
