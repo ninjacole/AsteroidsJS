@@ -11,8 +11,6 @@ ASTEROIDS.enemy = function () {
     var key = ASTEROIDS.key,
         bullet = ASTEROIDS.bullet,
         weapon = ASTEROIDS.weapon,
-        powerup = ASTEROIDS.Powerup,
-        powerupTypes = ASTEROIDS.powerupTypes,
         player = ASTEROIDS.player,
         canvas = ASTEROIDS.canvas,
         context = ASTEROIDS.context,
@@ -20,28 +18,17 @@ ASTEROIDS.enemy = function () {
         
         // private variables
         img = document.getElementById('enemy'),
-        x = Math.random() > 0.5 ? 50 : canvas.width - 200,
-        y = Math.random() > 0.5 ? 50 : canvas.height - 200,
+        x = Math.random() > 0.5 ? 50 : canvas.width - 100,
+        y = Math.random() > 0.5 ? 50 : canvas.height - 100,
         vx = Math.random() * 3,
         vy = Math.random() * 3,
         width = 40,
         height = 20,
         lastFired = Date.now(),
-        accelerationCoefficient = 0.1,
-        maxSpeed = 15,
-        maxAccelerationCoefficient = 1,
         fireRate = 1500,
-        maxFireRate = 100,
-        setFireRate = function (value) {
-            fireRate -= value;
-            if (fireRate < maxFireRate) {
-                fireRate = maxFireRate;
-            }
-        },
         lastChangedDirection = Date.now(),
         directionChangeRate = 5000,
-        enemy,
-        init;
+        enemy;
     
     // public interface
     enemy = {
@@ -93,9 +80,8 @@ ASTEROIDS.enemy = function () {
             vy = vychange;
         },
         draw: function () {
-            context.save();
-            context.drawImage(img, x - 0.5 * width, y - 0.5 * height, width, height);
-            context.restore();
+            context.fillRect(this.getCenterX(), this.getCenterY(), 5, 5);
+            context.drawImage(img, x, y, width, height);
         },
         canShoot: function () {
             return Date.now() - lastFired > fireRate;
@@ -103,7 +89,7 @@ ASTEROIDS.enemy = function () {
         shoot: function () {
             if (this.canShoot()) {
                 lastFired = Date.now();
-                weapon.fireEnemyBullet(x, y, player.getX(), player.getY());
+                weapon.fireEnemyBullet(this.getCenterX(), this.getCenterY(), player.getX(), player.getY());
             }
         },
         canChangeDirection: function () {
@@ -131,9 +117,6 @@ ASTEROIDS.enemy = function () {
             if (y + vy < 0) {
                 y = canvas.height;
             }
-        },
-        getFireRate: function () {
-            return fireRate;
         }
     };
     return enemy;

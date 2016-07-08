@@ -21,6 +21,8 @@ ASTEROIDS.key = (function () {
         R: 82,
         E: 69,
         ENTER: 13,
+        ONE: 49,
+        TWO: 50,
         
         isDown: function (keyCode) {
             return pressed[keyCode];

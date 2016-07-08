@@ -73,35 +73,29 @@ ASTEROIDS.menu.StartMenu = function (startMenuItems, selectionCallback) {
     };
 };
 
-ASTEROIDS.menu.gameOverScreen = (function () {
-    var canvas = ASTEROIDS.canvas,
+ASTEROIDS.menu.GameOver = function (startTime, finalScore, enemiesKilled, callback) {
+    var that = this,
+        canvas = ASTEROIDS.canvas,
         context = ASTEROIDS.context,
-        gameOverScreen,
-        start,
-        cb,
         duration = 4000;
     
-    gameOverScreen = {
-        draw: function () {
-            if (Date.now() - start < duration) {
-                context.clearRect(0, 0, canvas.width, canvas.height);
-                context.save();
-                context.fillStyle = 'white';
-                context.font = '80px consolas';
-                context.textAlign = 'center';
-                context.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
-                context.restore();
-            } else {
-                cb();
-            }
-        },
-        configure: function (startTime, callback) {
-            start = startTime;
-            cb = callback;
+    
+    that.draw = function () {
+        if (Date.now() - startTime < duration) {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.save();
+            context.fillStyle = 'white';
+            context.font = '80px consolas';
+            context.textAlign = 'center';
+            context.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 90);
+            context.fillText("Final score: " + finalScore, canvas.width / 2, canvas.height / 2);
+            context.fillText("Enemies killed: " + enemiesKilled, canvas.width / 2, canvas.height / 2 + 90);
+            context.restore();
+        } else {
+            callback();
         }
     };
-    return gameOverScreen;
-}());
+};
 
 ASTEROIDS.menu.WaveTransition = function (wave, transitionStart, transitionLength, callback) {
     var canvas = ASTEROIDS.canvas,

@@ -33,7 +33,6 @@ ASTEROIDS.Powerup = function (x, y) {
     };
     
     this.draw = function () {
-        context.save();
         if (ballCounter === 0) {
             ballDir = 1;
         } else if (ballCounter === 25) {
@@ -46,7 +45,6 @@ ASTEROIDS.Powerup = function (x, y) {
             ballDir = -1;
         }
         context.drawImage(ballImgs[ballIndex], x, y, width, height);
-        context.restore();
         ballCounter += ballDir;
     };
     

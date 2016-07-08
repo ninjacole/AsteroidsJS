@@ -14,6 +14,7 @@ ASTEROIDS.enemyManager = function (getCurrentWave) {
         enemyCounter = 0,
         enemyPeriodicity = 15000 / getCurrentWave(),
         maxEnemies = getCurrentWave() * 3,
+        enemiesKilled = 0,
         isTimerReady = function () {
             return Date.now() - lastEnemySpawnedTime > (15000 / (getCurrentWave()));
         },
@@ -36,5 +37,13 @@ ASTEROIDS.enemyManager = function (getCurrentWave) {
         maxEnemies = getCurrentWave() * 3;
         enemyCounter = 0;
         lastEnemySpawnedTime = Date.now();
+    };
+    
+    that.getEnemiesKilled = function () {
+        return enemiesKilled;
+    };
+    
+    that.enemyKilled = function () {
+        enemiesKilled += 1;
     };
 };

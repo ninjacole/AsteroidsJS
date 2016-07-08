@@ -27,6 +27,7 @@ ASTEROIDS.gameBoard = (function () {
         canvas = ASTEROIDS.canvas,
         context = ASTEROIDS.context,
         gameLoopManager = new ASTEROIDS.GameLoopManager(),
+        scoreManager = new ASTEROIDS.ScoreManager(),
         enemyManager,
         //---------------- Private properties
         that = this,
@@ -109,6 +110,7 @@ ASTEROIDS.gameBoard = (function () {
                 for (i = enemyBulletsFired.length - 1; i >= 0; i -= 1) {
                     if (utils.isCircleCollision(player.getCircleCollider(), enemyBulletsFired[i].getCircleCollider())) {
                         player.die();
+                        energy.reset();
                         enemyBulletsFired.splice(i, 1);
                     }
                 }
@@ -122,6 +124,7 @@ ASTEROIDS.gameBoard = (function () {
                 for (i = asteroids.length - 1; i >= 0; i -= 1) {
                     if (utils.isCircleCollision(player.getCircleCollider(), asteroids[i].getCircleCollider())) {
                         player.die();
+                        energy.reset();
                     }
                 }
             }
@@ -138,6 +141,8 @@ ASTEROIDS.gameBoard = (function () {
                             enemies[i].die();
                             enemies.splice(i, 1);
                             bulletsFired.splice(j, 1);
+                            enemyManager.enemyKilled();
+                            break;
                         }
                     }
                 }
@@ -369,28 +374,33 @@ ASTEROIDS.gameBoard = (function () {
             }
         },
         input: function () {
-            if (key.isDown(key.UP)) {
-                player.accelerate();
-                player.engineEnabled(true);
+            if (player.isAlive()) {
+                if (key.isDown(key.UP)) {
+                    player.accelerate();
+                    player.engineEnabled(true);
+                } else {
+                    player.engineEnabled(false);
+                }
+                if (key.isDown(key.LEFT)) {
+                    player.rotate(-4);
+                }
+                if (key.isDown(key.RIGHT)) {
+                    player.rotate(4);
+                }
+                if (key.isDown(key.SPACE)) {
+                    player.shoot();
+                }
+                if (key.isDown(key.DOWN)) {
+                    player.shield.activate();
+                } else if (player.isRecentlySpawned()) {
+                    player.shield.activate(true);
+                } else {
+                    player.shield.deactivate();
+                }
             } else {
-                player.engineEnabled(false);
+                key.reset();
             }
-            if (key.isDown(key.LEFT)) {
-                player.rotate(-4);
-            }
-            if (key.isDown(key.RIGHT)) {
-                player.rotate(4);
-            }
-            if (key.isDown(key.SPACE)) {
-                player.shoot();
-            }
-            if (key.isDown(key.DOWN)) {
-                player.shield.activate();
-            } else if (player.isRecentlySpawned()) {
-                player.shield.activate(true);
-            } else {
-                player.shield.deactivate();
-            }
+
             if (key.isDown(key.ESC)) {
                 if (canPause) {
                     this.pause();
@@ -398,6 +408,17 @@ ASTEROIDS.gameBoard = (function () {
                 canPause = false;
             } else {
                 canPause = true;
+            }
+            
+            if (key.isDown(key.ONE)) {
+                var scores = scoreManager.getCookie('highscore'),
+                    i;
+                for (i = 0; i < scores.length; i += 1) {
+                    console.log(scores[i]);
+                }
+            }
+            if (key.isDown(key.TWO)) {
+                enemies.push(enemyManager.createEnemy());
             }
         },
         start: function () {
@@ -440,12 +461,15 @@ ASTEROIDS.gameBoard = (function () {
             enemies = [];
             weapon.resetEnemyBulletsFired();
             enemyManager.reset();
+            energy.reset();
         },
         resetGame: function () {
             gameBoard.resetWave();
             currentWave = 0;
             score = 0;
             player.setLives(5);
+            energy.reset();
+            enemyManager = new ASTEROIDS.enemyManager(gameBoard.getWave);
         },
         waveBegin: function () {
             currentWave += 1;
@@ -463,8 +487,9 @@ ASTEROIDS.gameBoard = (function () {
         },
         gameOver: function () {
             // TODO: show game over screen and high score menu
-            menu.gameOverScreen.configure(Date.now(), function () { gameBoard.resetGame(); gameBoard.start(); });
-            gameLoopManager.run(function () { menu.gameOverScreen.draw(); });
+            var gameOver = new ASTEROIDS.menu.GameOver(Date.now(), score, enemyManager.getEnemiesKilled(), function () { gameBoard.resetGame(); gameBoard.start(); });
+            scoreManager.setCookie('highscore', score, 1);
+            gameLoopManager.run(function () { gameOver.draw(); });
         }
     };
 

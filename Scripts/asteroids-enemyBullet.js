@@ -47,10 +47,7 @@ ASTEROIDS.EnemyBullet = function EnemyBullet(x, y, playerx, playery) {
     };
     
     this.canTravel = function () {
-        if ((x < canvas.width && x > 0) && (y < canvas.height && y > 0)) {
-            return true;
-        }
-        return false;
+        return (x < canvas.width && x > 0) && (y < canvas.height && y > 0);
     };
     
     this.getCircleCollider = function () {

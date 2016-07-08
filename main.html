@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Asteroids</title>
+	<meta charset="utf-8" />
+    <link rel="stylesheet" href="../Content/CSS/site.css" />
+    <link rel="stylesheet" href="../Content/CSS/bootstrap.css" />
+</head>
+<body>
+    <div clas="row">
+        <div class="col-md-10 col-md-offset-2">
+            <canvas width="1280" height="960" id="gameCanvas" style="background-image:url('../Images/bg.png');"></canvas>
+        </div>
+    </div>
+    <div style="display: none">
+        <!-- ships -->
+        <img src="/Images/ship-single.png" height="42" width="42" id="ship-single"/>
+        <img src="/Images/ship-double.png" height="42" width="42" id="ship-double"/>
+        <img src="/Images/ship-single-moving.png" height="42" width="42" id="ship-single-moving"/>
+        <img src="/Images/ship-double-moving.png" height="42" width="42" id="ship-double-moving"/>
+
+        <img src="/Images/bg.png" height="40" width="40" id="bgpic" />
+        
+        <img src="/Images/asteroid-gray.png" height="40" width="40" id="aster-gray"/>
+        <img src="/Images/asteroid-gray-1dmg.png" height="40" width="40" id="aster-gray-1dmg"/>
+        <img src="/Images/asteroid-gray-2dmg.png" height="40" width="40" id="aster-gray-2dmg"/>
+        <img src="../Images/asteroid-gray-3dmg.png" height="40" width="40" id="aster-gray-3dmg"/>
+        
+        <img src="/images/powerup.png" height="32" width="32" id="powerup"/>
+        <img src="/images/ball01.png" height="32" width="32" id="ball0"/>
+        <img src="/images/ball02.png" height="32" width="32" id="ball1"/>
+        <img src="/images/ball03.png" height="32" width="32" id="ball2"/>
+        <img src="/images/enemy.png" height="20" width="40" id="enemy"/>
+        <img src="/images/enemy-explosion.png" height="40" width="80" id="enemy-explosion"/>
+    </div>
+    
+    <audio id="laserSound" src="/Content/sounds/laser.wav" preload="auto" style="display: none;"></audio>
+    <audio id="laserSound2" src="/Content/sounds/laser2.wav" preload="auto" style="display: none;"></audio>
+
+    <audio id="explosionSound" src="/Content/sounds/explosion.wav" preload="auto" style="display: none;"></audio>
+    <audio id="powerupSound" src="/Content/sounds/powerup.wav" preload="auto" style="display: none;"></audio>
+    <audio id="playerDeathSound" src="/Content/sounds/death.wav" preload="auto" style="display: none;"></audio>
+    <audio id="asteroid-takes-damage" src="/Content/Sounds/asteroid-takes-damage.wav" style="display: none;"></audio>
+    <audio id="enemy-shoot" src="/Content/Sounds/enemy-shoot.wav" style="display: none;"></audio>
+    <audio id="enemy-death" src="/Content/Sounds/enemy-death.wav" style="display: none;"></audio>
+    <audio id="shield-up" src="/Content/sounds/shield-up.wav" preload="auto" style="display: none;"></audio>
+    <audio id="menu-select" src="/Content/Sounds/menu-select.wav" preload="auto" style="display: none;"></audio>
+
+    <script src="/Scripts/jquery-2.2.3.js"></script>
+    <script src="/Scripts/bootstrap.js"></script>
+
+
+    <script src="/Scripts/asteroids-utils.js"></script>
+    <script src="/Scripts/asteroids-energy.js"></script>
+    <script src="/Scripts/asteroids-shield.js"></script>
+    <script src="/scripts/asteroids-bullet.js"></script>
+    <script src="/scripts/asteroids-enemyBullet.js"></script>
+    <script src="/Scripts/asteroids-key.js"></script>
+    <script src="/scripts/asteroids-weapon.js"></script>
+    <script src="/scripts/asteroids-asteroid.js"></script>
+    <script src="/scripts/asteroids-powerups.js"></script>
+    <script src="/scripts/asteroids-enemyShip.js"></script>
+    <script src="/Scripts/asteroids-player.js"></script>
+    <script src="/Scripts/asteroids-scoreMessage.js"></script>
+    <script src="/Scripts/asteroids-game-loop-manager.js"></script>
+    <script src="/Scripts/asteroids-enemyManager.js"></script>
+    <script src="/Scripts/asteroids-enemy-explosion.js"></script>
+
+
+    <script src="/Scripts/asteroids-menu-manager.js"></script>
+    <script src="/Scripts/asteroids-score-manager.js"></script>
+
+    <script src="/Scripts/asteroids-gameBoard.js"></script>
+
+    <script>
+    $(document).ready(function () {
+        ASTEROIDS.gameBoard.start();
+    });
+    </script>
+</body>
+</html>

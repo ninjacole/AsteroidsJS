@@ -45,6 +45,27 @@ ASTEROIDS.energy = (function () {
             if (this.canRegen()) {
                 this.regenerate();
             }
+        },
+        set: function (value) {
+            if (value > max) {
+                current = max;
+            } else if (value < min) {
+                current = min;
+            } else {
+                current = value;
+            }
+        },
+        increaseBy: function (value) {
+            if (current + value > max) {
+                current = max;
+            } else if (current + value < min) {
+                current = min;
+            } else {
+                current += value;
+            }
+        },
+        reset: function () {
+            energy.set(max);
         }
     };
     return energy;

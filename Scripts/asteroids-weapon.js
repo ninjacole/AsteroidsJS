@@ -14,7 +14,7 @@ ASTEROIDS.weapon = (function () {
         bulletsFired = [],
         enemyBulletsFired = [],
         type = 'single',
-        fireSound = document.getElementById('laserSound'),
+        fireSound = document.getElementById('laserSound2'),
         enemyFireSound = document.getElementById('enemy-shoot');
     // public api
     weapon = {

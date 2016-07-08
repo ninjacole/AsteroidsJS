@@ -11,7 +11,7 @@ ASTEROIDS.EnemyExplosion = function (position) {
         context = ASTEROIDS.context,
         startTime = Date.now(),
         runningTime = 0,
-        duration = 1000,
+        duration = 600,
         img = document.getElementById('enemy-explosion');
 
     this.draw = function () {
