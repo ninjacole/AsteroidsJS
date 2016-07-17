@@ -11,18 +11,54 @@ ASTEROIDS.key = (function () {
         pressed = {};
     
     key = {
-        LEFT: 37,
-        UP: 38,
-        RIGHT: 39,
-        DOWN: 40,
-        SPACE: 32,
-        ESC: 27,
-        Q: 81,
-        R: 82,
-        E: 69,
-        ENTER: 13,
-        ONE: 49,
-        TWO: 50,
+        LEFT: {
+            keyCode: 37,
+            execute: function () { },
+        },
+        UP: {
+            keyCode: 38,
+            execute: function () { },
+        },
+        RIGHT: {
+            keyCode: 39,
+            execute: function () { },
+        },
+        DOWN: {
+            keyCode: 40,
+            execute: function () { },
+        },
+        SPACE: {
+            keyCode: 32,
+            execute: function () { },
+        },
+        ESC: {
+            keyCode: 27,
+            execute: function () { },
+        },
+        Q: {
+            keyCode: 81,
+            execute: function () { },
+        },
+        R: {
+            keyCode: 82,
+            execute: function () { },
+        },
+        E: {
+            keyCode: 69,
+            execute: function () { },
+        },
+        ENTER: {
+            keyCode: 13,
+            execute: function () { },
+        },
+        ONE: {
+            keyCode: 49,
+            execute: function () { },
+        },
+        TWO: {
+            keyCode: 50,
+            execute: function () { },
+        },
         
         isDown: function (keyCode) {
             return pressed[keyCode];
@@ -35,6 +71,10 @@ ASTEROIDS.key = (function () {
         },
         reset: function () {
             pressed = {};
+        },
+        bindAction: function (keyName, action, undoAction) {
+            keyName.execute = action;
+            keyName.undo = undoAction;
         }
     };
     

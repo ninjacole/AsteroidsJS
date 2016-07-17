@@ -84,8 +84,9 @@ ASTEROIDS.player = (function () {
             var vx = Math.sin((utils.convertDegreesToRads(180 - rotation))) * accelerationCoefficient,
                 vy = Math.cos((utils.convertDegreesToRads(180 - rotation))) * accelerationCoefficient;
             
-            this.updateVX(vx);
-            this.updateVY(vy);
+            player.updateVX(vx);
+            player.updateVY(vy);
+            player.engineEnabled(true);
         },
         adjustFireRate: function (value) {
             if (fireRate + value > maxFireRate) {
@@ -168,12 +169,12 @@ ASTEROIDS.player = (function () {
             return {x: x + magx, y: y + magy};
         },
         shoot: function () {
-            if (this.isFireReady()) {
-                this.isFiring();
+            if (player.isFireReady()) {
+                player.isFiring();
                 var playerData = {
-                    centerBulletPoint: this.getCenterBulletPoint(),
-                    rightBulletPoint: this.getRightBulletPoint(),
-                    leftBulletPoint: this.getLeftBulletPoint(),
+                    centerBulletPoint: player.getCenterBulletPoint(),
+                    rightBulletPoint: player.getRightBulletPoint(),
+                    leftBulletPoint: player.getLeftBulletPoint(),
                     vx: vx,
                     vy: vy,
                     rotation: rotation
@@ -216,7 +217,7 @@ ASTEROIDS.player = (function () {
         shield: shield,
         gainPowerup: function (powerupType) {
             if (powerupType === powerupTypes.SPEED) {
-                this.adjustAccelerationCoefficient(0.06);
+                player.adjustAccelerationCoefficient(0.06);
             } else if (powerupType === powerupTypes.DOUBLE) {
                 weapon.setType(powerupTypes.DOUBLE);
             } else if (powerupType === powerupTypes.SPREAD) {
@@ -242,7 +243,7 @@ ASTEROIDS.player = (function () {
             timeOfDeath = new Date().getTime();
             img = document.getElementById('ship-single');
             if (lives > 0) {
-                setTimeout(this.reset, respawnTime);
+                setTimeout(player.reset, respawnTime);
             }
         },
         reset: function () {
@@ -253,6 +254,7 @@ ASTEROIDS.player = (function () {
             vx = 0;
             vy = 0;
             rotation = 0;
+            shield.freeShield();
         }
     };
     return player;

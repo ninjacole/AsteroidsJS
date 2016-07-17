@@ -37,11 +37,11 @@ ASTEROIDS.menu.StartMenu = function (startMenuItems, selectionCallback) {
         }
         context.restore();
         
-        if (key.isDown(key.ENTER)) {
+        if (key.isDown(key.ENTER.keyCode)) {
             selectionCallback(selectedMenuItem);
         }
         
-        if (key.isDown(key.DOWN)) {
+        if (key.isDown(key.DOWN.keyCode)) {
             if (canDown) {
                 ASTEROIDS.menu.selectSound.play();
                 canDown = false;
@@ -56,7 +56,7 @@ ASTEROIDS.menu.StartMenu = function (startMenuItems, selectionCallback) {
             canDown = true;
         }
         
-        if (key.isDown(key.UP)) {
+        if (key.isDown(key.UP.keyCode)) {
             if (canUp) {
                 ASTEROIDS.menu.selectSound.play();
                 canUp = false;
@@ -145,10 +145,10 @@ ASTEROIDS.menu.PauseMenu = function (pausedItems, pauseMenuItemChosenCallback, r
         }
         context.restore();
         
-        if (key.isDown(key.ENTER)) {
+        if (key.isDown(key.ENTER.keyCode)) {
             pauseMenuItemChosenCallback(selectedPauseItem);
         }
-        if (key.isDown(key.DOWN)) {
+        if (key.isDown(key.DOWN.keyCode)) {
             if (canDown) {
                 ASTEROIDS.menu.selectSound.play();
                 canDown = false;
@@ -163,7 +163,7 @@ ASTEROIDS.menu.PauseMenu = function (pausedItems, pauseMenuItemChosenCallback, r
             canDown = true;
         }
         
-        if (key.isDown(key.UP)) {
+        if (key.isDown(key.UP.keyCode)) {
             if (canUp) {
                 ASTEROIDS.menu.selectSound.play();
                 canUp = false;
@@ -178,7 +178,7 @@ ASTEROIDS.menu.PauseMenu = function (pausedItems, pauseMenuItemChosenCallback, r
             canUp = true;
         }
         
-        if (key.isDown(key.ESC)) {
+        if (key.isDown(key.ESC.keyCode)) {
             if (canResume) {
                 resumeCallback();
             }

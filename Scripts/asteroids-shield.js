@@ -13,7 +13,9 @@ ASTEROIDS.shield = (function () {
         upSound = document.getElementById('shield-up'),
         canvas = document.getElementById('gameCanvas'),
         context = canvas.getContext('2d'),
-        isActive = false;
+        isActive = false,
+        isFreeShieldActive = false,
+        freeShieldTimer = 2500;
         
     shield = {
         draw: function (x, y, radius) {
@@ -27,28 +29,28 @@ ASTEROIDS.shield = (function () {
             context.restore();
         },
         isUp: function () {
-            return isActive;
+            return isActive || isFreeShieldActive;
         },
-        activate: function (temp) {
-            if (temp) {
+        activate: function () {
+            if (energy.isAvailable(energyConsumption)) {
                 if (!isActive) {
                     upSound.play();
                 }
+                energy.consume(energyConsumption);
                 isActive = true;
             } else {
-                if (energy.isAvailable(energyConsumption)) {
-                    if (!isActive) {
-                        upSound.play();
-                    }
-                    energy.consume(energyConsumption);
-                    isActive = true;
-                } else {
-                    isActive = false;
-                }
+                isActive = false;
             }
         },
         deactivate: function () {
             isActive = false;
+        },
+        freeShield: function () {
+            if (!isActive) {
+                upSound.play()
+            }
+            isFreeShieldActive = true;
+            setTimeout(function () { isFreeShieldActive = false; }, freeShieldTimer);
         }
     };
     return shield;
