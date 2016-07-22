@@ -42,14 +42,23 @@ ASTEROIDS.menu.pauseMenu = {
 
 
 ASTEROIDS.menu.gameOver = {
-    show: function (finalScore, enemiesKilled, isHighScore) {
-        var scoreMessage = "";
+    show: function (finalScore, enemiesKilled, isHighScore, isWin) {
+        var scoreMessage = "",
+            gameEndMessage = "";
         if (isHighScore === true) {
             scoreMessage = "New high score!: " + finalScore;
             $("#game-over-score").fadeOut(500).fadeIn(500).fadeOut(500).fadeIn(500).fadeOut(500).fadeIn(500);
         } else {
             scoreMessage = "Final score: " + finalScore;
         }
+
+        if (isWin === true) {
+            gameEndMessage = "YOU WIN!";
+        } else {
+            gameEndMessage = "GAME OVER";
+        }
+
+        $("#game-end-message").text(gameEndMessage);
         $("#game-over-score").text(scoreMessage);
         $("#game-over-enemies-killed").text("Enemies killed: " + enemiesKilled);
         $("#game-over").show();
@@ -64,4 +73,3 @@ ASTEROIDS.menu.waveTransition = {
         setTimeout(function () { $("#wave-transition").fadeOut(ASTEROIDS.gameBoard.waveStart) }, 5000);
     }
 }
-

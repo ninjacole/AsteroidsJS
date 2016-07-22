@@ -230,7 +230,7 @@ ASTEROIDS.gameBoard = (function () {
     gameBoard = {
         updateAll: function () {
             if (player.getLives() === 0) {
-                gameBoard.gameOver();
+                gameBoard.gameOver(false);
             } else if (asteroids.length === 0 && enemies.length === 0 && transitioning === false) {
                 transitioning = true;
                 gameBoard.waveOver();
@@ -459,7 +459,11 @@ ASTEROIDS.gameBoard = (function () {
         },
         waveOver: function () {
             currentWave += 1;
-            ASTEROIDS.menu.waveTransition.show(currentWave);
+            if (currentWave === totalWaves) {
+                gameBoard.gameOver(true);
+            } else {
+                ASTEROIDS.menu.waveTransition.show(currentWave);
+            }
         },
         waveStart: function () {
             gameBoard.reset();
@@ -467,12 +471,12 @@ ASTEROIDS.gameBoard = (function () {
             gameBoard.spawnAsteroids();
             transitioning = false;
         },
-        gameOver: function () {
+        gameOver: function (isWin) {
             gameLoopManager.stop();
             var isHighScore = ASTEROIDS.scoreManager.isHighScore(score),
                 enemiesKilled = enemyManager.getEnemiesKilled();
             ASTEROIDS.scoreManager.setHighScore(score);
-            ASTEROIDS.menu.gameOver.show(score, enemiesKilled, isHighScore);
+            ASTEROIDS.menu.gameOver.show(score, enemiesKilled, isHighScore, isWin);
         }
     };
     return gameBoard;
