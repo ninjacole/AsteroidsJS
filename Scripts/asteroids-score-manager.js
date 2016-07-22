@@ -8,30 +8,44 @@ ASTEROIDS.namespace('ASTEROIDS.ScoreManager');
 
 
 ASTEROIDS.ScoreManager = function () {
-    var that = this;
-    
-    that.getCookie = function (cname) {
-        var name = cname + "=",
-            ca = document.cookie.split(';'),
+    var that = this,
+        storage = localStorage,
+        highscores = 'highscores';
+
+
+    that.getScores = function () {
+        if (!storage.getItem(highscores)) {
+            return [];
+        } else {
+            return JSON.parse(storage.getItem(highscores));
+        }
+    };
+
+    that.isHighScore = function (score) {
+        var scores = that.getScores(),
             i,
-            c;
-        for (i = 0; i < ca.length; i += 1) {
-            c = ca[i];
-            while (c.charAt(0) === ' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name) === 0) {
-                return c.substring(name.length, c.length);
+            isHighScore;
+        if (scores.length === 0) {
+            return true;
+        }
+
+        for (i = 0; i < scores.length; scores += 1) {
+            if (score > scores[i].value) {
+                return true;
             }
         }
-        return "";
+        return false;
     };
-    
-    that.setCookie = function (cname, cvalue, exdays) {
-        var d = new Date(),
-            expires;
-        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-        expires = "expires=" + d.toUTCString();
-        document.cookie = cname + "=" + cvalue + "; " + expires;
+
+    that.addHighScore = function (score, name) {
+        var scores = that.getScores();
+        scores.push({ name: name, value: score });
+        scores.sort(function (a, b) { return b.value - a.value; });
+        scores = scores.splice(0, 9);
+        storage.setItem(highscores, JSON.stringify(scores));
+    };
+
+    that.clearScores = function () {
+        storage.clear();
     };
 };

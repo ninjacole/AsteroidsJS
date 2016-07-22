@@ -73,11 +73,12 @@ ASTEROIDS.menu.StartMenu = function (startMenuItems, selectionCallback) {
     };
 };
 
-ASTEROIDS.menu.GameOver = function (startTime, finalScore, enemiesKilled, callback) {
+ASTEROIDS.menu.GameOver = function (finalScore, enemiesKilled, callback) {
     var that = this,
         canvas = ASTEROIDS.canvas,
         context = ASTEROIDS.context,
-        duration = 4000;
+        duration = 4000,
+        startTime = Date.now();
     
     
     that.draw = function () {
@@ -97,9 +98,39 @@ ASTEROIDS.menu.GameOver = function (startTime, finalScore, enemiesKilled, callba
     };
 };
 
-ASTEROIDS.menu.WaveTransition = function (wave, transitionStart, transitionLength, callback) {
+ASTEROIDS.menu.showHighScores = function (highScores, callback) {
+    var that = this,
+        canvas = ASTEROIDS.canvas,
+        context = ASTEROIDS.context,
+        duration = 3000,
+        startTime = Date.now();
+
+    that.draw = function () {
+        if (Date.now() - startTime < duration) {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.save();
+            context.fillStyle = 'white';
+            context.font = '80px consolas';
+            for (var i = 0; i < highScores.length; i += 1) {
+                var yPos = 90 + (i * 90);
+                context.textAlign = 'right';
+                context.fillText((i + 1).toString() + " - " + highScores[i].name, canvas.width / 2, yPos);
+                context.textAlign = 'left';
+                context.fillText(highScores[i].value, canvas.width / 2, yPos);
+            }
+            context.restore();
+        }
+        else {
+            callback();
+        }
+    }
+}
+
+ASTEROIDS.menu.WaveTransition = function (wave, callback) {
     var canvas = ASTEROIDS.canvas,
         context = ASTEROIDS.context,
+        transitionStart = Date.now(),
+        transitionLength = 3000,
         that = this;
     
     that.waveTransition = function () {

@@ -429,8 +429,13 @@ ASTEROIDS.gameBoard = (function () {
                         if (value === 0) {
                             gameBoard.waveBegin();
                         } else if (value === 1) {
-                            // TODO
-                            console.log('show high scores not implemented');
+                            var scoreManager = new ASTEROIDS.ScoreManager();
+                            var highScoresMenu = new ASTEROIDS.menu.showHighScores(scoreManager.getScores(),
+                                function () {
+                                    gameBoard.resetGame();
+                                    gameBoard.start();
+                                });
+                            gameLoopManager.run(function () { highScoresMenu.draw(); })
                         }
                     }
                 );
@@ -483,8 +488,6 @@ ASTEROIDS.gameBoard = (function () {
             currentWave += 1;
             var waveTransition = new menu.WaveTransition(
                 currentWave,
-                Date.now(),
-                3000,
                 function () {
                     gameBoard.resetWave();
                     gameBoard.spawnAsteroids();
@@ -494,13 +497,21 @@ ASTEROIDS.gameBoard = (function () {
             gameLoopManager.run(waveTransition.waveTransition);
         },
         gameOver: function () {
-            // TODO: show game over screen and high score menu
-            var gameOver = new ASTEROIDS.menu.GameOver(Date.now(), score, enemyManager.getEnemiesKilled(), function () { gameBoard.resetGame(); gameBoard.start(); });
-            scoreManager.setCookie('highscore', score, 1);
+            var callback = function () {
+                var scoreManager = new ASTEROIDS.ScoreManager();
+                var name = prompt("High score! Enter your name: ");
+                scoreManager.addHighScore(score, name);
+                var highScoresMenu = new ASTEROIDS.menu.showHighScores(scoreManager.getScores(),
+                    function () {
+                        gameBoard.resetGame();
+                        gameBoard.start();
+                    });
+                gameLoopManager.run(function () { highScoresMenu.draw(); })
+            }
+
+            var gameOver = new ASTEROIDS.menu.GameOver(score, enemyManager.getEnemiesKilled(), callback);
             gameLoopManager.run(function () { gameOver.draw(); });
         }
     };
-
-    
     return gameBoard;
 }());
