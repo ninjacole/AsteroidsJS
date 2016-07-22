@@ -8,22 +8,19 @@
 <body>
     <div id="container">
         <canvas width="1280" height="960" id="gameCanvas" style="background-image:url('Images/bg.png');"></canvas>
-        <div id="main-menu">
+        <div id="main-menu" class="menu">
             <a id="new-game" class="menu-button">NEW GAME</a>
-            <a id="high-scores" class="menu-button">SHOW HIGH SCORES</a>
         </div>
 
-        <div id="high-scores-menu">
-            <table id="high-scores-table">
-                <thead>
-                    <tr>
-                        <td>Name</td>
-                        <td>Score</td>
-                    </tr>
-                </thead>
-                <tbody id="high-scores-list"></tbody>
-            </table>
-            <a id="back-to-main-menu" class="menu-button">MAIN MENU</a>
+        <div id="pause-menu" class="menu">
+            <a id="resume-game" class="menu-button">RESUME GAME</a>
+            <a id="exit-game" class="menu-button">EXIT TO MAIN MENU</a>
+        </div>
+
+        <div id="game-over" class="menu">
+            <p class="game-over-text">GAME OVER</p>
+            <p id="game-over-score" class="game-over-text"></p>
+            <p id="game-over-enemies-killed" class="game-over-text"></p>
         </div>
     </div>
 

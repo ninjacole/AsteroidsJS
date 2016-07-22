@@ -37,7 +37,7 @@ ASTEROIDS.player = (function () {
         accelerationCoefficient = 0.1,
         maxSpeed = 15,
         maxAccelerationCoefficient = 1,
-        fireRate = 300,
+        fireRate = 150,
         maxFireRate = 100,
         setFireRate = function (value) {
             fireRate -= value;
@@ -234,7 +234,7 @@ ASTEROIDS.player = (function () {
             y = -5000;
             vx = 0;
             vy = 0;
-            fireRate = 300;
+            fireRate = 150;
             rotation = 0;
             alive = false;
             playerDeathSound.play();

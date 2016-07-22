@@ -26,10 +26,9 @@ ASTEROIDS.gameBoard = (function () {
         canvas = ASTEROIDS.canvas,
         context = ASTEROIDS.context,
         gameLoopManager = new ASTEROIDS.GameLoopManager(),
-        scoreManager = new ASTEROIDS.ScoreManager(),
         enemyManager,
+
         //---------------- Private properties
-        that = this,
         playerImg = document.getElementById('ship-single'),
         asteroids = [],
         powerups = [],
@@ -40,7 +39,7 @@ ASTEROIDS.gameBoard = (function () {
         bulletsFired = weapon.getBulletsFired(),
         enemyBulletsFired = weapon.getEnemyBulletsFired(),
         currentWave = 0,
-        totalWaves = 10,
+        totalWaves = 5,
         score = 0,
         canPause = true,
         i,
@@ -205,7 +204,7 @@ ASTEROIDS.gameBoard = (function () {
                             if (size > 1) {
                                 splitAsteroid(size, x, y, bullvx, bullvy);
                             } else {
-                                if (Math.random() > 0.7) {
+                                if (Math.random() > 0.9) {
                                     powerups.push(new Powerup(x, y));
                                 }
                             }
@@ -307,7 +306,7 @@ ASTEROIDS.gameBoard = (function () {
             context.fillStyle = 'white';
             context.font = "30px Consolas";
             
-            context.fillText("Level: " + currentWave + " Score: " + score, 50, 30);
+            context.fillText("Level: " + currentWave + " Score: " + score + " Hi: " + ASTEROIDS.scoreManager.getHighScore(), 50, 30);
             
             for (i = 0; i < player.getLives(); i += 1) {
                 context.drawImage(playerImg, (i * 25) + 50, 45, 20, 20);
@@ -381,14 +380,20 @@ ASTEROIDS.gameBoard = (function () {
 
                 if (key.isDown(key.LEFT.keyCode)) {
                     key.LEFT.execute();
+                } else {
+                    key.LEFT.undo();
                 }
 
                 if (key.isDown(key.RIGHT.keyCode)) {
                     key.RIGHT.execute();
+                } else {
+                    key.RIGHT.undo();
                 }
 
                 if (key.isDown(key.SPACE.keyCode)) {
                     key.SPACE.execute();
+                } else {
+                    key.SPACE.undo();
                 }
 
                 if (key.isDown(key.DOWN.keyCode)) {
@@ -396,36 +401,30 @@ ASTEROIDS.gameBoard = (function () {
                 } else {
                     key.DOWN.undo();
                 }
+
+                if (key.isDown(key.ESC.keyCode)) {
+                    key.ESC.execute();
+                } else {
+                    key.ESC.undo();
+                }
+
             } else {
                 key.reset();
             }
-
-            if (key.isDown(key.ESC.keyCode)) {
-                if (canPause) {
-                    this.pause();
-                }
-                canPause = false;
-            } else {
-                canPause = true;
-            }
             
-            if (key.isDown(key.ONE.keyCode)) {
-                var scores = scoreManager.getCookie('highscore'),
-                    i;
-                for (i = 0; i < scores.length; i += 1) {
-                    console.log(scores[i]);
-                }
-            }
             if (key.isDown(key.TWO.keyCode)) {
                 enemies.push(enemyManager.createEnemy());
             }
         },
         start: function () {
+            ASTEROIDS.gameBoard.resetGame();
             key.bindAction(key.UP, function () { player.accelerate(); player.engineEnabled(true) }, function () { player.engineEnabled(false); });
             key.bindAction(key.DOWN, player.shield.activate, player.shield.deactivate);
-            key.bindAction(key.LEFT, function () { player.rotate(-4); });
-            key.bindAction(key.RIGHT, function () { player.rotate(4); });
-            key.bindAction(key.SPACE, player.shoot);
+            key.bindAction(key.LEFT, function () { player.rotate(-4); }, function () { });
+            key.bindAction(key.RIGHT, function () { player.rotate(4); }, function () { });
+            key.bindAction(key.SPACE, player.shoot, function () { });
+            key.bindAction(key.ESC, this.pause, function () { });
+
             gameBoard.waveBegin();
         },
         main: function () {
@@ -434,16 +433,11 @@ ASTEROIDS.gameBoard = (function () {
             gameBoard.input();
         },
         pause: function () {
-            var pauseMenuItems = ['Resume', 'Quit'],
-                pauseMenu = new menu.PauseMenu(pauseMenuItems, gameBoard.resume, gameBoard.resume);
-            gameLoopManager.run(function () { gameBoard.drawAll(); pauseMenu.drawPauseMenu(); });
+            ASTEROIDS.menu.pauseMenu.show();
+            gameLoopManager.stop();
         },
-        resume: function (index) {
-            if (index === 0 || index === undefined) {
-                gameLoopManager.run(function () { gameBoard.main(); });
-            } else if (index === 1) {
-                gameBoard.gameOver();
-            }
+        resume: function () {
+            gameLoopManager.run(function () { gameBoard.main(); });
         },
         resetWave: function () {
             player.reset();
@@ -476,20 +470,11 @@ ASTEROIDS.gameBoard = (function () {
             gameLoopManager.run(waveTransition.waveTransition);
         },
         gameOver: function () {
-            var callback = function () {
-                var scoreManager = new ASTEROIDS.ScoreManager();
-                var name = prompt("High score! Enter your name: ");
-                scoreManager.addHighScore(score, name);
-                var highScoresMenu = new ASTEROIDS.menu.showHighScores(scoreManager.getScores(),
-                    function () {
-                        gameBoard.resetGame();
-                        gameBoard.start();
-                    });
-                gameLoopManager.run(function () { highScoresMenu.draw(); })
-            }
-
-            var gameOver = new ASTEROIDS.menu.GameOver(score, enemyManager.getEnemiesKilled(), callback);
-            gameLoopManager.run(function () { gameOver.draw(); });
+            gameLoopManager.stop();
+            var isHighScore = ASTEROIDS.scoreManager.isHighScore(score),
+                enemiesKilled = enemyManager.getEnemiesKilled();
+            ASTEROIDS.scoreManager.setHighScore(score);
+            ASTEROIDS.menu.gameOver.show(score, enemiesKilled, isHighScore);
         }
     };
     return gameBoard;

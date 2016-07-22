@@ -18,14 +18,14 @@ $("#new-game").on('click', function () {
     ASTEROIDS.gameBoard.start();
 });
 
-$("#high-scores").on('click', function () {
-    $('#main-menu').hide();
-    ASTEROIDS.menu.highScores.show()
+$("#resume-game").on('click', function () {
+    $('#pause-menu').hide();
+    ASTEROIDS.gameBoard.resume();
 });
 
-$("#back-to-main-menu").on('click', function () {
-    $('#high-scores-menu').hide();
-    ASTEROIDS.menu.startMenu.show();
+$("#exit-game").on('click', function () {
+    $('#pause-menu').hide();
+    ASTEROIDS.gameBoard.gameOver();
 });
 
 ASTEROIDS.menu.startMenu = {
@@ -34,44 +34,28 @@ ASTEROIDS.menu.startMenu = {
     }
 };
 
-ASTEROIDS.menu.highScores = {
+ASTEROIDS.menu.pauseMenu = {
     show: function () {
-        var scoreManager = new ASTEROIDS.ScoreManager(),
-            scores = scoreManager.getScores(),
-            i;
-        $("#high-scores-list").empty();
-        for (i = 0; i < scores.length; i += 1) {
-            $("#high-scores-list").append("<tr><td>" + scores[i].name + "</td><td>" + scores[i].value + "</td></tr>");
-        }
-        $("#high-scores-menu").show();
+        $("#pause-menu").show();
     }
 }
 
-ASTEROIDS.menu.GameOver = function (finalScore, enemiesKilled, callback) {
-    var that = this,
-        canvas = ASTEROIDS.canvas,
-        context = ASTEROIDS.context,
-        duration = 4000,
-        startTime = Date.now();
-    
-    that.draw = function () {
-        if (Date.now() - startTime < duration) {
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.save();
-            context.fillStyle = 'white';
-            context.font = '80px consolas';
-            context.textAlign = 'center';
-            context.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 90);
-            context.fillText("Final score: " + finalScore, canvas.width / 2, canvas.height / 2);
-            context.fillText("Enemies killed: " + enemiesKilled, canvas.width / 2, canvas.height / 2 + 90);
-            context.restore();
+
+ASTEROIDS.menu.gameOver = {
+    show: function (finalScore, enemiesKilled, isHighScore) {
+        var scoreMessage = "";
+        if (isHighScore === true) {
+            scoreMessage = "New high score!: " + finalScore;
+            $("#game-over-score").fadeOut(500).fadeIn(500).fadeOut(500).fadeIn(500).fadeOut(500).fadeIn(500);
         } else {
-            callback();
+            scoreMessage = "Final score: " + finalScore;
         }
-    };
-};
-
-
+        $("#game-over-score").text(scoreMessage);
+        $("#game-over-enemies-killed").text("Enemies killed: " + enemiesKilled);
+        $("#game-over").show();
+        setTimeout(function () { $("#game-over").fadeOut(ASTEROIDS.menu.startMenu.show)}, 4000);
+    }
+}
 
 ASTEROIDS.menu.WaveTransition = function (wave, callback) {
     var canvas = ASTEROIDS.canvas,
@@ -95,73 +79,3 @@ ASTEROIDS.menu.WaveTransition = function (wave, callback) {
     };
 };
 
-ASTEROIDS.menu.PauseMenu = function (pausedItems, pauseMenuItemChosenCallback, resumeCallback) {
-    var key = ASTEROIDS.key,
-        canvas = ASTEROIDS.canvas,
-        context = ASTEROIDS.context,
-        selectedPauseItem = 0,
-        i,
-        canDown = false,
-        canUp = false,
-        canResume = false,
-        that = this;
-    
-    that.drawPauseMenu = function () {
-        var newSelectedPauseItem;
-        context.save();
-        context.font = "50px Consolas";
-        context.textAlign = "center";
-        context.fillStyle = 'white';
-        context.fillText("GAME PAUSED", canvas.width / 2, 100);
-        for (i = 0; i < pausedItems.length; i += 1) {
-            if (i === selectedPauseItem) {
-                context.fillStyle = 'blue';
-            } else {
-                context.fillStyle = 'white';
-            }
-            context.fillText(pausedItems[i], canvas.width / 2, (i + 2) * 100);
-        }
-        context.restore();
-        
-        if (key.isDown(key.ENTER.keyCode)) {
-            pauseMenuItemChosenCallback(selectedPauseItem);
-        }
-        if (key.isDown(key.DOWN.keyCode)) {
-            if (canDown) {
-                ASTEROIDS.menu.selectSound.play();
-                canDown = false;
-                newSelectedPauseItem = selectedPauseItem + 1;
-                if (newSelectedPauseItem === pausedItems.length) {
-                    selectedPauseItem = 0;
-                } else {
-                    selectedPauseItem = newSelectedPauseItem;
-                }
-            }
-        } else {
-            canDown = true;
-        }
-        
-        if (key.isDown(key.UP.keyCode)) {
-            if (canUp) {
-                ASTEROIDS.menu.selectSound.play();
-                canUp = false;
-                newSelectedPauseItem = selectedPauseItem - 1;
-                if (newSelectedPauseItem === -1) {
-                    selectedPauseItem = pausedItems.length - 1;
-                } else {
-                    selectedPauseItem = newSelectedPauseItem;
-                }
-            }
-        } else {
-            canUp = true;
-        }
-        
-        if (key.isDown(key.ESC.keyCode)) {
-            if (canResume) {
-                resumeCallback();
-            }
-        } else {
-            canResume = true;
-        }
-    };
-};

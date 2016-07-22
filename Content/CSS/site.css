@@ -19,8 +19,10 @@ body {
 *, *:before, *:after {
   box-sizing: border-box;
 }
-
-#main-menu {
+.game-over-text {
+    color: white;
+}
+.menu {
     position: absolute;
     display: none;
     overflow: auto;
@@ -28,30 +30,6 @@ body {
     z-index: 3;
     left: 50px;
     top: 200px;
-}
-
-#high-scores-menu {
-    z-index: 3;
-    display: none;
-    overflow: auto;
-    margin: auto;
-    position: absolute;
-    width: 500px;
-    text-align: center;
-    margin-left: -250px;
-    left: 50%;
-}
-
-#high-scores-menu  .menu-button {
-}
-
-#high-scores-table {
-    color: #ffe3ca;
-    width: 400px;
-}
-
-#high-scores-table th, td {
-    padding: 15px;
 }
 
 .menu-button {
