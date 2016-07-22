@@ -41,7 +41,6 @@ ASTEROIDS.gameBoard = (function () {
         currentWave = 1,
         totalWaves = 5,
         score = 0,
-        canPause = true,
         i,
         j,
         transitioning = true,
@@ -419,6 +418,7 @@ ASTEROIDS.gameBoard = (function () {
             }
         },
         start: function () {
+            gameBoard.reset();
             key.bindAction(key.UP, function () { player.accelerate(); player.engineEnabled(true) }, function () { player.engineEnabled(false); });
             key.bindAction(key.DOWN, player.shield.activate, player.shield.deactivate);
             key.bindAction(key.LEFT, function () { player.rotate(-4); }, function () { });

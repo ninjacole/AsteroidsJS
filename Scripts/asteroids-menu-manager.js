@@ -8,6 +8,7 @@ var ASTEROIDS = ASTEROIDS || {};
 ASTEROIDS.namespace('ASTEROIDS.menu');
 
 ASTEROIDS.menu.selectSound = document.getElementById('menu-select');
+ASTEROIDS.menu.scoreClearedSound = document.getElementById('score-cleared-sound');
 
 $(".menu-button").on('mouseover', function () {
     ASTEROIDS.menu.selectSound.play();
@@ -28,6 +29,13 @@ $("#exit-game").on('click', function () {
     ASTEROIDS.gameBoard.gameOver();
 });
 
+$("#reset-scores").on('click', function () {
+    $("#scores-cleared").text("Cleared!");
+    $("#scores-cleared").show().fadeOut(500);
+    ASTEROIDS.scoreManager.clearHighScore();
+    ASTEROIDS.menu.scoreClearedSound.play();
+});
+
 ASTEROIDS.menu.startMenu = {
     show: function () {
         $("#main-menu").show();
@@ -40,11 +48,11 @@ ASTEROIDS.menu.pauseMenu = {
     }
 }
 
-
 ASTEROIDS.menu.gameOver = {
     show: function (finalScore, enemiesKilled, isHighScore, isWin) {
         var scoreMessage = "",
             gameEndMessage = "";
+
         if (isHighScore === true) {
             scoreMessage = "New high score!: " + finalScore;
             $("#game-over-score").fadeOut(500).fadeIn(500).fadeOut(500).fadeIn(500).fadeOut(500).fadeIn(500);
@@ -62,6 +70,7 @@ ASTEROIDS.menu.gameOver = {
         $("#game-over-score").text(scoreMessage);
         $("#game-over-enemies-killed").text("Enemies killed: " + enemiesKilled);
         $("#game-over").show();
+
         setTimeout(function () { $("#game-over").fadeOut(ASTEROIDS.menu.startMenu.show)}, 4000);
     }
 }

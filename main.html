@@ -8,8 +8,10 @@
 <body>
     <div id="container">
         <canvas width="1280" height="960" id="gameCanvas" style="background-image:url('Images/bg.png');"></canvas>
+
         <div id="main-menu" class="menu">
             <a id="new-game" class="menu-button">NEW GAME</a>
+            <a id="reset-scores" class="menu-button">CLEAR HIGH SCORES</a><span id="scores-cleared" style="color:white"></span>
         </div>
 
         <div id="pause-menu" class="menu">
@@ -62,6 +64,7 @@
     <audio id="enemy-death" src="Content/Sounds/enemy-death.wav" style="display: none;"></audio>
     <audio id="shield-up" src="Content/sounds/shield-up.wav" preload="auto" style="display: none;"></audio>
     <audio id="menu-select" src="Content/Sounds/menu-select.wav" preload="auto" style="display: none;"></audio>
+    <audio id="score-cleared-sound" src="Content/Sounds/score-cleared.wav" preload="auto" style="display: none;"></audio>
 
     <script src="Scripts/jquery-2.2.3.js"></script>
     <script src="Scripts/bootstrap.js"></script>
