@@ -22,7 +22,6 @@ ASTEROIDS.gameBoard = (function () {
         utils = ASTEROIDS.utils,
         energy = ASTEROIDS.energy,
         shield = ASTEROIDS.shield,
-        menu = ASTEROIDS.menu,
         key = ASTEROIDS.key,
         canvas = ASTEROIDS.canvas,
         context = ASTEROIDS.context,
@@ -422,33 +421,12 @@ ASTEROIDS.gameBoard = (function () {
             }
         },
         start: function () {
-            var startMenuItems = ['New Game', 'View high scores'],
-                startMenu = new menu.StartMenu(
-                    startMenuItems,
-                    function (value) {
-                        if (value === 0) {
-                            gameBoard.waveBegin();
-                        } else if (value === 1) {
-                            var scoreManager = new ASTEROIDS.ScoreManager();
-                            var highScoresMenu = new ASTEROIDS.menu.showHighScores(scoreManager.getScores(),
-                                function () {
-                                    gameBoard.resetGame();
-                                    gameBoard.start();
-                                });
-                            gameLoopManager.run(function () { highScoresMenu.draw(); })
-                        }
-                    }
-                );
-
             key.bindAction(key.UP, function () { player.accelerate(); player.engineEnabled(true) }, function () { player.engineEnabled(false); });
             key.bindAction(key.DOWN, player.shield.activate, player.shield.deactivate);
             key.bindAction(key.LEFT, function () { player.rotate(-4); });
             key.bindAction(key.RIGHT, function () { player.rotate(4); });
             key.bindAction(key.SPACE, player.shoot);
-
-
-            enemyManager = new ASTEROIDS.enemyManager(gameBoard.getWave);
-            gameLoopManager.run(function () { startMenu.draw(); });
+            gameBoard.waveBegin();
         },
         main: function () {
             gameBoard.updateAll();
@@ -473,6 +451,7 @@ ASTEROIDS.gameBoard = (function () {
             powerups = [];
             enemies = [];
             weapon.resetEnemyBulletsFired();
+            enemyManager = new ASTEROIDS.enemyManager(gameBoard.getWave);
             enemyManager.reset();
             energy.reset();
         },
@@ -486,7 +465,7 @@ ASTEROIDS.gameBoard = (function () {
         },
         waveBegin: function () {
             currentWave += 1;
-            var waveTransition = new menu.WaveTransition(
+            var waveTransition = new ASTEROIDS.menu.WaveTransition(
                 currentWave,
                 function () {
                     gameBoard.resetWave();

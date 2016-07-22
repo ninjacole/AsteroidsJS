@@ -9,69 +9,43 @@ ASTEROIDS.namespace('ASTEROIDS.menu');
 
 ASTEROIDS.menu.selectSound = document.getElementById('menu-select');
 
-ASTEROIDS.menu.StartMenu = function (startMenuItems, selectionCallback) {
-    var key = ASTEROIDS.key,
-        canvas = ASTEROIDS.canvas,
-        context = ASTEROIDS.context,
-        that = this,
-        canUp = false,
-        canDown = false,
-        selectedMenuItem = 0,
-        newSelectedMenuItem,
-        i;
-    
-    that.draw = function () {
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        context.save();
-        context.font = "50px sans-serif";
-        context.textAlign = "center";
-        context.fillStyle = 'white';
-        context.fillText("ASTEROIDS!", canvas.width / 2, 100);
-        for (i = 0; i < startMenuItems.length; i += 1) {
-            if (i === selectedMenuItem) {
-                context.fillStyle = 'blue';
-            } else {
-                context.fillStyle = 'white';
-            }
-            context.fillText(startMenuItems[i], canvas.width / 2, (i + 2) * 100);
-        }
-        context.restore();
-        
-        if (key.isDown(key.ENTER.keyCode)) {
-            selectionCallback(selectedMenuItem);
-        }
-        
-        if (key.isDown(key.DOWN.keyCode)) {
-            if (canDown) {
-                ASTEROIDS.menu.selectSound.play();
-                canDown = false;
-                newSelectedMenuItem = selectedMenuItem + 1;
-                if (newSelectedMenuItem === startMenuItems.length) {
-                    selectedMenuItem = 0;
-                } else {
-                    selectedMenuItem = newSelectedMenuItem;
-                }
-            }
-        } else {
-            canDown = true;
-        }
-        
-        if (key.isDown(key.UP.keyCode)) {
-            if (canUp) {
-                ASTEROIDS.menu.selectSound.play();
-                canUp = false;
-                newSelectedMenuItem = selectedMenuItem - 1;
-                if (newSelectedMenuItem === -1) {
-                    selectedMenuItem = startMenuItems.length - 1;
-                } else {
-                    selectedMenuItem = newSelectedMenuItem;
-                }
-            }
-        } else {
-            canUp = true;
-        }
-    };
+$(".menu-button").on('mouseover', function () {
+    ASTEROIDS.menu.selectSound.play();
+});
+
+$("#new-game").on('click', function () {
+    $('#main-menu').hide();
+    ASTEROIDS.gameBoard.start();
+});
+
+$("#high-scores").on('click', function () {
+    $('#main-menu').hide();
+    ASTEROIDS.menu.highScores.show()
+});
+
+$("#back-to-main-menu").on('click', function () {
+    $('#high-scores-menu').hide();
+    ASTEROIDS.menu.startMenu.show();
+});
+
+ASTEROIDS.menu.startMenu = {
+    show: function () {
+        $("#main-menu").show();
+    }
 };
+
+ASTEROIDS.menu.highScores = {
+    show: function () {
+        var scoreManager = new ASTEROIDS.ScoreManager(),
+            scores = scoreManager.getScores(),
+            i;
+        $("#high-scores-list").empty();
+        for (i = 0; i < scores.length; i += 1) {
+            $("#high-scores-list").append("<tr><td>" + scores[i].name + "</td><td>" + scores[i].value + "</td></tr>");
+        }
+        $("#high-scores-menu").show();
+    }
+}
 
 ASTEROIDS.menu.GameOver = function (finalScore, enemiesKilled, callback) {
     var that = this,
@@ -79,7 +53,6 @@ ASTEROIDS.menu.GameOver = function (finalScore, enemiesKilled, callback) {
         context = ASTEROIDS.context,
         duration = 4000,
         startTime = Date.now();
-    
     
     that.draw = function () {
         if (Date.now() - startTime < duration) {
@@ -98,33 +71,7 @@ ASTEROIDS.menu.GameOver = function (finalScore, enemiesKilled, callback) {
     };
 };
 
-ASTEROIDS.menu.showHighScores = function (highScores, callback) {
-    var that = this,
-        canvas = ASTEROIDS.canvas,
-        context = ASTEROIDS.context,
-        duration = 3000,
-        startTime = Date.now();
 
-    that.draw = function () {
-        if (Date.now() - startTime < duration) {
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.save();
-            context.fillStyle = 'white';
-            context.font = '80px consolas';
-            for (var i = 0; i < highScores.length; i += 1) {
-                var yPos = 90 + (i * 90);
-                context.textAlign = 'right';
-                context.fillText((i + 1).toString() + " - " + highScores[i].name, canvas.width / 2, yPos);
-                context.textAlign = 'left';
-                context.fillText(highScores[i].value, canvas.width / 2, yPos);
-            }
-            context.restore();
-        }
-        else {
-            callback();
-        }
-    }
-}
 
 ASTEROIDS.menu.WaveTransition = function (wave, callback) {
     var canvas = ASTEROIDS.canvas,

@@ -4,14 +4,30 @@
     <title>Asteroids</title>
 	<meta charset="utf-8" />
     <link rel="stylesheet" href="Content/CSS/site.css" />
-    <link rel="stylesheet" href="Content/CSS/bootstrap.css" />
 </head>
 <body>
-    <div clas="row">
-        <div class="col-md-10 col-md-offset-2">
-            <canvas width="1280" height="960" id="gameCanvas" style="background-image:url('Images/bg.png');"></canvas>
+    <div id="container">
+        <canvas width="1280" height="960" id="gameCanvas" style="background-image:url('Images/bg.png');"></canvas>
+        <div id="main-menu">
+            <a id="new-game" class="menu-button">NEW GAME</a>
+            <a id="high-scores" class="menu-button">SHOW HIGH SCORES</a>
+        </div>
+
+        <div id="high-scores-menu">
+            <table id="high-scores-table">
+                <thead>
+                    <tr>
+                        <td>Name</td>
+                        <td>Score</td>
+                    </tr>
+                </thead>
+                <tbody id="high-scores-list"></tbody>
+            </table>
+            <a id="back-to-main-menu" class="menu-button">MAIN MENU</a>
         </div>
     </div>
+
+
     <div style="display: none">
         <!-- ships -->
         <img src="Images/ship-single.png" height="42" width="42" id="ship-single"/>
@@ -66,15 +82,14 @@
     <script src="Scripts/asteroids-enemyManager.js"></script>
     <script src="Scripts/asteroids-enemy-explosion.js"></script>
 
-
-    <script src="Scripts/asteroids-menu-manager.js"></script>
     <script src="Scripts/asteroids-score-manager.js"></script>
 
     <script src="Scripts/asteroids-gameBoard.js"></script>
+    <script src="Scripts/asteroids-menu-manager.js"></script>
 
     <script>
     $(document).ready(function () {
-        ASTEROIDS.gameBoard.start();
+        ASTEROIDS.menu.startMenu.show();
     });
     </script>
 </body>
