@@ -6,7 +6,7 @@ var ASTEROIDS = ASTEROIDS || {};
 
 ASTEROIDS.namespace('ASTEROIDS.enemyManager');
 
-ASTEROIDS.enemyManager = function (getCurrentWave) {
+ASTEROIDS.enemyManager = function (getCurrentWave, isTransition) {
     var enemyManager = {},
         Enemy = ASTEROIDS.enemy,
         that = this,
@@ -23,7 +23,7 @@ ASTEROIDS.enemyManager = function (getCurrentWave) {
         };
     
     that.canSpawnEnemy = function () {
-        return isTimerReady() && isLessThanMaxSpawned();
+        return isTimerReady() && isLessThanMaxSpawned() && isTransition() === false;
     };
     
     that.createEnemy = function () {

@@ -38,12 +38,13 @@ ASTEROIDS.gameBoard = (function () {
         enemyExplosions = [],
         bulletsFired = weapon.getBulletsFired(),
         enemyBulletsFired = weapon.getEnemyBulletsFired(),
-        currentWave = 0,
+        currentWave = 1,
         totalWaves = 5,
         score = 0,
         canPause = true,
         i,
         j,
+        transitioning = true,
         splitAsteroid = function (size, x, y, bulletVX, bulletVY) {
             var config = {},
                 afterVX,
@@ -230,8 +231,9 @@ ASTEROIDS.gameBoard = (function () {
         updateAll: function () {
             if (player.getLives() === 0) {
                 gameBoard.gameOver();
-            } else if (asteroids.length === 0 && enemies.length === 0) {
-                gameBoard.waveBegin();
+            } else if (asteroids.length === 0 && enemies.length === 0 && transitioning === false) {
+                transitioning = true;
+                gameBoard.waveOver();
             } else {
                 detectAllCollisions();
                 if (player.isAlive()) {
@@ -417,15 +419,22 @@ ASTEROIDS.gameBoard = (function () {
             }
         },
         start: function () {
-            ASTEROIDS.gameBoard.resetGame();
             key.bindAction(key.UP, function () { player.accelerate(); player.engineEnabled(true) }, function () { player.engineEnabled(false); });
             key.bindAction(key.DOWN, player.shield.activate, player.shield.deactivate);
             key.bindAction(key.LEFT, function () { player.rotate(-4); }, function () { });
             key.bindAction(key.RIGHT, function () { player.rotate(4); }, function () { });
             key.bindAction(key.SPACE, player.shoot, function () { });
             key.bindAction(key.ESC, this.pause, function () { });
-
-            gameBoard.waveBegin();
+            currentWave = 1;
+            score = 0;
+            player.setLives(5);
+            energy.reset();
+            enemyManager = new ASTEROIDS.enemyManager(gameBoard.getWave, gameBoard.isTransition);
+            ASTEROIDS.menu.waveTransition.show(currentWave);
+            gameLoopManager.run(gameBoard.main);
+        },
+        isTransition: function () {
+            return transitioning;
         },
         main: function () {
             gameBoard.updateAll();
@@ -439,35 +448,24 @@ ASTEROIDS.gameBoard = (function () {
         resume: function () {
             gameLoopManager.run(function () { gameBoard.main(); });
         },
-        resetWave: function () {
-            player.reset();
+        reset: function () {
             asteroids = [];
             powerups = [];
             enemies = [];
             weapon.resetEnemyBulletsFired();
-            enemyManager = new ASTEROIDS.enemyManager(gameBoard.getWave);
+            enemyManager = new ASTEROIDS.enemyManager(gameBoard.getWave, gameBoard.isTransition);
             enemyManager.reset();
             energy.reset();
         },
-        resetGame: function () {
-            gameBoard.resetWave();
-            currentWave = 0;
-            score = 0;
-            player.setLives(5);
-            energy.reset();
-            enemyManager = new ASTEROIDS.enemyManager(gameBoard.getWave);
-        },
-        waveBegin: function () {
+        waveOver: function () {
             currentWave += 1;
-            var waveTransition = new ASTEROIDS.menu.WaveTransition(
-                currentWave,
-                function () {
-                    gameBoard.resetWave();
-                    gameBoard.spawnAsteroids();
-                    gameLoopManager.run(gameBoard.main);
-                }
-            );
-            gameLoopManager.run(waveTransition.waveTransition);
+            ASTEROIDS.menu.waveTransition.show(currentWave);
+        },
+        waveStart: function () {
+            gameBoard.reset();
+            player.shield.freeShield();
+            gameBoard.spawnAsteroids();
+            transitioning = false;
         },
         gameOver: function () {
             gameLoopManager.stop();

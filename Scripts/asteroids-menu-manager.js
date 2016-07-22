@@ -57,25 +57,11 @@ ASTEROIDS.menu.gameOver = {
     }
 }
 
-ASTEROIDS.menu.WaveTransition = function (wave, callback) {
-    var canvas = ASTEROIDS.canvas,
-        context = ASTEROIDS.context,
-        transitionStart = Date.now(),
-        transitionLength = 3000,
-        that = this;
-    
-    that.waveTransition = function () {
-        if (Date.now() - transitionStart < transitionLength) {
-            context.save();
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.fillStyle = 'white';
-            context.font = "80px Consolas";
-            context.textAlign = "center";
-            context.fillText("LEVEL " + wave, canvas.width / 2, canvas.height / 2);
-            context.restore();
-        } else {
-            callback();
-        }
-    };
-};
+ASTEROIDS.menu.waveTransition = {
+    show: function (wave) {
+        $("#wave-transition").show();
+        $("#wave-element").text("WAVE " + wave);
+        setTimeout(function () { $("#wave-transition").fadeOut(ASTEROIDS.gameBoard.waveStart) }, 5000);
+    }
+}
 
