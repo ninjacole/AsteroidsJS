@@ -417,10 +417,6 @@ ASTEROIDS.gameBoard = (function () {
             } else {
                 key.reset();
             }
-            
-            if (key.isDown(key.TWO.keyCode)) {
-                enemies.push(enemyManager.createEnemy());
-            }
         },
         start: function () {
             gameBoard.reset();
