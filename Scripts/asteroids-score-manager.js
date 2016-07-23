@@ -41,7 +41,6 @@ ASTEROIDS.scoreManager = {
     },
     asteroidDestroyed: function (sizeOfAsteroid, position) {
         var points = 600 / sizeOfAsteroid;
-        console.log(sizeOfAsteroid);
         ASTEROIDS.scoreManager.currentScore += points;
         ASTEROIDS.scoreManager.scoreMessages.push(new ASTEROIDS.ScoreMessage(points, position));
     },
