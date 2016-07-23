@@ -15,7 +15,7 @@ ASTEROIDS.player = (function () {
         powerup = ASTEROIDS.Powerup,
         powerupTypes = ASTEROIDS.powerupTypes,
         shield = ASTEROIDS.shield,
-        
+        energy = ASTEROIDS.energy,
         // private variables
         playerDeathSound = document.getElementById('playerDeathSound'),
         canvas = ASTEROIDS.canvas,
@@ -227,6 +227,8 @@ ASTEROIDS.player = (function () {
                 setFireRate(50);
             } else if (powerupType === powerupTypes.EXTRA_LIFE) {
                 lives += 1;
+            } else if (powerupType === powerupTypes.ENERGY) {
+                energy.increaseBy(25);
             }
         },
         die: function () {
