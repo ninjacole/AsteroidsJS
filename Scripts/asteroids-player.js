@@ -9,8 +9,6 @@ ASTEROIDS.namespace('ASTEROIDS.player');
 ASTEROIDS.player = (function () {
     // dependencies
     var utils = ASTEROIDS.utils,
-        key = ASTEROIDS.key,
-        bullet = ASTEROIDS.bullet,
         weapon = ASTEROIDS.weapon,
         powerup = ASTEROIDS.Powerup,
         powerupTypes = ASTEROIDS.powerupTypes,
@@ -48,10 +46,10 @@ ASTEROIDS.player = (function () {
         },
         player,
         isEngineRunning = false,
-        timeOfDeath = new Date().getTime(),
-        respawnTime = 500,
+        timeOfDeath = Date.now(),
+        respawnTime = 1000,
         alive = true,
-        timeOfLastSpawn = new Date().getTime(),
+        timeOfLastSpawn = Date.now(),
         safeTime = 2000;
     
     // public interface
@@ -146,10 +144,10 @@ ASTEROIDS.player = (function () {
             }
         },
         isFireReady: function () {
-            return new Date().getTime() - lastFired > fireRate;
+            return Date.now() - lastFired > fireRate;
         },
         isFiring: function () {
-            lastFired = new Date().getTime();
+            lastFired = Date.now();
         },
         getCenterBulletPoint: function () {
             var hyp = 0.5 * height,
@@ -198,7 +196,7 @@ ASTEROIDS.player = (function () {
             }
         },
         isRecentlySpawned: function () {
-            return new Date().getTime() - timeOfLastSpawn < safeTime;
+            return Date.now() - timeOfLastSpawn < safeTime;
         },
         getHeight: function () {
             return height;
@@ -246,7 +244,7 @@ ASTEROIDS.player = (function () {
             }
         },
         reset: function () {
-            timeOfLastSpawn = new Date().getTime();
+            timeOfLastSpawn = Date.now();
             alive = true;
             x = canvas.width / 2;
             y = canvas.height / 2;

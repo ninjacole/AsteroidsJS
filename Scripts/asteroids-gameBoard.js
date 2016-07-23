@@ -137,7 +137,8 @@ ASTEROIDS.gameBoard = (function () {
                     for (j = bulletsFired.length - 1; j >= 0; j -= 1) {
                         if (utils.isCircleCollision(enemies[i].getCircleCollider(), bulletsFired[j].getCircleCollider())) {
                             scoreManager.enemyKilled({ x: enemies[i].getX(), y: enemies[i].getY() });
-                            enemyExplosions.push(new EnemyExplosion({x: enemies[i].getCenterX(), y: enemies[i].getCenterY()}));
+                            enemyExplosions.push(new EnemyExplosion({ x: enemies[i].getCenterX(), y: enemies[i].getCenterY() }));
+                            powerups.push(new Powerup(enemies[i].getCenterX(), enemies[i].getCenterY()));
                             enemies[i].die();
                             enemies.splice(i, 1);
                             bulletsFired.splice(j, 1);
@@ -171,7 +172,7 @@ ASTEROIDS.gameBoard = (function () {
                             if (size > 1) {
                                 splitAsteroid(size, x, y, bullvx, bullvy);
                             } else {
-                                if (Math.random() > 0.7) {
+                                if (Math.random() > 0.8) {
                                     powerups.push(new Powerup(asteroids[i].getX(), asteroids[i].getY()));
                                 }
                             }
@@ -205,7 +206,7 @@ ASTEROIDS.gameBoard = (function () {
                             if (size > 1) {
                                 splitAsteroid(size, x, y, bullvx, bullvy);
                             } else {
-                                if (Math.random() > 0.9) {
+                                if (Math.random() > 0.8) {
                                     powerups.push(new Powerup(x, y));
                                 }
                             }
@@ -309,7 +310,7 @@ ASTEROIDS.gameBoard = (function () {
             context.fillStyle = 'white';
             context.font = "30px Consolas";
             
-            context.fillText("Level: " + currentWave + " Score: " + scoreManager.currentScore + " Hi: " + ASTEROIDS.scoreManager.getHighScore(), 50, 30);
+            context.fillText("Wave: " + currentWave + "\tScore: " + scoreManager.currentScore + "\tHigh: " + ASTEROIDS.scoreManager.getHighScore(), 50, 30);
             if (waveStartTime) {
                 context.fillText(waveSeconds, 1200, 30);
             }
