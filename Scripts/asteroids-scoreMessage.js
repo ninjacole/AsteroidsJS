@@ -7,8 +7,8 @@ var ASTEROIDS = ASTEROIDS || {};
 ASTEROIDS.namespace('ASTEROIDS.ScoreMessage');
 
 ASTEROIDS.ScoreMessage = function (amount, position) {
-    var canvas = document.getElementById('gameCanvas'),
-        context = canvas.getContext('2d'),
+    var canvas = ASTEROIDS.canvas,
+        context = ASTEROIDS.context,
         startTime = new Date().getTime(),
         runningTime = 0,
         duration = 1000,
@@ -27,10 +27,4 @@ ASTEROIDS.ScoreMessage = function (amount, position) {
     this.timeExpired = function () {
         return runningTime > duration;
     };
-    
-    this.init = function () {
-        
-    };
-    
-    this.init();
 };

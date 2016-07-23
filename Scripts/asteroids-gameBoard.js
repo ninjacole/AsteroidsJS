@@ -18,7 +18,7 @@ ASTEROIDS.gameBoard = (function () {
         powerupTypes = ASTEROIDS.powerupTypes,
         ScoreMessage = ASTEROIDS.ScoreMessage,
         EnemyExplosion = ASTEROIDS.EnemyExplosion,
-        Enemy = ASTEROIDS.enemy,
+        scoreManager = ASTEROIDS.scoreManager,
         utils = ASTEROIDS.utils,
         energy = ASTEROIDS.energy,
         shield = ASTEROIDS.shield,
@@ -40,9 +40,11 @@ ASTEROIDS.gameBoard = (function () {
         enemyBulletsFired = weapon.getEnemyBulletsFired(),
         currentWave = 1,
         totalWaves = 5,
-        score = 0,
         i,
         j,
+        waveStartTime,
+        waveSeconds = 0,
+        playerDeathsThisWave = 0,
         transitioning = true,
         splitAsteroid = function (size, x, y, bulletVX, bulletVY) {
             var config = {},
@@ -96,8 +98,7 @@ ASTEROIDS.gameBoard = (function () {
                     type = powerups[i].getType();
                     player.gainPowerup(type);
                     powerupMessages.push(new PowerupMessage(type, powerups[i].getX(), powerups[i].getY()));
-                    score += 100;
-                    scoreMessages.push(new ScoreMessage(100, {x: powerups[i].getX(), y: powerups[i].getY() }));
+                    scoreManager.powerupGained({ x: powerups[i].getX(), y: powerups[i].getY() });
                     powerups.splice(i, 1);
                 }
             }
@@ -108,6 +109,7 @@ ASTEROIDS.gameBoard = (function () {
                 for (i = enemyBulletsFired.length - 1; i >= 0; i -= 1) {
                     if (utils.isCircleCollision(player.getCircleCollider(), enemyBulletsFired[i].getCircleCollider())) {
                         player.die();
+                        playerDeathsThisWave += 1;
                         energy.reset();
                         enemyBulletsFired.splice(i, 1);
                     }
@@ -122,6 +124,7 @@ ASTEROIDS.gameBoard = (function () {
                 for (i = asteroids.length - 1; i >= 0; i -= 1) {
                     if (utils.isCircleCollision(player.getCircleCollider(), asteroids[i].getCircleCollider())) {
                         player.die();
+                        playerDeathsThisWave += 1;
                         energy.reset();
                     }
                 }
@@ -133,8 +136,7 @@ ASTEROIDS.gameBoard = (function () {
                 for (i = enemies.length - 1; i >= 0; i -= 1) {
                     for (j = bulletsFired.length - 1; j >= 0; j -= 1) {
                         if (utils.isCircleCollision(enemies[i].getCircleCollider(), bulletsFired[j].getCircleCollider())) {
-                            score += 1000;
-                            scoreMessages.push(new ScoreMessage(1000, {x: enemies[i].getX(), y: enemies[i].getY() }));
+                            scoreManager.enemyKilled({ x: enemies[i].getX(), y: enemies[i].getY() });
                             enemyExplosions.push(new EnemyExplosion({x: enemies[i].getCenterX(), y: enemies[i].getCenterY()}));
                             enemies[i].die();
                             enemies.splice(i, 1);
@@ -198,8 +200,7 @@ ASTEROIDS.gameBoard = (function () {
                             x = asteroids[i].getX();
                             y = asteroids[i].getY();
                             size = asteroids[i].getSize();
-                            score += 600 / size;
-                            scoreMessages.push(new ScoreMessage(600 / size, {x: x, y: y }));
+                            scoreManager.asteroidDestroyed(size, { x: x, y: y });
                             asteroids.splice(i, 1);
                             if (size > 1) {
                                 splitAsteroid(size, x, y, bullvx, bullvy);
@@ -235,6 +236,7 @@ ASTEROIDS.gameBoard = (function () {
                 gameBoard.waveOver();
             } else {
                 detectAllCollisions();
+                waveSeconds = 60 - ((Date.now() - waveStartTime) / 1000).toFixed(0)
                 if (player.isAlive()) {
                     player.update();
                 }
@@ -258,9 +260,9 @@ ASTEROIDS.gameBoard = (function () {
                 }
 
                 // Remove score messages if they're expired
-                for (i = scoreMessages.length - 1; i >= 0; i -= 1) {
-                    if (scoreMessages[i].timeExpired()) {
-                        scoreMessages.splice(i, 1);
+                for (i = scoreManager.scoreMessages.length - 1; i >= 0; i -= 1) {
+                    if (scoreManager.scoreMessages[i].timeExpired()) {
+                        scoreManager.scoreMessages.splice(i, 1);
                     }
                 }
 
@@ -307,8 +309,10 @@ ASTEROIDS.gameBoard = (function () {
             context.fillStyle = 'white';
             context.font = "30px Consolas";
             
-            context.fillText("Level: " + currentWave + " Score: " + score + " Hi: " + ASTEROIDS.scoreManager.getHighScore(), 50, 30);
-            
+            context.fillText("Level: " + currentWave + " Score: " + scoreManager.currentScore + " Hi: " + ASTEROIDS.scoreManager.getHighScore(), 50, 30);
+            if (waveStartTime) {
+                context.fillText(waveSeconds, 1200, 30);
+            }
             for (i = 0; i < player.getLives(); i += 1) {
                 context.drawImage(playerImg, (i * 25) + 50, 45, 20, 20);
             }
@@ -349,8 +353,8 @@ ASTEROIDS.gameBoard = (function () {
             for (i = 0; i < powerupMessages.length; i += 1) {
                 powerupMessages[i].draw();
             }
-            for (i = 0; i < scoreMessages.length; i += 1) {
-                scoreMessages[i].draw();
+            for (i = 0; i < scoreManager.scoreMessages.length; i += 1) {
+                scoreManager.scoreMessages[i].draw();
             }
             for (i = 0; i < enemyExplosions.length; i += 1) {
                 enemyExplosions[i].draw();
@@ -419,6 +423,7 @@ ASTEROIDS.gameBoard = (function () {
         },
         start: function () {
             gameBoard.reset();
+            transitioning = true;
             key.bindAction(key.UP, function () { player.accelerate(); player.engineEnabled(true) }, function () { player.engineEnabled(false); });
             key.bindAction(key.DOWN, player.shield.activate, player.shield.deactivate);
             key.bindAction(key.LEFT, function () { player.rotate(-4); }, function () { });
@@ -426,8 +431,9 @@ ASTEROIDS.gameBoard = (function () {
             key.bindAction(key.SPACE, player.shoot, function () { });
             key.bindAction(key.ESC, this.pause, function () { });
             currentWave = 1;
-            score = 0;
-            player.setLives(5);
+            scoreManager.currentScore = 0;
+            player.setLives(4);
+            player.reset();
             energy.reset();
             enemyManager = new ASTEROIDS.enemyManager(gameBoard.getWave, gameBoard.isTransition);
             ASTEROIDS.menu.waveTransition.show(currentWave);
@@ -456,13 +462,23 @@ ASTEROIDS.gameBoard = (function () {
             enemyManager = new ASTEROIDS.enemyManager(gameBoard.getWave, gameBoard.isTransition);
             enemyManager.reset();
             energy.reset();
+            playerDeathsThisWave = 0;
         },
         waveOver: function () {
+            var deathBonus = 0;
+
+            if (playerDeathsThisWave === 0) {
+                deathBonus = scoreManager.noDeathBonus(currentWave)
+            }
+
+            scoreManager.speedBonus(waveSeconds);
+
             currentWave += 1;
+
             if (currentWave === totalWaves) {
                 gameBoard.gameOver(true);
             } else {
-                ASTEROIDS.menu.waveTransition.show(currentWave);
+                ASTEROIDS.menu.waveTransition.show(currentWave, deathBonus, waveSeconds);
             }
         },
         waveStart: function () {
@@ -470,13 +486,14 @@ ASTEROIDS.gameBoard = (function () {
             player.shield.freeShield();
             gameBoard.spawnAsteroids();
             transitioning = false;
+            waveStartTime = Date.now();
         },
         gameOver: function (isWin) {
             gameLoopManager.stop();
-            var isHighScore = ASTEROIDS.scoreManager.isHighScore(score),
+            var isHighScore = scoreManager.isHighScore(),
                 enemiesKilled = enemyManager.getEnemiesKilled();
-            ASTEROIDS.scoreManager.setHighScore(score);
-            ASTEROIDS.menu.gameOver.show(score, enemiesKilled, isHighScore, isWin);
+            scoreManager.setHighScore();
+            ASTEROIDS.menu.gameOver.show(scoreManager.currentScore, enemiesKilled, isHighScore, isWin);
         }
     };
     return gameBoard;

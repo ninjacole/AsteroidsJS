@@ -24,7 +24,7 @@ ASTEROIDS.Bullet = function (bulletPoint, playervx, playervy, playerRotation) {
         vy = playervy + Math.cos(utils.convertDegreesToRads(180 - rotation)) * speed;
     
     this.draw = function () {
-        context.fillStyle = "#3BFF6F";
+        context.fillStyle = "#FFA600";
         context.beginPath();
         context.arc(x, y, radius, 0, Math.PI * 2);
         context.fill();

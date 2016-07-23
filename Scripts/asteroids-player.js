@@ -29,6 +29,7 @@ ASTEROIDS.player = (function () {
         y = canvas.height / 2,
         vx = 0,
         vy = 0,
+        deaths = 0,
         width = 40,
         height = 40,
         rotation = 0,
@@ -234,13 +235,9 @@ ASTEROIDS.player = (function () {
             y = -5000;
             vx = 0;
             vy = 0;
-            fireRate = 150;
-            rotation = 0;
             alive = false;
             playerDeathSound.play();
-            weapon.setType('single');
-            accelerationCoefficient = 0.1;
-            timeOfDeath = new Date().getTime();
+            timeOfDeath = Date.now();
             img = document.getElementById('ship-single');
             if (lives > 0) {
                 setTimeout(player.reset, respawnTime);
@@ -255,6 +252,10 @@ ASTEROIDS.player = (function () {
             vy = 0;
             rotation = 0;
             shield.freeShield();
+            fireRate = 150;
+            rotation = 0;
+            weapon.setType('single');
+            accelerationCoefficient = 0.1;
         }
     };
     return player;

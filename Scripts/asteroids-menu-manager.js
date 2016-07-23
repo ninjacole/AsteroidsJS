@@ -76,9 +76,20 @@ ASTEROIDS.menu.gameOver = {
 }
 
 ASTEROIDS.menu.waveTransition = {
-    show: function (wave) {
-        $("#wave-transition").show();
-        $("#wave-element").text("WAVE " + wave);
+    show: function (wave, deathBonus, seconds) {
+        var waveTransition = $("#wave-transition");
+        waveTransition.empty();
+        waveTransition.fadeIn(1000);
+        waveTransition.append("<p class=\"game-over-text\">WAVE " + wave + "</p>");
+
+        if (deathBonus && deathBonus > -1) {
+            waveTransition.append("<p class=\"game-over-text\">No death bonus: " + deathBonus + "</p>").fadeIn(300);
+        }
+
+        if (seconds && seconds > 0) {
+            waveTransition.append("<p class=\"game-over-text\">Fast clear bonus: 100 * " + seconds + " = " + (100 * seconds).toString() + "</p>").fadeIn(300);
+        }
+
         setTimeout(function () { $("#wave-transition").fadeOut(ASTEROIDS.gameBoard.waveStart) }, 5000);
     }
 }
