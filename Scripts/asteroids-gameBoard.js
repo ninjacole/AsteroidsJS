@@ -237,7 +237,7 @@ ASTEROIDS.gameBoard = (function () {
                 gameBoard.waveOver();
             } else {
                 detectAllCollisions();
-                waveSeconds = 60 - ((Date.now() - waveStartTime) / 1000).toFixed(0)
+                waveSeconds = 120 - ((Date.now() - waveStartTime) / 1000).toFixed(0)
                 if (player.isAlive()) {
                     player.update();
                 }
@@ -364,7 +364,7 @@ ASTEROIDS.gameBoard = (function () {
         spawnAsteroids: function () {
             var config;
             
-            for (i = 0; i < currentWave; i += 1) {
+            for (i = 0; i < currentWave + 2; i += 1) {
                 config = {
                     x: utils.getSpawnPoint().x,
                     y: utils.getSpawnPoint().y,

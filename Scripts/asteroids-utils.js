@@ -27,6 +27,8 @@ ASTEROIDS.namespace = function (ns_string) {
 
 ASTEROIDS.namespace('ASTEROIDS.utils');
 ASTEROIDS.canvas = document.getElementById('gameCanvas');
+ASTEROIDS.canvas.width = window.innerWidth * 0.95;
+ASTEROIDS.canvas.height = window.innerHeight * 0.95;
 ASTEROIDS.context = ASTEROIDS.canvas.getContext('2d');
 
 ASTEROIDS.utils = (function () {
