@@ -1,6 +1,6 @@
-#container { 
-    position: relative;
-    margin: auto;
+html, body { 
+    width:100%; 
+    height:100%; 
 }
 
 body {
@@ -10,10 +10,14 @@ body {
 
 *, *:before, *:after {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
+
 .game-over-text {
     color: white;
 }
+
 .menu {
     position: absolute;
     display: none;
@@ -42,10 +46,5 @@ body {
 }
 
 #gameCanvas {
-    margin: auto;
-    padding-left: 0;
-    padding-right: 0;
-    display: block;
-    z-index: -1;
-    position: absolute;
+    display:block;
 }
