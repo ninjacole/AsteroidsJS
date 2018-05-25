@@ -1,0 +1,12 @@
+{
+    "version": "1.0.0",
+    "name": "asteroidsjs",
+    "private": true,
+    "devDependencies": {
+        "react": "16.4.0",
+        "react-dom": "16.4.0",
+        "typescript": "2.8.3",
+        "webpack": "4.9.0"
+    },
+    "dependencies": {}
+}
