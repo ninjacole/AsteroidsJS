@@ -2,7 +2,6 @@
 Retro game recreated in HTML5 / JS
 
 Currently hosted on Github here: 
-http://mvarta.github.io/AsteroidsJS/main.html
 
 Not mobile friendly, desktop pc only (no real plans to change)
 
