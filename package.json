@@ -6,7 +6,7 @@
         "react": "16.4.0",
         "react-dom": "16.4.2",
         "typescript": "2.8.3",
-        "webpack": "4.9.0"
+        "webpack": "5.75.0"
     },
     "dependencies": {}
 }
